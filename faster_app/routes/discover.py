@@ -12,7 +12,7 @@ class RoutesDiscover(DiscoverBase):
             "skip_files": [],
         },
         {
-            "directory": "routes/builtins",
+            "directory": f"{DiscoverBase.FASTER_APP_PATH}/routes/builtins",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],

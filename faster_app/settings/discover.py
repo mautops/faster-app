@@ -20,7 +20,7 @@ class SettingsDiscover(DiscoverBase):
             "skip_files": [],
         },
         {
-            "directory": "settings/builtins",
+            "directory": f"{DiscoverBase.FASTER_APP_PATH}/settings/builtins",
             "filename": "settings.py",
             "skip_dirs": ["__pycache__"],
             "skip_files": [],

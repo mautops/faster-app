@@ -16,7 +16,7 @@ class CommandDiscover(DiscoverBase):
             "skip_files": [],
         },
         {
-            "directory": "commands/builtins",
+            "directory": f"{DiscoverBase.FASTER_APP_PATH}/commands/builtins",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],

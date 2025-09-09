@@ -7,6 +7,7 @@ from typing import Dict, List
 class DiscoverBase(object):
     INSTANCE_TYPE = None
     TARGETS: List[Dict[str, str]] = []
+    FASTER_APP_PATH = os.path.dirname(__file__)
 
     def discover(self) -> List[type]:
         """
