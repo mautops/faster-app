@@ -11,7 +11,7 @@ class DefaultSettings(BaseSettings):
 
     # 基础配置
     PROJECT_NAME: str = "Faster API"
-    VERSION: str = "0.1.0"
+    VERSION: str = "0.0.1"
     DEBUG: bool = True
 
     # Server 配置
