@@ -6,7 +6,10 @@ import fire
 from faster_app.commands.discover import CommandDiscover
 
 
-if __name__ == "__main__":
+def main():
+    """
+    Faster APP 命令行入口点
+    """
     command_instances = CommandDiscover().discover()
 
     # 将命令实例转换为字典，使用类名作为键
@@ -18,3 +21,7 @@ if __name__ == "__main__":
 
     # 直接传递命令字典给 Fire
     fire.Fire(commands)
+
+
+if __name__ == "__main__":
+    main()
