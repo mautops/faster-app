@@ -176,7 +176,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # 服务器配置
-    HOST: str = "127.0.0.5"
+    HOST: str = "127.0.0.6"
     PORT: int = 8000
 
     # API 配置
@@ -241,19 +241,6 @@ SECRET_KEY=your-secret-key-here
 - [Fire](https://github.com/google/python-fire) - 命令行接口生成器
 - [Pydantic](https://pydantic-docs.helpmanual.io/) - 数据验证库
 - [Rich](https://rich.readthedocs.io/) - 终端美化库
-
-## 📈 更新日志
-
-### v0.0.5 (2025-09-09)
-
-- 🎉 初始版本发布
-- ✅ 提供基础的自动发现功能
-- ✅ 提供模型、命令、路由基类
-- ✅ 提供数据库连接管理
-- ✅ 内置数据库迁移工具
-- ✅ 内置 FastAPI 开发服务器
-
----
 
 **作者**: peizhenfei (peizhenfei@hotmail.com)
 
