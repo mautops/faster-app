@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "faster_app"
-version = "0.0.11"
+version = "0.0.12"
 description = "一个轻量级的 Python Web 框架，提供自动发现、模型基类、命令行工具等功能"
 readme = "README.md"
 license = "MIT"
