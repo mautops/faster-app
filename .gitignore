@@ -1,4 +1,4 @@
-# Faster API - .gitignore
+# Faster APP - .gitignore
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -410,7 +410,7 @@ GRTAGS
 GSYMS
 GTAGS
 
-# Faster API specific
+# Faster APP specific
 # Add any project-specific files to ignore here
 examples/*/logs/
 examples/*/cache/

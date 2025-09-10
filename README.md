@@ -1,4 +1,4 @@
-# Faster API
+# Faster APP
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.116.1+-green.svg)](https://fastapi.tiangolo.com/)
@@ -176,7 +176,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # 服务器配置
-    HOST: str = "127.0.0.4"
+    HOST: str = "127.0.0.5"
     PORT: int = 8000
 
     # API 配置
@@ -244,7 +244,7 @@ SECRET_KEY=your-secret-key-here
 
 ## 📈 更新日志
 
-### v0.0.4 (2025-09-09)
+### v0.0.5 (2025-09-09)
 
 - 🎉 初始版本发布
 - ✅ 提供基础的自动发现功能
@@ -257,4 +257,4 @@ SECRET_KEY=your-secret-key-here
 
 **作者**: peizhenfei (peizhenfei@hotmail.com)
 
-**项目主页**: [https://github.com/mautops/faster_app.git](https://github.com/mautops/faster_app.git)
+**项目主页**: [https://github.com/mautops/faster-app.git](https://github.com/mautops/faster-app.git)

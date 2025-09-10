@@ -10,8 +10,8 @@ class DefaultSettings(BaseSettings):
     """应用设置"""
 
     # 基础配置
-    PROJECT_NAME: str = "Faster API"
-    VERSION: str = "0.0.4"
+    PROJECT_NAME: str = "Faster APP"
+    VERSION: str = "0.0.5"
     DEBUG: bool = True
 
     # Server 配置
@@ -62,3 +62,4 @@ class DefaultSettings(BaseSettings):
     class Config:
         env_file = ".env"
         exclude_from_env = {"TORTOISE_ORM"}
+        extra = "ignore"

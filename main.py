@@ -1,5 +1,5 @@
 """
-Faster API 命令行入口
+Faster APP 命令行入口
 """
 
 import fire

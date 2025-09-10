@@ -1,5 +1,5 @@
 """
-Faster API - 一个轻量级的 Python Web 框架
+Faster APP - 一个轻量级的 Python Web 框架
 
 提供了以下核心功能：
 - 自动发现和加载模块 (DiscoverBase)
@@ -9,7 +9,7 @@ Faster API - 一个轻量级的 Python Web 框架
 - 数据库连接管理 (tortoise_init)
 """
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 __author__ = "peizhenfei"
 __email__ = "peizhenfei@hotmail.com"
 
