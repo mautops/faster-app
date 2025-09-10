@@ -9,7 +9,7 @@ Faster APP - 一个轻量级的 Python Web 框架
 - 数据库连接管理 (tortoise_init)
 """
 
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 __author__ = "peizhenfei"
 __email__ = "peizhenfei@hotmail.com"
 
