@@ -13,7 +13,7 @@ console = Console()
 
 
 class DBOperations(CommandBase):
-    """数据库操作命令 - 使用Aerich管理数据库迁移"""
+    """DB Operations - 使用 Aerich 管理数据库迁移"""
 
     def __init__(self, fake: bool = False):
         self.fake = fake

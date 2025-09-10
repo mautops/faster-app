@@ -60,7 +60,7 @@ class CommandBase(object):
         return attr
 
     @classmethod
-    def get_command_name(cls, class_name: str = None, suffixes: list = None) -> str:
+    def _get_command_name(cls, class_name: str = None, suffixes: list = None) -> str:
         """
         自动去除类名中的常见后缀，生成简洁的命令名
 

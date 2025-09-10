@@ -69,7 +69,9 @@ class FastAPIAppSingleton:
 app = FastAPIAppSingleton()
 
 
-class FastApiOperations(CommandBase):
+class ServerOperations(CommandBase):
+    """FastAPI Server Operations"""
+
     def __init__(self, host: str = None, port: int = None):
         configs = DefaultSettings()
         self.host = host or configs.HOST
