@@ -1,10 +1,23 @@
 import os
 import shutil
 from faster_app.commands.base import CommandBase
+from rich.console import Console
+
+console = Console()
 
 
 class AppCommand(CommandBase):
     """App Command"""
+
+    async def init(self):
+        """Run Init App"""
+        # 拷贝项目根路径下的 main.py 文件到项目根路径
+        shutil.copy(f"{self.BASE_PATH}/main.py", "main.py")
+        console.print("✅ main.py created successfully")
+
+        # 拷贝项目根路径下的 .env.example 文件到项目根路径
+        shutil.copy(f"{self.BASE_PATH}/.env.example", ".env")
+        console.print("✅ .env created successfully")
 
     async def demo(self):
         """Run Demo"""
@@ -23,8 +36,3 @@ class AppCommand(CommandBase):
         shutil.copytree(
             f"{self.BASE_PATH}/templates/config/settings.py", "config/settings.py"
         )
-
-    async def env(self):
-        """create .env file"""
-        # 拷贝项目根路径下的 .env.example 文件到项目根路径
-        shutil.copy(f"{self.BASE_PATH}/.env.example", ".env")

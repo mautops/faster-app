@@ -176,7 +176,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # 服务器配置
-    HOST: str = "127.0.0.6"
+    HOST: str = "127.0.0.7"
     PORT: int = 8000
 
     # API 配置
