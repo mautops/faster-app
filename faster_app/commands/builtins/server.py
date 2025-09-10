@@ -1,5 +1,4 @@
 import os
-import sys
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from tortoise import Tortoise
@@ -52,8 +51,6 @@ class FastAPIAppSingleton:
 
         # 添加静态文件服务器
         try:
-            import os
-
             static_dir = os.path.join(os.path.dirname(__file__), "..", "..", "statics")
             app.mount("/static", StaticFiles(directory=static_dir), name="static")
         except Exception as e:
@@ -74,27 +71,16 @@ class ServerOperations(CommandBase):
     """FastAPI Server Operations"""
 
     def __init__(self, host: str = None, port: int = None):
+        super().__init__()  # 调用父类初始化，自动配置 PYTHONPATH
         self.host = host or configs.HOST
         self.port = port or configs.PORT
         self.configs = configs
 
     def start(self):
         """start fastapi server"""
-        # 将当前工作目录添加到 Python 路径，确保可以导入项目模块
-        current_dir = os.getcwd()
-        if current_dir not in sys.path:
-            sys.path.insert(0, current_dir)
-
-        # 设置 PYTHONPATH 环境变量，确保子进程也能找到项目模块
-        pythonpath = os.environ.get("PYTHONPATH", "")
-        if current_dir not in pythonpath:
-            os.environ["PYTHONPATH"] = (
-                current_dir + ":" + pythonpath if pythonpath else current_dir
-            )
-
         reload = True if self.configs.DEBUG else False
         uvicorn.run(
-            "faster_app.commands.builtins.fastapi:app",
+            "faster_app.commands.builtins.server:app",
             host=self.host,
             port=self.port,
             reload=reload,

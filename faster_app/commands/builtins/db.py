@@ -16,6 +16,7 @@ class DBOperations(CommandBase):
     """DB Operations - 使用 Aerich 管理数据库迁移"""
 
     def __init__(self, fake: bool = False):
+        super().__init__()  # 调用父类初始化，自动配置 PYTHONPATH
         self.fake = fake
         self.command = Command(
             tortoise_config=self._get_tortoise_config(), app="aerich"

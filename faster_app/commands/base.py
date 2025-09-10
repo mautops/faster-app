@@ -3,6 +3,7 @@
 """
 
 import os
+import sys
 import inspect
 from functools import wraps
 from tortoise import Tortoise
@@ -42,6 +43,24 @@ class CommandBase(object):
         "Operations",
         "Operation",
     ]
+
+    def __init__(self):
+        """初始化命令基类，自动配置 PYTHONPATH"""
+        self._setup_python_path()
+
+    def _setup_python_path(self):
+        """配置 Python 路径，确保可以导入项目模块"""
+        # 将当前工作目录添加到 Python 路径，确保可以导入项目模块
+        current_dir = os.getcwd()
+        if current_dir not in sys.path:
+            sys.path.insert(0, current_dir)
+
+        # 设置 PYTHONPATH 环境变量，确保子进程也能找到项目模块
+        pythonpath = os.environ.get("PYTHONPATH", "")
+        if current_dir not in pythonpath:
+            os.environ["PYTHONPATH"] = (
+                current_dir + ":" + pythonpath if pythonpath else current_dir
+            )
 
     def __getattribute__(self, name):
         """自动为异步方法添加数据库初始化装饰器"""

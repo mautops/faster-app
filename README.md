@@ -1,10 +1,5 @@
 # Faster APP
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.116.1+-green.svg)](https://fastapi.tiangolo.com/)
-[![Tortoise ORM](https://img.shields.io/badge/Tortoise%20ORM-0.25.1+-orange.svg)](https://tortoise.github.io/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 一个轻量级、高性能的 Python Web 框架，基于 FastAPI 和 Tortoise ORM 构建，提供自动发现、模型基类、命令行工具等企业级功能。
 
 ## ✨ 核心特性
@@ -40,7 +35,6 @@ your-project/
 │       └── commands.py
 ├── config/
 └──── settings.py           # 配置文件
-└── main.py                 # 入口文件
 ```
 
 ### 2. 模型定义
@@ -110,24 +104,6 @@ class UserCommand(CommandBase):
             print(f"  - {user.name} ({user.email})")
 ```
 
-### 5. 启动应用
-
-```python
-# main.py
-import fire
-from faster_app.commands.discover import CommandDiscover
-
-if __name__ == "__main__":
-    # 自动发现并注册所有命令
-    command_instances = CommandDiscover().discover()
-    commands = {}
-    for instance in command_instances:
-        command_name = instance.get_command_name()
-        commands[command_name] = instance
-
-    fire.Fire(commands)
-```
-
 # 🛠️ 内置工具
 
 ### 1. 数据库管理
@@ -194,9 +170,6 @@ class Settings(BaseSettings):
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "password"
     DB_DATABASE: str = "mydb"
-
-# 实例化配置
-configs = Settings()
 ```
 
 ### 环境变量支持
