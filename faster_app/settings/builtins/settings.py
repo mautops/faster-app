@@ -11,7 +11,7 @@ class DefaultSettings(BaseSettings):
 
     # 基础配置
     PROJECT_NAME: str = "Faster APP"
-    VERSION: str = "0.0.8"
+    VERSION: str = "0.0.1"
     DEBUG: bool = True
 
     # Server 配置
