@@ -1,9 +1,11 @@
+import os
+import sys
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from tortoise import Tortoise
-from faster_app.settings.builtins.settings import DefaultSettings
 from rich.console import Console
 from starlette.staticfiles import StaticFiles
+from faster_app.settings import configs
 from faster_app.commands.base import CommandBase
 from faster_app.db import tortoise_init
 import uvicorn
@@ -39,7 +41,6 @@ class FastAPIAppSingleton:
     def _create_app(cls):
         """创建FastAPI应用实例"""
         # 创建FastAPI应用实例
-        configs = DefaultSettings()
         app = FastAPI(
             title=configs.PROJECT_NAME,
             version=configs.VERSION,
@@ -73,13 +74,24 @@ class ServerOperations(CommandBase):
     """FastAPI Server Operations"""
 
     def __init__(self, host: str = None, port: int = None):
-        configs = DefaultSettings()
         self.host = host or configs.HOST
         self.port = port or configs.PORT
         self.configs = configs
 
     def start(self):
-        # 启动服务
+        """start fastapi server"""
+        # 将当前工作目录添加到 Python 路径，确保可以导入项目模块
+        current_dir = os.getcwd()
+        if current_dir not in sys.path:
+            sys.path.insert(0, current_dir)
+
+        # 设置 PYTHONPATH 环境变量，确保子进程也能找到项目模块
+        pythonpath = os.environ.get("PYTHONPATH", "")
+        if current_dir not in pythonpath:
+            os.environ["PYTHONPATH"] = (
+                current_dir + ":" + pythonpath if pythonpath else current_dir
+            )
+
         reload = True if self.configs.DEBUG else False
         uvicorn.run(
             "faster_app.commands.builtins.fastapi:app",
