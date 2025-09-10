@@ -7,6 +7,7 @@ from rich.console import Console
 from faster_app.settings.builtins.settings import DefaultSettings
 from faster_app.models.discover import ModelDiscover
 from aerich import Command
+from faster_app.settings import configs
 
 console = Console()
 

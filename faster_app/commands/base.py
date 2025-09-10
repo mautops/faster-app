@@ -2,6 +2,7 @@
 命令基类, 使用 fire 库管理子命令
 """
 
+import os
 import inspect
 from functools import wraps
 from tortoise import Tortoise
@@ -29,6 +30,8 @@ def with_db_init(func):
 
 class CommandBase(object):
     """命令基类"""
+
+    BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 
     # 默认要去掉的后缀列表
     DEFAULT_SUFFIXES = [
