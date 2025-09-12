@@ -1,18 +1,19 @@
 from fastapi import APIRouter
-from faster_app.base import DiscoverBase
+from faster_app.utils.discover import DiscoverBase
+from faster_app.utils import BASE_DIR
 
 
 class RoutesDiscover(DiscoverBase):
     INSTANCE_TYPE = APIRouter
     TARGETS = [
         {
-            "directory": "apps",
-            "filename": "routes.py",
+            "directory": f"{BASE_DIR}/apps",
+            "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
         },
         {
-            "directory": f"{DiscoverBase.FASTER_APP_PATH}/routes/builtins",
+            "directory": f"{BASE_DIR}/routes/builtins",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],

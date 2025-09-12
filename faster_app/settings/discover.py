@@ -4,7 +4,9 @@
 
 from typing import Any, Dict
 from pydantic_settings import BaseSettings
-from faster_app.base import DiscoverBase
+from faster_app.utils.discover import DiscoverBase
+from faster_app.settings.builtins.settings import DefaultSettings
+from faster_app.utils import BASE_DIR
 
 
 class SettingsDiscover(DiscoverBase):
@@ -14,13 +16,13 @@ class SettingsDiscover(DiscoverBase):
 
     TARGETS = [
         {
-            "directory": "config",
+            "directory": f"{BASE_DIR}/config",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
         },
         {
-            "directory": f"{DiscoverBase.FASTER_APP_PATH}/settings/builtins",
+            "directory": f"{BASE_DIR}/settings/builtins",
             "filename": "settings.py",
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
@@ -29,7 +31,7 @@ class SettingsDiscover(DiscoverBase):
 
     def merge(self) -> BaseSettings:
         """合并配置: 使用用户配置覆盖内置配置"""
-        default_settings = BaseSettings
+        default_settings = DefaultSettings()
         user_settings = []
 
         configs = self.discover()

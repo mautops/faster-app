@@ -9,8 +9,6 @@ from tortoise.fields import (
     UUIDField,
     DatetimeField,
     CharEnumField,
-    BooleanField,
-    TextField,
 )
 
 
@@ -81,26 +79,6 @@ class ScopeModel(Model):
         OBJECT = "object"
 
     scope = CharEnumField(ScopeEnum, default=ScopeEnum.PROJECT, verbose_name="作用域")
-
-    class Meta:
-        abstract = True
-
-
-class SyncTimeModel(Model):
-    """add sync_time field to model"""
-
-    sync_time = DatetimeField(verbose_name="同步时间", blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-
-class SyncCrontabModel(SyncTimeModel):
-    """add sync_crontab field to model"""
-
-    sync_crontab = DatetimeField(verbose_name="定时同步", null=True, blank=True)
-    sync_status = BooleanField(verbose_name="同步状态", default=False)
-    sync_error_message = TextField(verbose_name="同步错误", blank=True, null=True)
 
     class Meta:
         abstract = True

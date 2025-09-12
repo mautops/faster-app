@@ -2,6 +2,7 @@ import os
 import shutil
 from faster_app.commands.base import BaseCommand
 from rich.console import Console
+from faster_app.utils import BASE_DIR
 
 console = Console()
 
@@ -10,10 +11,10 @@ class AppCommand(BaseCommand):
     """App Command"""
 
     async def env(self):
-        """Create .env file"""
+        """create .env file"""
         # 拷贝项目根路径下的 .env.example 文件到项目根路径
         try:
-            shutil.copy(f"{self._BASE_PATH}/.env.example", ".env")
+            shutil.copy(f"{BASE_DIR}/.env.example", ".env")
             console.print("✅ .env created successfully")
         except FileExistsError:
             console.print("✅ .env already exists")
@@ -27,7 +28,7 @@ class AppCommand(BaseCommand):
             if not os.path.exists("apps"):
                 os.makedirs("apps")
             # 拷贝 /apps/demo 目录到 apps 目录
-            shutil.copytree(f"{self._BASE_PATH}//apps/demo", "apps/demo")
+            shutil.copytree(f"{BASE_DIR}//apps/demo", "apps/demo")
             console.print("✅ apps/demo created successfully")
         except FileExistsError:
             console.print("✅ apps/demo already exists")
@@ -38,7 +39,7 @@ class AppCommand(BaseCommand):
         """create config"""
         # 拷贝 /config 到 . 目录
         try:
-            shutil.copytree(f"{self._BASE_PATH}//config", "./config")
+            shutil.copytree(f"{BASE_DIR}//config", "./config")
             console.print("✅ config created successfully")
         except FileExistsError:
             console.print("✅ config already exists")

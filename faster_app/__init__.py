@@ -6,7 +6,6 @@ Faster APP - 一个轻量级的 Python Web 框架
 - 数据库模型基类 (UUIDModel, DateTimeModel, StatusModel, ScopeModel)
 - 命令行工具基类 (BaseCommand)
 - 路由管理 (ApiResponse)
-- 数据库连接管理 (tortoise_init)
 """
 
 __version__ = "0.0.16"
@@ -14,18 +13,15 @@ __author__ = "peizhenfei"
 __email__ = "peizhenfei@hotmail.com"
 
 # 导出主要的类和函数
-from faster_app.base import DiscoverBase
+from faster_app.utils.discover import DiscoverBase
 from faster_app.models.base import (
     UUIDModel,
     DateTimeModel,
     StatusModel,
     ScopeModel,
-    SyncTimeModel,
-    SyncCrontabModel,
 )
 from faster_app.commands.base import BaseCommand
 from faster_app.routes.base import ApiResponse
-from faster_app.db import tortoise_init
 
 # 导出发现器
 from faster_app.models.discover import ModelDiscover
@@ -40,14 +36,11 @@ __all__ = [
     "DiscoverBase",
     "BaseCommand",
     "ApiResponse",
-    "tortoise_init",
     # 模型基类
     "UUIDModel",
     "DateTimeModel",
     "StatusModel",
     "ScopeModel",
-    "SyncTimeModel",
-    "SyncCrontabModel",
     # 发现器
     "ModelDiscover",
     "CommandDiscover",

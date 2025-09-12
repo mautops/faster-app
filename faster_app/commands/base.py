@@ -9,8 +9,6 @@ import sys
 class BaseCommand(object):
     """命令基类"""
 
-    _BASE_PATH = os.path.dirname(os.path.dirname(__file__))
-
     # 默认要去掉的前缀列表（私有属性，避免被 Fire 暴露）
     _DEFAULT_PREFIXES = []
 

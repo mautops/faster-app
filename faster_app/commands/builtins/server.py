@@ -6,7 +6,6 @@ from rich.console import Console
 from starlette.staticfiles import StaticFiles
 from faster_app.settings import configs
 from faster_app.commands.base import BaseCommand
-from faster_app.db import tortoise_init
 import uvicorn
 import threading
 
@@ -17,7 +16,7 @@ console = Console()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await tortoise_init()
+    await Tortoise.init(config=configs.TORTOISE_ORM)
     yield
     await Tortoise.close_connections()
 

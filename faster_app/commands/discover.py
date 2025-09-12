@@ -4,20 +4,21 @@
 
 from typing import Dict
 from faster_app.commands.base import BaseCommand
-from faster_app.base import DiscoverBase
+from faster_app.utils.discover import DiscoverBase
+from faster_app.utils import BASE_DIR
 
 
 class CommandDiscover(DiscoverBase):
     INSTANCE_TYPE = BaseCommand
     TARGETS = [
         {
-            "directory": "apps",
-            "filename": "commands.py",
+            "directory": f"{BASE_DIR}/apps",
+            "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
         },
         {
-            "directory": f"{DiscoverBase.FASTER_APP_PATH}/commands/builtins",
+            "directory": f"{BASE_DIR}/commands/builtins",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
@@ -33,5 +34,4 @@ class CommandDiscover(DiscoverBase):
             # 使用 BaseCommand 的 _get_command_name 方法自动去除后缀
             command_name = instance._get_command_name()
             commands[command_name] = instance
-
         return commands

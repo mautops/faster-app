@@ -3,7 +3,8 @@
 """
 
 from tortoise import Model
-from faster_app.base import DiscoverBase
+from faster_app.utils.discover import DiscoverBase
+from faster_app.utils import BASE_DIR
 
 
 class ModelDiscover(DiscoverBase):
@@ -13,8 +14,8 @@ class ModelDiscover(DiscoverBase):
 
     TARGETS = [
         {
-            "directory": "apps",
-            "filename": "models.py",
+            "directory": f"{BASE_DIR}/apps",
+            "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
         },
@@ -23,7 +24,7 @@ class ModelDiscover(DiscoverBase):
     def discover(self) -> dict[str, list[str]]:
         """
         发现模型模块路径
-        返回按app分组的模块路径字典，用于Tortoise ORM的apps配置
+        返回按app分组的模块路径字典, 用于Tortoise ORM的apps配置
         """
         apps_models = {}
 

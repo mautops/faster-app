@@ -5,16 +5,11 @@ import shutil
 from typing import Optional
 from faster_app.commands.base import BaseCommand
 from rich.console import Console
-from faster_app.utils.config import get_aerich_config
 from faster_app.utils.decorators import with_aerich_command
 from aerich import Command
 from faster_app.settings import configs
 
 console = Console()
-
-# 常量定义
-AERICH_APP_NAME = "aerich"
-AERICH_MODELS = ["aerich.models"]
 
 
 class DBOperations(BaseCommand):
@@ -23,28 +18,28 @@ class DBOperations(BaseCommand):
     def __init__(self, fake: bool = False):
         super().__init__()  # 调用父类初始化，自动配置 PYTHONPATH
         self.fake = fake
-        self.command = Command(tortoise_config=get_aerich_config(), app=AERICH_APP_NAME)
+        self.command = Command(tortoise_config=configs.TORTOISE_ORM)
 
-    @with_aerich_command(tortoise=True)
+    @with_aerich_command()
     async def init(self) -> None:
-        """Initialize aerich config and create migrations folder.
+        """initialize aerich config and create migrations folder.
 
         Args:
             location: default ./migrations
             src_folder: source code folder, relative to project root
         """
         await self.command.init()
-        console.print("✅ Successfully created migrations folder: {location}")
+        console.print("✅ Successfully created migrations folder")
 
-    @with_aerich_command(tortoise=True)
+    @with_aerich_command()
     async def init_db(self) -> None:
-        """Generate schema and generate app migration folder."""
+        """generate schema and generate app migration folder."""
         await self.command.init_db(safe=True)
         console.print("✅ Database initialization successful")
 
-    @with_aerich_command(tortoise=True)
+    @with_aerich_command()
     async def migrate(self, name: Optional[str] = None, empty: bool = False) -> None:
-        """Generate a migration file for the current state of the models.
+        """generate a migration file for the current state of the models.
 
         Args:
             name: migration file name
@@ -56,36 +51,36 @@ class DBOperations(BaseCommand):
         else:
             console.print("✅ Migration file generated successfully")
 
-    @with_aerich_command(tortoise=True)
+    @with_aerich_command()
     async def upgrade(self) -> None:
-        """Upgrade to specified migration version."""
+        """upgrade to specified migration version."""
         await self.command.upgrade(fake=self.fake)
         console.print("✅ Database migration execution successful")
 
-    @with_aerich_command(tortoise=True)
+    @with_aerich_command()
     async def downgrade(self, version: int = -1) -> None:
-        """Downgrade to specified version."""
+        """downgrade to specified version."""
         await self.command.downgrade(version=version, delete=True, fake=self.fake)
         console.print("✅ Database downgrade successful")
 
-    @with_aerich_command(tortoise=True)
+    @with_aerich_command()
     async def history(self) -> None:
-        """List all migrations."""
+        """list all migrations."""
         history = await self.command.history()
         console.print("✅ Migration history:")
         for record in history:
             console.print(f"  - {record}")
 
-    @with_aerich_command(tortoise=True)
+    @with_aerich_command()
     async def heads(self) -> None:
-        """Show currently available heads (unapplied migrations)."""
+        """show currently available heads (unapplied migrations)."""
         heads = await self.command.heads()
         console.print("✅ Current migration heads:")
         for record in heads:
             console.print(f"  - {record}")
 
     async def dev_clean(self, force: bool = False) -> None:
-        """Clean development environment db migrations.
+        """clean development environment db migrations.
 
         Args:
             force: whether to force clean, skip confirmation prompt
