@@ -4,38 +4,18 @@
 
 import os
 import sys
-import inspect
-from functools import wraps
-from tortoise import Tortoise
-from faster_app.db import tortoise_init
 
 
-def with_db_init(func):
-    """装饰器：为异步方法自动初始化和关闭数据库连接"""
-
-    @wraps(func)
-    async def wrapper(*args, **kwargs):
-        # 初始化数据库连接
-        await tortoise_init()
-        try:
-            # 执行原方法
-            result = await func(*args, **kwargs)
-            return result
-        finally:
-            # 关闭数据库连接
-            if Tortoise._inited:
-                await Tortoise.close_connections()
-
-    return wrapper
-
-
-class CommandBase(object):
+class BaseCommand(object):
     """命令基类"""
 
-    BASE_PATH = os.path.dirname(os.path.dirname(__file__))
+    _BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 
-    # 默认要去掉的后缀列表
-    DEFAULT_SUFFIXES = [
+    # 默认要去掉的前缀列表（私有属性，避免被 Fire 暴露）
+    _DEFAULT_PREFIXES = []
+
+    # 默认要去掉的后缀列表（私有属性，避免被 Fire 暴露）
+    _DEFAULT_SUFFIXES = [
         "Command",
         "Commands",
         "Handler",
@@ -43,6 +23,15 @@ class CommandBase(object):
         "Operations",
         "Operation",
     ]
+
+    class Meta:
+        """
+        PREFIXES = []
+        SUFFIXES = []
+        """
+
+        PREFIXES = []
+        SUFFIXES = []
 
     def __init__(self):
         """初始化命令基类，自动配置 PYTHONPATH"""
@@ -62,46 +51,53 @@ class CommandBase(object):
                 current_dir + ":" + pythonpath if pythonpath else current_dir
             )
 
-    def __getattribute__(self, name):
-        """自动为异步方法添加数据库初始化装饰器"""
-        attr = object.__getattribute__(self, name)
-
-        # 如果是方法且是异步的，自动添加数据库初始化装饰器
-        if (
-            inspect.iscoroutinefunction(attr)
-            and not name.startswith("_")
-            and not hasattr(attr, "_db_wrapped")
-        ):
-            wrapped_attr = with_db_init(attr)
-            wrapped_attr._db_wrapped = True  # 标记已包装，避免重复包装
-            return wrapped_attr
-
-        return attr
-
     @classmethod
-    def _get_command_name(cls, class_name: str = None, suffixes: list = None) -> str:
+    def _get_command_name(
+        cls, class_name: str = None, prefixes: list = None, suffixes: list = None
+    ) -> str:
         """
-        自动去除类名中的常见后缀，生成简洁的命令名
+        自动去除类名中的前缀和后缀，生成简洁的命令名
 
         Args:
             class_name: 类名，如果不提供则使用当前类的名称
-            suffixes: 要去除的后缀列表，如果不提供则使用默认后缀
+            prefixes: 要去除的前缀列表，如果不提供则使用 _DEFAULT_PREFIXES 和 Meta.PREFIXES
+            suffixes: 要去除的后缀列表，如果不提供则使用 _DEFAULT_SUFFIXES 和 Meta.SUFFIXES
 
         Returns:
-            去除后缀后的命令名（小写）
+            去除前缀和后缀后的命令名（小写）
         """
         if class_name is None:
             class_name = cls.__name__
 
-        if suffixes is None:
-            suffixes = cls.DEFAULT_SUFFIXES
+        # 获取前缀列表，合并默认前缀和 Meta 配置的前缀
+        if prefixes is None:
+            meta_prefixes = (
+                getattr(cls.Meta, "PREFIXES", []) if hasattr(cls, "Meta") else []
+            )
+            prefixes = cls._DEFAULT_PREFIXES + meta_prefixes
 
+        # 获取后缀列表，合并默认后缀和 Meta 配置的后缀
+        if suffixes is None:
+            meta_suffixes = (
+                getattr(cls.Meta, "SUFFIXES", []) if hasattr(cls, "Meta") else []
+            )
+            suffixes = cls._DEFAULT_SUFFIXES + meta_suffixes
+
+        # 去除前缀
+        # 按照前缀长度从长到短排序，优先匹配较长的前缀
+        sorted_prefixes = sorted(prefixes, key=len, reverse=True)
+        for prefix in sorted_prefixes:
+            if class_name.startswith(prefix):
+                class_name = class_name[len(prefix) :]
+                break
+
+        # 去除后缀
         # 按照后缀长度从长到短排序，优先匹配较长的后缀
         sorted_suffixes = sorted(suffixes, key=len, reverse=True)
-
         for suffix in sorted_suffixes:
             if class_name.endswith(suffix):
-                return class_name[: -len(suffix)].lower()
+                class_name = class_name[: -len(suffix)]
+                break
 
-        # 如果没有匹配的后缀，直接返回小写的类名
+        # 返回小写的命令名
         return class_name.lower()

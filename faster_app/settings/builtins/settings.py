@@ -38,7 +38,7 @@ class DefaultSettings(BaseSettings):
         "connections": {
             "development": {
                 "engine": "tortoise.backends.sqlite",
-                "credentials": {"file_path": "faster_app.db"},
+                "credentials": {"file_path": f"{DB_DATABASE}.db"},
             },
             "production": {
                 "engine": DB_ENGINE,

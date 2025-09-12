@@ -86,9 +86,9 @@ async def create_user(name: str, email: str):
 
 ```python
 # commands.py
-from faster_app.commands import CommandBase
+from faster_app.commands import BaseCommand
 
-class UserCommand(CommandBase):
+class UserCommand(BaseCommand):
     """用户管理命令"""
 
     async def create_user(self, name: str, email: str):

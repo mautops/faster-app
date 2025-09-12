@@ -2,138 +2,128 @@
 
 import os
 import shutil
-from faster_app.commands.base import CommandBase
+from typing import Optional
+from faster_app.commands.base import BaseCommand
 from rich.console import Console
-from faster_app.settings.builtins.settings import DefaultSettings
-from faster_app.models.discover import ModelDiscover
+from faster_app.utils.config import get_aerich_config
+from faster_app.utils.decorators import with_aerich_command
 from aerich import Command
 from faster_app.settings import configs
 
 console = Console()
 
+# 常量定义
+AERICH_APP_NAME = "aerich"
+AERICH_MODELS = ["aerich.models"]
 
-class DBOperations(CommandBase):
-    """DB Operations - 使用 Aerich 管理数据库迁移"""
+
+class DBOperations(BaseCommand):
+    """aerich commands implementation"""
 
     def __init__(self, fake: bool = False):
         super().__init__()  # 调用父类初始化，自动配置 PYTHONPATH
         self.fake = fake
-        self.command = Command(
-            tortoise_config=self._get_tortoise_config(), app="aerich"
-        )
+        self.command = Command(tortoise_config=get_aerich_config(), app=AERICH_APP_NAME)
 
-    def _get_tortoise_config(self):
-        """获取Tortoise ORM配置"""
-        apps_models = ModelDiscover().discover()
-        # print("--->", apps_models)  # 注释掉调试输出
-        configs = DefaultSettings()
-        tortoise_config = configs.TORTOISE_ORM.copy()
+    @with_aerich_command(tortoise=True)
+    async def init(self) -> None:
+        """Initialize aerich config and create migrations folder.
 
-        # 清空原有的apps配置
-        tortoise_config["apps"] = {}
-
-        # 为每个app创建配置
-        for app_name, models in apps_models.items():
-            tortoise_config["apps"][app_name] = {
-                "models": models,
-                "default_connection": "development" if configs.DEBUG else "production",
-            }
-
-        # 添加aerich模型到一个单独的app中
-        tortoise_config["apps"]["aerich"] = {
-            "models": ["aerich.models"],
-            "default_connection": "development" if configs.DEBUG else "production",
-        }
-
-        return tortoise_config
-
-    async def init_db(self):
-        """初始化数据库（首次创建表）"""
-        try:
-            await self.command.init_db(safe=True)
-            console.print("✅ 数据库初始化成功")
-        except Exception as e:
-            console.print(f"❌ 数据库初始化失败: {e}")
-        finally:
-            await self.command.close()
-
-    async def migrate(self):
-        """执行数据库迁移"""
-        try:
-            await self.command.init()
-            await self.command.migrate()
-            console.print("✅ 数据库迁移执行成功")
-        except Exception as e:
-            console.print(f"❌ 数据库迁移执行失败: {e}")
-        finally:
-            await self.command.close()
-
-    async def upgrade(self):
-        """执行数据库迁移"""
-        try:
-            await self.command.init()
-            await self.command.upgrade(fake=self.fake)
-            console.print("✅ 数据库迁移执行成功")
-        except Exception as e:
-            console.print(f"❌ 数据库迁移执行失败: {e}")
-        finally:
-            await self.command.close()
-
-    async def downgrade(self, version: int = -1):
-        """回滚数据库迁移"""
-        try:
-            await self.command.init()
-            await self.command.downgrade(version=version, delete=True, fake=self.fake)
-            console.print("✅ 数据库回滚成功")
-        except Exception as e:
-            console.print(f"❌ 数据库回滚失败: {e}")
-        finally:
-            await self.command.close()
-
-    async def history(self):
-        """查看迁移历史"""
-        try:
-            await self.command.init()
-            history = await self.command.history()
-            console.print("✅ 迁移历史:")
-            for record in history:
-                console.print(f"  - {record}")
-
-        except Exception as e:
-            console.print(f"❌ 查看迁移历史失败: {e}")
-        finally:
-            await self.command.close()
-
-    async def heads(self):
-        """查看当前迁移头部"""
-        try:
-            await self.command.init()
-            heads = await self.command.heads()
-            console.print("✅ 当前迁移头部:")
-            for record in heads:
-                console.print(f"  - {record}")
-        except Exception as e:
-            console.print(f"❌ 查看当前迁移头部失败: {e}")
-        finally:
-            await self.command.close()
-
-    async def dev_clean(self):
-        """清理开发环境数据
-        1. 移除 sqlite 数据库文件
-        2. 移除 aerich 迁移记录
+        Args:
+            location: default ./migrations
+            src_folder: source code folder, relative to project root
         """
+        await self.command.init()
+        console.print("✅ Successfully created migrations folder: {location}")
+
+    @with_aerich_command(tortoise=True)
+    async def init_db(self) -> None:
+        """Generate schema and generate app migration folder."""
+        await self.command.init_db(safe=True)
+        console.print("✅ Database initialization successful")
+
+    @with_aerich_command(tortoise=True)
+    async def migrate(self, name: Optional[str] = None, empty: bool = False) -> None:
+        """Generate a migration file for the current state of the models.
+
+        Args:
+            name: migration file name
+            empty: whether to generate an empty migration file
+        """
+        await self.command.migrate(name=name, empty=empty)
+        if empty:
+            console.print("✅ Empty migration file generated successfully")
+        else:
+            console.print("✅ Migration file generated successfully")
+
+    @with_aerich_command(tortoise=True)
+    async def upgrade(self) -> None:
+        """Upgrade to specified migration version."""
+        await self.command.upgrade(fake=self.fake)
+        console.print("✅ Database migration execution successful")
+
+    @with_aerich_command(tortoise=True)
+    async def downgrade(self, version: int = -1) -> None:
+        """Downgrade to specified version."""
+        await self.command.downgrade(version=version, delete=True, fake=self.fake)
+        console.print("✅ Database downgrade successful")
+
+    @with_aerich_command(tortoise=True)
+    async def history(self) -> None:
+        """List all migrations."""
+        history = await self.command.history()
+        console.print("✅ Migration history:")
+        for record in history:
+            console.print(f"  - {record}")
+
+    @with_aerich_command(tortoise=True)
+    async def heads(self) -> None:
+        """Show currently available heads (unapplied migrations)."""
+        heads = await self.command.heads()
+        console.print("✅ Current migration heads:")
+        for record in heads:
+            console.print(f"  - {record}")
+
+    async def dev_clean(self, force: bool = False) -> None:
+        """Clean development environment db migrations.
+
+        Args:
+            force: whether to force clean, skip confirmation prompt
+
+        Warning:
+            This operation will delete all data, please use with caution! Only in development environment!
+        """
+        # 安全检查：仅在调试模式下允许
+        if not configs.DEBUG:
+            console.print(
+                "❌ This operation is only allowed in development environment (DEBUG=True)!"
+            )
+            return
+
+        # 确认提示
+        if not force:
+            console.print(
+                "⚠️  [bold red]Warning: This operation will delete all database files and migration records![/bold red]"
+            )
+            confirm = console.input("Continue? (输入 'yes' 确认): ")
+            if confirm.lower() != "yes":
+                console.print("❌ Operation cancelled")
+                return
+
         try:
             # 删除数据库文件
             db_file = f"{configs.DB_DATABASE}.db"
             if os.path.exists(db_file):
                 os.remove(db_file)
-                console.print(f"✅ 已删除数据库文件: {db_file}")
+                console.print(f"✅ Database file deleted: {db_file}")
 
             # 递归删除 migrations 目录
-            if os.path.exists("migrations"):
-                shutil.rmtree("migrations")
-                console.print("✅ 已删除迁移目录: migrations")
+            migrations_dir = "migrations"
+            if os.path.exists(migrations_dir):
+                shutil.rmtree(migrations_dir)
+                console.print(f"✅ Migration directory deleted: {migrations_dir}")
 
-            console.print("✅ 开发环境数据清理成功")
+            console.print("✅ Development environment data cleanup successful")
         except Exception as e:
-            console.print(f"❌ 清理开发环境数据失败: {e}")
+            console.print(f"❌ Cleanup development environment data failed: {e}")
+            raise

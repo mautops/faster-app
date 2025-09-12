@@ -5,7 +5,7 @@ from tortoise import Tortoise
 from rich.console import Console
 from starlette.staticfiles import StaticFiles
 from faster_app.settings import configs
-from faster_app.commands.base import CommandBase
+from faster_app.commands.base import BaseCommand
 from faster_app.db import tortoise_init
 import uvicorn
 import threading
@@ -67,7 +67,7 @@ class FastAPIAppSingleton:
 app = FastAPIAppSingleton()
 
 
-class ServerOperations(CommandBase):
+class ServerOperations(BaseCommand):
     """FastAPI Server Operations"""
 
     def __init__(self, host: str = None, port: int = None):

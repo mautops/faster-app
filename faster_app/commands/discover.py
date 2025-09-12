@@ -3,12 +3,12 @@
 """
 
 from typing import Dict
-from faster_app.commands.base import CommandBase
+from faster_app.commands.base import BaseCommand
 from faster_app.base import DiscoverBase
 
 
 class CommandDiscover(DiscoverBase):
-    INSTANCE_TYPE = CommandBase
+    INSTANCE_TYPE = BaseCommand
     TARGETS = [
         {
             "directory": "apps",
@@ -24,13 +24,13 @@ class CommandDiscover(DiscoverBase):
         },
     ]
 
-    def collect(self) -> Dict[str, CommandBase]:
+    def collect(self) -> Dict[str, BaseCommand]:
         commands = {}
         command_instances = self.discover()
 
         # 将命令实例转换为字典，使用类名作为键
         for instance in command_instances:
-            # 使用 CommandBase 的 _get_command_name 方法自动去除后缀
+            # 使用 BaseCommand 的 _get_command_name 方法自动去除后缀
             command_name = instance._get_command_name()
             commands[command_name] = instance
 

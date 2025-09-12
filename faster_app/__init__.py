@@ -4,7 +4,7 @@ Faster APP - 一个轻量级的 Python Web 框架
 提供了以下核心功能：
 - 自动发现和加载模块 (DiscoverBase)
 - 数据库模型基类 (UUIDModel, DateTimeModel, StatusModel, ScopeModel)
-- 命令行工具基类 (CommandBase)
+- 命令行工具基类 (BaseCommand)
 - 路由管理 (ApiResponse)
 - 数据库连接管理 (tortoise_init)
 """
@@ -23,7 +23,7 @@ from faster_app.models.base import (
     SyncTimeModel,
     SyncCrontabModel,
 )
-from faster_app.commands.base import CommandBase, with_db_init
+from faster_app.commands.base import BaseCommand
 from faster_app.routes.base import ApiResponse
 from faster_app.db import tortoise_init
 
@@ -38,8 +38,7 @@ from faster_app.settings.builtins.settings import DefaultSettings
 __all__ = [
     # 基础类
     "DiscoverBase",
-    "CommandBase",
-    "with_db_init",
+    "BaseCommand",
     "ApiResponse",
     "tortoise_init",
     # 模型基类
