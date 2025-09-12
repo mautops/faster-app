@@ -2,7 +2,6 @@
 自动发现 apps 目录下的 models 模块
 """
 
-from typing import Any, Dict
 from pydantic_settings import BaseSettings
 from faster_app.utils.discover import DiscoverBase
 from faster_app.settings.builtins.settings import DefaultSettings
@@ -30,11 +29,12 @@ class SettingsDiscover(DiscoverBase):
     ]
 
     def merge(self) -> BaseSettings:
-        """合并配置: 使用用户配置覆盖内置配置"""
+        """合并配置: 使用用户配置覆盖内置配置，同时保留DefaultSettings的方法和动态逻辑"""
+        configs = self.discover()
+
+        # 分离默认配置和用户配置
         default_settings = DefaultSettings()
         user_settings = []
-
-        configs = self.discover()
 
         for config in configs:
             if type(config).__name__ == "DefaultSettings":
@@ -42,40 +42,31 @@ class SettingsDiscover(DiscoverBase):
             else:
                 user_settings.append(config)
 
-        default_dict = default_settings.model_dump()
+        # 如果没有用户配置，直接返回默认配置
+        if not user_settings:
+            return default_settings
 
+        # 收集所有用户配置的属性
+        user_overrides = {}
         for user_setting in user_settings:
             user_dict = user_setting.model_dump()
-            # 覆盖所有存在的属性
-            for key, value in user_dict.items():
-                default_dict[key] = value
+            user_overrides.update(user_dict)
 
-        # 为动态字段创建类型注解
-        annotations = {}
-        class_dict = {"__module__": __name__}
+        # 创建继承自DefaultSettings的动态类，保留所有方法和逻辑
+        class_dict = {
+            "__module__": __name__,
+            "__doc__": f"Merged settings class inheriting from {DefaultSettings.__name__}",
+        }
 
-        for key, value in default_dict.items():
-            # 根据值的类型推断注解
-            if isinstance(value, str):
-                annotations[key] = str
-            elif isinstance(value, int):
-                annotations[key] = int
-            elif isinstance(value, bool):
-                annotations[key] = bool
-            elif isinstance(value, dict):
-                annotations[key] = Dict[str, Any]
-            else:
-                annotations[key] = Any
-
-            # 设置默认值
+        # 添加用户覆盖的属性作为类属性的默认值
+        for key, value in user_overrides.items():
             class_dict[key] = value
 
-        # 添加类型注解
-        class_dict["__annotations__"] = annotations
+        # 动态创建继承自DefaultSettings的类
+        MergedSettings = type("MergedSettings", (DefaultSettings,), class_dict)
 
-        # 动态创建 BaseSettings 的子类
-        MergedSettings = type("MergedSettings", (BaseSettings,), class_dict)
+        # 创建实例，传入用户覆盖的参数
+        # 这样可以确保DefaultSettings的__init__方法正确执行
+        merged_settings = MergedSettings(**user_overrides)
 
-        # 创建并返回实例
-        merged_settings = MergedSettings()
         return merged_settings
