@@ -43,7 +43,7 @@ class DefaultSettings(BaseSettings):
             "connections": {
                 "development": {
                     "engine": "tortoise.backends.sqlite",
-                    "credentials": {"file_path": f"{self.DB_DATABASE}.db"},
+                    "credentials": {"file_path": f"{self.get_db_name()}.db"},
                 },
                 "production": {
                     "engine": self.DB_ENGINE,
