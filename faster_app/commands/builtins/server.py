@@ -1,17 +1,16 @@
 import os
+import uvicorn
+import threading
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from tortoise import Tortoise
-from rich.console import Console
 from starlette.staticfiles import StaticFiles
 from faster_app.settings import configs
 from faster_app.commands.base import BaseCommand
-import uvicorn
-import threading
+from faster_app.settings import log_config, logger
+
 
 from faster_app.routes.discover import RoutesDiscover
-
-console = Console()
 
 
 @asynccontextmanager
@@ -53,7 +52,7 @@ class FastAPIAppSingleton:
             static_dir = os.path.join(os.path.dirname(__file__), "..", "..", "statics")
             app.mount("/static", StaticFiles(directory=static_dir), name="static")
         except Exception as e:
-            console.print(f"静态文件服务器启动失败: {e}")
+            logger.error(f"静态文件服务器启动失败: {e}")
 
         # 添加路由
         routes = RoutesDiscover().discover()
@@ -83,4 +82,5 @@ class ServerOperations(BaseCommand):
             host=self.host,
             port=self.port,
             reload=reload,
+            log_config=log_config,
         )

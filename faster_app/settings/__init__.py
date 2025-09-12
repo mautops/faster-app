@@ -5,6 +5,7 @@
 """
 
 from .discover import SettingsDiscover
+from .logging import logger, log_config
 from faster_app.models import ModelDiscover
 
 # 创建默认配置实例
@@ -28,4 +29,6 @@ if hasattr(configs, "TORTOISE_ORM") and configs.TORTOISE_ORM:
 
 __all__ = [
     "configs",
+    "logger",
+    "log_config",
 ]
