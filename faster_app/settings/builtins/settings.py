@@ -34,30 +34,39 @@ class DefaultSettings(BaseSettings):
     DB_PASSWORD: str = "postgres"
     DB_DATABASE: str = "faster_app"
 
-    TORTOISE_ORM: Optional[dict] = {
-        "connections": {
-            "development": {
-                "engine": "tortoise.backends.sqlite",
-                "credentials": {"file_path": f"{DB_DATABASE}.db"},
-            },
-            "production": {
-                "engine": DB_ENGINE,
-                "credentials": {
-                    "host": DB_HOST,
-                    "port": DB_PORT,
-                    "user": DB_USER,
-                    "password": DB_PASSWORD,
-                    "database": DB_DATABASE,
+    TORTOISE_ORM: Optional[dict] = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # 动态生成 TORTOISE_ORM 配置，确保使用实际的配置值
+        self.TORTOISE_ORM = {
+            "connections": {
+                "development": {
+                    "engine": "tortoise.backends.sqlite",
+                    "credentials": {"file_path": f"{self.DB_DATABASE}.db"},
+                },
+                "production": {
+                    "engine": self.DB_ENGINE,
+                    "credentials": {
+                        "host": self.DB_HOST,
+                        "port": self.DB_PORT,
+                        "user": self.DB_USER,
+                        "password": self.DB_PASSWORD,
+                        "database": self.get_db_name(),
+                    },
                 },
             },
-        },
-        "apps": {
-            "models": {
-                # "models": ["apps.llm.models"],  # 这里不要硬编码，由自动发现填充
-                "default_connection": "development" if DEBUG else "production",
-            }
-        },
-    }
+            "apps": {
+                "models": {
+                    # "models": ["apps.llm.models"],  # 这里不要硬编码，由自动发现填充
+                    "default_connection": "development" if self.DEBUG else "production",
+                }
+            },
+        }
+
+    def get_db_name(self) -> str:
+        # PROJECT_NAME 转换成小写，去掉空格，加上下划线
+        return self.PROJECT_NAME.lower().replace(" ", "_")
 
     class Config:
         env_file = ".env"
