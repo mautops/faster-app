@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings
 from faster_app.utils.discover import DiscoverBase
 from faster_app.settings.builtins.settings import DefaultSettings
 from faster_app.utils import BASE_DIR
+from faster_app.settings import configs
 
 
 class SettingsDiscover(DiscoverBase):
@@ -15,7 +16,9 @@ class SettingsDiscover(DiscoverBase):
 
     TARGETS = [
         {
-            "directory": f"{BASE_DIR}/config",
+            "directory": f"{BASE_DIR}/config"
+            if configs.PROJECT_NAME == "Faster APP"
+            else "config",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
