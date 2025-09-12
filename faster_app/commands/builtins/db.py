@@ -107,7 +107,7 @@ class DBOperations(BaseCommand):
 
         try:
             # 删除数据库文件
-            db_file = f"{configs.DB_DATABASE}.db"
+            db_file = f"{configs.get_db_name()}.db"
             if os.path.exists(db_file):
                 os.remove(db_file)
                 console.print(f"✅ Database file deleted: {db_file}")
