@@ -6,7 +6,6 @@ from pydantic_settings import BaseSettings
 from faster_app.utils.discover import DiscoverBase
 from faster_app.settings.builtins.settings import DefaultSettings
 from faster_app.utils import BASE_DIR
-from faster_app.settings import configs
 
 
 class SettingsDiscover(DiscoverBase):
@@ -16,9 +15,7 @@ class SettingsDiscover(DiscoverBase):
 
     TARGETS = [
         {
-            "directory": f"{BASE_DIR}/config"
-            if configs.PROJECT_NAME == "Faster APP"
-            else "config",
+            "directory": f"{BASE_DIR}/config",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
@@ -55,21 +52,8 @@ class SettingsDiscover(DiscoverBase):
             user_dict = user_setting.model_dump()
             user_overrides.update(user_dict)
 
-        # 创建继承自DefaultSettings的动态类，保留所有方法和逻辑
-        class_dict = {
-            "__module__": __name__,
-            "__doc__": f"Merged settings class inheriting from {DefaultSettings.__name__}",
-        }
-
-        # 添加用户覆盖的属性作为类属性的默认值
-        for key, value in user_overrides.items():
-            class_dict[key] = value
-
-        # 动态创建继承自DefaultSettings的类
-        MergedSettings = type("MergedSettings", (DefaultSettings,), class_dict)
-
-        # 创建实例，传入用户覆盖的参数
-        # 这样可以确保DefaultSettings的__init__方法正确执行
-        merged_settings = MergedSettings(**user_overrides)
+        # 直接创建 DefaultSettings 实例，传入用户覆盖的参数
+        # 这样可以确保DefaultSettings的__init__方法正确执行，并且避免Pydantic类型注解问题
+        merged_settings = DefaultSettings(**user_overrides)
 
         return merged_settings
