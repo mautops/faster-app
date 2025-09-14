@@ -8,6 +8,7 @@ from starlette.staticfiles import StaticFiles
 from faster_app.settings import configs
 from faster_app.commands.base import BaseCommand
 from faster_app.settings import log_config, logger
+from faster_app.utils.project import project_config
 
 
 from faster_app.routes.discover import RoutesDiscover
@@ -39,8 +40,8 @@ class FastAPIAppSingleton:
         """创建FastAPI应用实例"""
         # 创建FastAPI应用实例
         app = FastAPI(
-            title=configs.PROJECT_NAME,
-            version=configs.VERSION,
+            title=project_config.name,
+            version=project_config.version,
             debug=configs.DEBUG,
             lifespan=lifespan,
             docs_url=None,

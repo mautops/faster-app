@@ -15,7 +15,7 @@ class SettingsDiscover(DiscoverBase):
 
     TARGETS = [
         {
-            "directory": f"{BASE_DIR}/config",
+            "directory": "config",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],

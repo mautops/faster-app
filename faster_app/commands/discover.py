@@ -6,16 +6,13 @@ from typing import Dict
 from faster_app.commands.base import BaseCommand
 from faster_app.utils.discover import DiscoverBase
 from faster_app.utils import BASE_DIR
-from faster_app.settings import configs
 
 
 class CommandDiscover(DiscoverBase):
     INSTANCE_TYPE = BaseCommand
     TARGETS = [
         {
-            "directory": f"{BASE_DIR}/apps"
-            if configs.PROJECT_NAME == "Faster APP"
-            else "apps",
+            "directory": "apps",
             "filename": None,
             "skip_dirs": ["__pycache__"],
             "skip_files": [],

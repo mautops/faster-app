@@ -3,8 +3,8 @@ import shutil
 from faster_app.commands.base import BaseCommand
 from rich.console import Console
 from faster_app.utils import BASE_DIR
+from faster_app.settings import logger
 
-console = Console()
 
 
 class AppCommand(BaseCommand):
@@ -15,11 +15,11 @@ class AppCommand(BaseCommand):
         # 拷贝项目根路径下的 .env.example 文件到项目根路径
         try:
             shutil.copy(f"{BASE_DIR}/.env.example", ".env")
-            console.print("✅ .env created successfully")
+            logger.info("✅ .env created successfully")
         except FileExistsError:
-            console.print("✅ .env already exists")
+            logger.info("✅ .env already exists")
         except Exception as e:
-            console.print(f"❌ .env created failed: {e}")
+            logger.error(f"❌ .env created failed: {e}")
 
     async def demo(self):
         """create demo app"""
@@ -29,19 +29,19 @@ class AppCommand(BaseCommand):
                 os.makedirs("apps")
             # 拷贝 /apps/demo 目录到 apps 目录
             shutil.copytree(f"{BASE_DIR}//apps/demo", "apps/demo")
-            console.print("✅ apps/demo created successfully")
+            logger.info("✅ apps/demo created successfully")
         except FileExistsError:
-            console.print("✅ apps/demo already exists")
+            logger.info("✅ apps/demo already exists")
         except Exception as e:
-            console.print(f"❌ apps/demo created failed: {e}")
+            logger.error(f"❌ apps/demo created failed: {e}")
 
     async def config(self):
         """create config"""
         # 拷贝 /config 到 . 目录
         try:
             shutil.copytree(f"{BASE_DIR}//config", "./config")
-            console.print("✅ config created successfully")
+            logger.info("✅ config created successfully")
         except FileExistsError:
-            console.print("✅ config already exists")
+            logger.info("✅ config already exists")
         except Exception as e:
-            console.print(f"❌ config created failed: {e}")
+            logger.error(f"❌ config created failed: {e}")

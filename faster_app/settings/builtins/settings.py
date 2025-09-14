@@ -4,6 +4,7 @@
 
 from typing import Optional
 from pydantic_settings import BaseSettings
+from faster_app.utils.project import project_config
 
 
 class DefaultSettings(BaseSettings):
@@ -43,7 +44,7 @@ class DefaultSettings(BaseSettings):
             "connections": {
                 "development": {
                     "engine": "tortoise.backends.sqlite",
-                    "credentials": {"file_path": f"{self.get_db_name()}.db"},
+                    "credentials": {"file_path": f"{project_config.name}.db"},
                 },
                 "production": {
                     "engine": self.DB_ENGINE,
@@ -52,7 +53,7 @@ class DefaultSettings(BaseSettings):
                         "port": self.DB_PORT,
                         "user": self.DB_USER,
                         "password": self.DB_PASSWORD,
-                        "database": self.get_db_name(),
+                        "database": self.DB_DATABASE,
                     },
                 },
             },
@@ -63,10 +64,6 @@ class DefaultSettings(BaseSettings):
                 }
             },
         }
-
-    def get_db_name(self) -> str:
-        # PROJECT_NAME 转换成小写，去掉空格，加上下划线
-        return self.PROJECT_NAME.lower().replace(" ", "_")
 
     class Config:
         env_file = ".env"

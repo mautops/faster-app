@@ -4,7 +4,6 @@
 
 from tortoise import Model
 from faster_app.utils.discover import DiscoverBase
-from faster_app.utils import BASE_DIR
 
 
 class ModelDiscover(DiscoverBase):
@@ -14,8 +13,8 @@ class ModelDiscover(DiscoverBase):
 
     TARGETS = [
         {
-            "directory": f"{BASE_DIR}/apps",
-            "filename": None,
+            "directory": "apps",
+            "filename": "models.py",
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
         },
