@@ -1,0 +1,94 @@
+# ================================
+# Faster APP 应用部署模板
+# ================================
+# 这是一个用于部署基于 faster-app 框架开发的应用的 docker-compose.yml 模板
+# 请将此文件复制到您的应用项目根目录并根据需要修改
+
+version: '3.8'
+
+services:
+  # ================================
+  # 您的应用服务
+  # ================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: your-app-name  # 修改为您的应用名称
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      # 基础配置
+      - PROJECT_NAME=${PROJECT_NAME:-Your App Name}  # 修改为您的项目名称
+      - DEBUG=${DEBUG:-false}
+      - HOST=0.0.0.0
+      - PORT=8000
+      
+      # 数据库配置 (如果使用数据库)
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_DATABASE=${DB_DATABASE:-your_app_db}  # 修改为您的数据库名
+      
+      # 安全配置
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+      
+      # 日志配置
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FORMAT=${LOG_FORMAT:-string}
+    volumes:
+      # 挂载配置文件 (可选)
+      - ./config:/app/config:ro
+      # 挂载日志目录 (可选)
+      - ./logs:/app/logs
+    depends_on:
+      - postgres  # 如果不使用数据库，可以删除此行
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # 数据库服务 (可选，如果不需要可以删除)
+  # ================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: your-app-postgres  # 修改为您的应用名称
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=${DB_DATABASE:-your_app_db}  # 修改为您的数据库名
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_DATABASE:-your_app_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ================================
+# 数据卷配置 (如果使用数据库)
+# ================================
+volumes:
+  postgres_data:
+    name: your-app-postgres-data  # 修改为您的应用名称
+
+# ================================
+# 使用说明:
+# ================================
+# 1. 将此文件复制到您的应用项目根目录
+# 2. 根据您的项目需求调整以下内容:
+#    - 容器名称和数据卷名称
+#    - 项目名称和数据库名称
+#    - 端口配置
+#    - 环境变量
+#    - 如果不使用数据库，删除 postgres 服务和相关配置
+# 3. 创建 .env 文件设置环境变量
+# 4. 启动服务: docker-compose up -d
+# 5. 查看日志: docker-compose logs -f app

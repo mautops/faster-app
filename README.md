@@ -1,220 +1,603 @@
-# Faster APP
+<div align="center">
 
-一个轻量级、高性能的 Python Web 框架，基于 FastAPI 和 Tortoise ORM 构建，提供自动发现、模型基类、命令行工具等企业级功能。
+# 🚀 Faster APP
+
+**FastAPI 最佳实践框架 - 约定优于配置**
+
+[![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.116+-green.svg)](https://fastapi.tiangolo.com)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.0.26-orange.svg)](https://github.com/mautops/faster-app)
+
+_为 FastAPI 带来 Django 风格的项目结构和开发体验_
+
+[快速开始](#-快速开始) • [命令行工具](#️-命令行工具详解) • [社区支持](#-社区与支持) • [许可证](#-许可证)
+
+</div>
+
+---
+
+## 🎯 解决什么问题？
+
+### 💭 FastAPI 的灵活性困扰
+
+FastAPI 非常灵活，但这种灵活性也带来了问题：
+
+| 问题             | 表现                               | 影响                       |
+| ---------------- | ---------------------------------- | -------------------------- |
+| **项目结构混乱** | 每个项目都有不同的目录结构         | 团队协作困难，代码难以维护 |
+| **重复造轮子**   | 每次都要重新设计模型基类、路由结构 | 开发效率低，代码质量不一致 |
+| **配置复杂**     | 手动注册路由、中间件、数据库模型   | 容易出错，启动代码冗长     |
+| **缺乏约定**     | 没有统一的开发规范和最佳实践       | 新人上手困难，项目难以扩展 |
+
+> ### 💡 Faster APP 的解决方案
+
+**核心理念：约定优于配置 (Convention over Configuration)**
+
+借鉴 Django 的成功经验，为 FastAPI 制定一套标准化的项目结构和开发约定。
+
+---
 
 ## ✨ 核心特性
 
-- 🔍 **智能自动发现**: 自动扫描和加载模块、模型、路由和命令
-- 🗄️ **丰富模型基类**: 基于 Tortoise ORM 的企业级模型基类
-- 🛠️ **强大命令行工具**: 基于 Fire 的异步命令行工具框架
-- 🌐 **统一路由管理**: FastAPI 路由的标准化返回格式
-- 📦 **即插即用**: 模块化设计，开箱即用
-- ⚡ **高性能**: 异步架构，支持高并发
-- 🔧 **开发友好**: 内置数据库迁移、开发服务器等工具
-
-## 🚀 快速安装
-
-```bash
-pip install faster_app
-```
-
-# 📖 快速开始
-
-## 1. 项目结构
+### 🏗️ 标准化项目结构
 
 ```
 your-project/
-├── apps/                    # 应用目录
-│   ├── auth/
-│   │   ├── models.py       # 模型定义
-│   │   ├── routes.py       # 路由定义
-│   │   └── commands.py     # 命令定义
-│   └── user/
+├── apps/                    # 应用模块 (Django 风格)
+│   ├── users/              # 用户模块
+│   │   ├── models.py       # 数据模型
+│   │   ├── routes.py       # API 路由
+│   │   └── commands.py     # 命令行工具
+│   └── posts/              # 文章模块
 │       ├── models.py
 │       ├── routes.py
 │       └── commands.py
-├── config/
-└──── settings.py           # 配置文件
+├── config/                 # 配置目录
+│   └── settings.py         # 自定义配置
+└── .env                    # 环境变量
 ```
 
-### 2. 模型定义
+### 🔍 智能发现与注册
+
+> 通过智能自动发现，实现项目 0️⃣ 配置启动
+
+#### 🛣️ 路由自动发现
+
+扫描 `apps/*/*.py` 文件，递归查找 `APIRouter` 类的实例，并注册成为 Fastapi 路由
+
+#### 📊 模型自动发现
+
+扫描 `apps/*/models.py` 文件，递归查找 `tortoise.Model` 类，并注册到 TORTOISE_ORM 中，实现模型自动化管理
+
+#### ⚡ 命令自动发现
+
+扫描 `apps/*/*.py` 文件，递归查找 `BaseCommand` 类实例，注册给 Fire 库，实现命令行参数管理
+
+#### 🔧 中间件自动发现
+
+扫描 `apps/middleware/*.py` 文件，递归查找 `BaseMiddleware` 类，然后注册到 fastapi 实例，实现中间件注册
+
+#### ⚙️ 项目配置自动发现
+
+扫描 `apps/config/*.py` 文件，递归查找 `BaseSettings` 类实例，自动合并多个配置类，从 `.env` 中读取配置并注册给应用；
+
+### 🗄️ 企业级模型基类
 
 ```python
-# models.py
-from faster_app.models import UUIDModel, DateTimeModel, StatusModel
-from tortoise import fields
-
-class User(UUIDModel, DateTimeModel, StatusModel):
-    """用户模型"""
-    name = fields.CharField(max_length=50, description="用户名")
-    email = fields.CharField(max_length=100, unique=True, description="邮箱")
-
-    class Meta:
-        table = "users"
-        table_description = "用户表"
+# 四大基础模型，覆盖 90% 业务场景
+UUIDModel     # UUID 主键
+DateTimeModel # 创建/更新时间
+StatusModel   # 状态管理 (启用/禁用)
+ScopeModel    # 多租户作用域
 ```
 
-### 3. 路由定义
-
-```python
-# routes.py
-from fastapi import APIRouter
-from faster_app.routes import ApiResponse
-
-router = APIRouter(prefix="/api/v1/users", tags=["用户管理"])
-
-@router.get("/", response_model=ApiResponse)
-async def get_users():
-    """获取用户列表"""
-    users = await User.all()
-    return ApiResponse(
-        message="获取用户列表成功",
-        data={"users": users, "total": len(users)}
-    )
-
-@router.post("/", response_model=ApiResponse)
-async def create_user(name: str, email: str):
-    """创建用户"""
-    user = await User.create(name=name, email=email)
-    return ApiResponse(
-        message="用户创建成功",
-        data={"user": user}
-    )
-```
-
-### 4. 命令定义
-
-```python
-# commands.py
-from faster_app.commands import BaseCommand
-
-class UserCommand(BaseCommand):
-    """用户管理命令"""
-
-    async def create_user(self, name: str, email: str):
-        """创建用户"""
-        user = await User.create(name=name, email=email)
-        print(f"✅ 用户创建成功: {user.name} ({user.email})")
-
-    async def list_users(self):
-        """列出所有用户"""
-        users = await User.all()
-        print(f"📋 共找到 {len(users)} 个用户:")
-        for user in users:
-            print(f"  - {user.name} ({user.email})")
-```
-
-# 🛠️ 内置工具
-
-### 1. 数据库管理
+### 🛠️ Django 风格命令行
 
 ```bash
-# 初始化数据库
-python main.py db init_db
-
-# 生成迁移文件
-python main.py db migrate
-
-# 执行迁移
-python main.py db upgrade
-
-# 回滚迁移
-python main.py db downgrade
-
-# 查看迁移历史
-python main.py db history
-
-# 清理开发环境
-python main.py db dev_clean
+faster server start    # 启动开发服务器
+faster db migrate      # 数据库迁移
+faster db upgrade      # 执行迁移
 ```
 
-### 2. 开发服务器
+---
+
+## 🚀 快速开始
+
+### 📦 初始化 uv 项目
+
+```
+# 初始化 uv 项目, python 版本 >= 3.11
+
+uv init demo
+cd demo
+uv add faster-app
+
+# 移除项目目录下的 main.py 文件
+rm -rf main.py
+
+# 恭喜你，此时可以直接执行如下命令启动项目
+faster server start
+
+# 不过此时仍然没有任何业务功能而已
+```
+
+### ⚡ 使用内置命令加速开发
+
+```shell
+# 创建 demo 项目
+faster app demo
+
+# 创建自定义配置
+faster app config
+
+# 创建自定义基础环境
+faster app env
+```
+
+### 🗄️ 执行数据库操作
+
+```shell
+# 初始化数据库配置
+faster db init
+
+# 初始化项目配置到数据库
+faster db init_db
+```
+
+## 🛠️ 命令行工具详解
+
+Faster APP 提供了完整的 Django 风格命令行工具，基于 [Fire](https://github.com/google/python-fire) 库实现，支持自动发现和注册。
+
+### 📋 命令概览
+
+| 命令组          | 说明       | 主要功能                 |
+| --------------- | ---------- | ------------------------ |
+| `faster app`    | 应用管理   | 创建项目结构、配置文件等 |
+| `faster db`     | 数据库管理 | 数据库迁移、初始化等操作 |
+| `faster server` | 服务器管理 | 启动开发服务器           |
+
+---
+
+### 🏗️ `faster app` - 应用管理命令
+
+用于快速创建项目结构和配置文件，帮助开发者快速搭建项目骨架。
+
+#### 📱 `faster app demo`
+
+创建示例应用模块
 
 ```bash
-# 启动开发服务器
-python main.py fastapi start
-
-# 指定主机和端口
-python main.py fastapi start --host=0.0.0.0 --port=8080
+faster app demo
 ```
 
-# ⚙️ 配置管理
+**功能说明**：
 
-> 默认配置，可以通过
+- 在项目根目录创建 `apps/` 目录（如不存在）
+- 复制内置的 `demo` 应用到 `apps/demo/`
+- 包含完整的 MVC 结构示例（models.py、routes.py、commands.py）
+
+**输出结果**：
+
+```
+✅ apps/demo created successfully
+```
+
+#### ⚙️ `faster app config`
+
+创建自定义配置目录
+
+```bash
+faster app config
+```
+
+**功能说明**：
+
+- 复制内置配置模板到项目根目录的 `config/` 目录
+- 提供自定义配置的基础结构
+- 支持配置自动发现和合并
+
+#### 🌍 `faster app env`
+
+创建环境变量配置文件
+
+```bash
+faster app env
+```
+
+**功能说明**：
+
+- 复制 `.env.example` 模板到项目根目录的 `.env` 文件
+- 包含所有必要的环境变量配置项
+- 如果文件已存在则跳过创建
+
+#### 🎯 `faster app main`
+
+复制框架内置的主入口文件模板
+
+```bash
+faster app main
+```
+
+**功能说明**：
+
+- **复制内置模板**：将 Faster APP 框架内置的 `main.py` 文件复制到项目根目录
+- **支持二次开发**：用户可以基于模板进行自定义修改和扩展
+- **完整功能示例**：模板包含完整的 FastAPI 应用配置示例
+- **覆盖默认行为**：自定义后的 `main.py` 将被 `faster server start` 优先使用
+
+**使用场景**：
+
+- 🔧 需要自定义 FastAPI 应用配置
+- 🎨 想要添加自定义中间件或路由
+- ⚙️ 需要特殊的启动逻辑或初始化代码
+- 🚀 准备部署到生产环境时的配置调优
+
+**输出结果**：
+
+```
+✅ main.py created successfully
+```
+
+> 💡 **提示**：复制后的 `main.py` 文件会被 `faster server start` 命令自动检测并优先使用，无需额外配置。
+
+#### 🔧 `faster app middleware`
+
+创建中间件目录
+
+```bash
+faster app middleware
+```
+
+**功能说明**：
+
+- 复制内置中间件模板到项目根目录的 `middleware/` 目录
+- 提供中间件开发的基础结构
+- 支持中间件自动发现和注册
+
+#### 🐳 `faster app docker`
+
+创建 Docker 配置文件
+
+```bash
+faster app docker
+```
+
+**功能说明**：
+
+- 复制优化的 `Dockerfile` 到项目根目录
+- 基于多阶段构建，适合生产环境部署
+- 包含 Python 3.11+ 和 uv 包管理器
+
+---
+
+### 🗄️ `faster db` - 数据库管理命令
+
+基于 [Aerich](https://github.com/tortoise/aerich) 实现的数据库迁移工具，提供完整的数据库生命周期管理。
+
+#### 🏗️ `faster db init`
+
+初始化数据库迁移配置
+
+```bash
+faster db init
+```
+
+**功能说明**：
+
+- 创建 `migrations/` 目录
+- 初始化 Aerich 配置
+- 准备数据库迁移环境
+
+**输出结果**：
+
+```
+✅ Successfully created migrations folder
+```
+
+#### 🎬 `faster db init_db`
+
+初始化数据库表结构
+
+```bash
+faster db init_db
+```
+
+**功能说明**：
+
+- 根据模型定义生成数据库表结构
+- 创建初始迁移文件
+- 适用于项目首次部署
+
+**输出结果**：
+
+```
+✅ Database initialization successful
+```
+
+#### 📝 `faster db migrate`
+
+生成数据库迁移文件
+
+```bash
+# 自动生成迁移文件
+faster db migrate
+
+# 指定迁移文件名称
+faster db migrate --name="add_user_table"
+
+# 生成空的迁移文件
+faster db migrate --empty
+```
+
+**参数说明**：
+
+- `--name`: 指定迁移文件名称（可选）
+- `--empty`: 生成空的迁移文件，用于手动编写迁移逻辑
+
+**输出结果**：
+
+```
+✅ Migration file generated successfully
+```
+
+#### ⬆️ `faster db upgrade`
+
+执行数据库迁移
+
+```bash
+faster db upgrade
+```
+
+**功能说明**：
+
+- 执行所有未应用的迁移文件
+- 将数据库结构更新到最新状态
+- 支持事务回滚
+
+**输出结果**：
+
+```
+✅ Database migration execution successful
+```
+
+#### ⬇️ `faster db downgrade`
+
+回滚数据库迁移
+
+```bash
+# 回滚到上一个版本
+faster db downgrade
+
+# 回滚到指定版本
+faster db downgrade --version=2
+```
+
+**参数说明**：
+
+- `--version`: 指定回滚到的版本号（默认为 -1，即上一个版本）
+
+**输出结果**：
+
+```
+✅ Database downgrade successful
+```
+
+#### 📚 `faster db history`
+
+查看迁移历史
+
+```bash
+faster db history
+```
+
+**功能说明**：
+
+- 显示所有已执行的迁移记录
+- 包含迁移文件名和执行时间
+
+#### 👀 `faster db heads`
+
+查看待应用的迁移
+
+```bash
+faster db heads
+```
+
+**功能说明**：
+
+- 显示所有未应用的迁移文件
+- 帮助了解当前数据库状态
+
+#### 🧹 `faster db dev_clean`
+
+清理开发环境数据 ⚠️
+
+```bash
+# 交互式确认清理
+faster db dev_clean
+
+# 强制清理（跳过确认）
+faster db dev_clean --force
+```
+
+**参数说明**：
+
+- `--force`: 跳过确认提示，强制执行清理
+
+**功能说明**：
+
+- **仅在开发环境可用**（`DEBUG=True`）
+- 删除数据库文件和迁移目录
+- 用于重置开发环境数据
+
+**⚠️ 警告**：此操作会删除所有数据，请谨慎使用！
+
+---
+
+### 🚀 `faster server` - 服务器管理命令
+
+提供开发服务器的启动和管理功能，支持热重载和自定义配置。
+
+#### 🚀 `faster server start`
+
+启动开发服务器
+
+```bash
+faster server start
+```
+
+**功能说明**：
+
+- **智能检测启动方式**：自动检测项目根目录下的 `main.py` 文件
+- **优先使用用户配置**：如果存在 `main.py` 则优先使用，否则使用框架内置配置
+- **热重载支持**：开发模式下自动重载代码变更
+- **完整功能集成**：自动应用日志配置、中间件、路由等
+- **灵活部署模式**：支持工厂模式和实例模式
+
+**🔍 启动检测逻辑**：
+
+1. **第一优先级**：检查项目根目录是否存在 `main.py` 文件
+
+   - ✅ **存在 `app` 实例** → 使用用户自定义的 FastAPI 应用
+   - ✅ **存在 `main()` 方法** → 执行用户自定义的启动逻辑
+   - ❌ **文件存在但无有效入口** → 提示警告，回退到框架默认配置
+
+2. **第二优先级**：使用 Faster APP 框架内置的默认配置启动
+
+> 💡 **提示**：可以使用 `faster app main` 命令复制框架内置的 `main.py` 模板到项目根目录，然后根据需要进行自定义修改。
+
+**配置参数**：
+
+- **主机地址**：通过 `HOST` 环境变量配置（默认：`0.0.0.0`）
+- **端口号**：通过 `PORT` 环境变量配置（默认：`8000`）
+- **调试模式**：通过 `DEBUG` 环境变量配置（默认：`True`）
+
+**输出示例**：
+
+```
+INFO:     Started server process [12345]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+```
+
+---
+
+### 🔧 自定义命令
+
+Faster APP 支持自动发现和注册自定义命令，只需继承 `BaseCommand` 类：
 
 ```python
-from pydantic_settings import BaseSettings
+# apps/your_app/commands.py
+from faster_app.commands.base import BaseCommand
 
-class Settings(BaseSettings):
-    # 基础配置
-    PROJECT_NAME: str = ""
-    VERSION: str = "1.0.0"
-    DEBUG: bool = True
+class YourAppCommand(BaseCommand):
+    """自定义应用命令"""
 
-    # 服务器配置
-    HOST: str = "127.0.0.1"
-    PORT: int = 8000
+    def hello(self, name: str = "World"):
+        """打招呼命令"""
+        print(f"Hello, {name}!")
 
-    # API 配置
-    API_V1_STR: str = "/api/v1"
-
-    # JWT 配置
-    SECRET_KEY: str = "your-secret-key"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-
-    # 数据库配置
-    DB_ENGINE: str = "tortoise.backends.asyncpg"
-    DB_HOST: str = "localhost"
-    DB_PORT: int = 5432
-    DB_USER: str = "postgres"
-    DB_PASSWORD: str = "password"
-    DB_DATABASE: str = "mydb"
+    def deploy(self, env: str = "staging"):
+        """部署命令"""
+        print(f"Deploying to {env} environment...")
 ```
 
-### 环境变量支持
+**使用方式**：
 
-创建 `.env` 文件：
-
-```env
-PROJECT_NAME=My API Project
-DEBUG=true
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=password
-DB_DATABASE=mydb
-SECRET_KEY=your-secret-key-here
+```bash
+# 自动发现并注册为 your_app 命令组
+faster your_app hello --name="FastAPI"
+faster your_app deploy --env="production"
 ```
 
-## 🤝 贡献指南
+### 💡 使用技巧
 
-我们欢迎所有形式的贡献！
+#### 1️⃣ **命令帮助**
 
-### 如何贡献
+在任何命令后添加 `--help` 查看详细帮助：
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+```bash
+faster db migrate --help
+```
 
-### 报告问题
+#### 2️⃣ **环境变量配置**
 
-如果您发现了 bug 或有功能建议，请在 [Issues](https://github.com/your-org/faster_app/issues) 中提交。
+通过 `.env` 文件配置数据库连接等参数：
+
+```bash
+# 先创建配置文件
+faster app env
+# 编辑 .env 文件后再执行数据库操作
+```
+
+#### 3️⃣ **开发工作流**
+
+推荐的项目初始化流程：
+
+```bash
+# 1. 创建基础结构
+faster app demo          # 创建示例应用
+faster app config        # 创建配置目录
+faster app env           # 创建环境变量文件
+
+# 2. 自定义主入口（可选）
+faster app main          # 复制内置 main.py 模板进行自定义
+
+# 3. 初始化数据库
+faster db init           # 初始化迁移配置
+faster db init_db        # 创建数据库表结构
+
+# 4. 启动开发服务器
+faster server start      # 自动检测并使用 main.py（如存在）
+```
+
+> 💡 **说明**：步骤 2 是可选的。如果不执行 `faster app main`，`faster server start` 会使用框架内置的默认配置启动。
+
+## 🤝 社区与支持
+
+### 📞 获取帮助
+
+- 📖 [完整文档](https://github.com/mautops/faster-app#readme)
+- 🐛 [问题反馈](https://github.com/mautops/faster-app/issues)
+- 💬 [讨论区](https://github.com/mautops/faster-app/discussions)
+
+### 🤝 贡献代码
+
+1. 🍴 **Fork 本仓库**
+2. 🌱 **创建特性分支**: `git checkout -b feature/amazing-feature`
+3. ✨ **提交更改**: `git commit -m 'Add amazing feature'`
+4. 🚀 **推送分支**: `git push origin feature/amazing-feature`
+5. 📝 **提交 Pull Request**
+
+### 🎨 设计原则
+
+- 📜 **约定优于配置**: 通过约定减少配置
+- 🎆 **Django 风格**: 借鉴 Django 的成功经验
+- 🚀 **开发者友好**: 提升开发效率和体验
+- 🏢 **企业级**: 满足生产环境需求
+
+---
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+本项目采用 [MIT 许可证](LICENSE)。
 
 ## 🙏 致谢
 
-- [FastAPI](https://fastapi.tiangolo.com/) - 现代、快速的 Web 框架
-- [Tortoise ORM](https://tortoise.github.io/) - 异步 ORM 框架
-- [Fire](https://github.com/google/python-fire) - 命令行接口生成器
-- [Pydantic](https://pydantic-docs.helpmanual.io/) - 数据验证库
-- [Rich](https://rich.readthedocs.io/) - 终端美化库
+感谢以下开源项目的启发：
 
-**作者**: peizhenfei (peizhenfei@hotmail.com)
+- ⚡ [FastAPI](https://fastapi.tiangolo.com/) - 现代、快速的 Web 框架
+- 🐢 [Tortoise ORM](https://tortoise.github.io/) - 异步 ORM 框架
+- 🔥 [Fire](https://github.com/google/python-fire) - 命令行接口生成器
 
-**项目主页**: [https://github.com/mautops/faster-app.git](https://github.com/mautops/faster-app.git)
+---
+
+<div align="center">
+
+**⭐ 如果这个项目对你有帮助，请给我们一个 Star！**
+
+**作者**: [peizhenfei](mailto:peizhenfei@hotmail.com) | **项目主页**: [GitHub](https://github.com/mautops/faster-app)
+
+</div>

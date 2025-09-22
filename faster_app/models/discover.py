@@ -15,7 +15,7 @@ class ModelDiscover(DiscoverBase):
         {
             "directory": "apps",
             "filename": "models.py",
-            "skip_dirs": ["__pycache__"],
+            "skip_dirs": ["__pycache__", "utils", "tests"],
             "skip_files": [],
         },
     ]

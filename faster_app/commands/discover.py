@@ -14,7 +14,7 @@ class CommandDiscover(DiscoverBase):
         {
             "directory": "apps",
             "filename": None,
-            "skip_dirs": ["__pycache__"],
+            "skip_dirs": ["__pycache__", "utils", "tests"],
             "skip_files": [],
         },
         {

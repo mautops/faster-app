@@ -113,6 +113,7 @@ class DiscoverBase(object):
                     inspect.isclass(obj)
                     and issubclass(obj, self.INSTANCE_TYPE)
                     and obj != self.INSTANCE_TYPE
+                    and not inspect.isabstract(obj)  # 跳过抽象类
                 ):
                     try:
                         # 实例化命令类

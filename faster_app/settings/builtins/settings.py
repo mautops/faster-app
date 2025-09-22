@@ -4,7 +4,6 @@
 
 from typing import Optional
 from pydantic_settings import BaseSettings
-from faster_app.utils.project import project_config
 
 
 class DefaultSettings(BaseSettings):
@@ -13,7 +12,7 @@ class DefaultSettings(BaseSettings):
     # 基础配置
     PROJECT_NAME: str = "Faster APP"
     VERSION: str = "0.0.1"
-    DEBUG: bool = True
+    DEBUG: bool = True  # 生产环境中应设置为 False，可通过环境变量 DEBUG=false 覆盖
 
     # Server 配置
     HOST: str = "0.0.0.0"
@@ -44,7 +43,9 @@ class DefaultSettings(BaseSettings):
             "connections": {
                 "development": {
                     "engine": "tortoise.backends.sqlite",
-                    "credentials": {"file_path": f"{project_config.name}.db"},
+                    "credentials": {
+                        "file_path": f"{self._normalize_db_name(self.PROJECT_NAME)}.db"
+                    },
                 },
                 "production": {
                     "engine": self.DB_ENGINE,
@@ -64,6 +65,48 @@ class DefaultSettings(BaseSettings):
                 }
             },
         }
+
+    def _normalize_db_name(self, project_name: str) -> str:
+        """
+        将项目名称转换为适合数据库的格式
+
+        规则：
+        1. 转换为小写
+        2. 空格替换为下划线
+        3. 移除或替换特殊字符
+        4. 确保以字母开头
+        5. 限制长度
+
+        Args:
+            project_name: 项目名称
+
+        Returns:
+            规范化后的数据库名称
+        """
+        import re
+
+        # 转换为小写
+        db_name = project_name.lower()
+
+        # 替换空格和连字符为下划线
+        db_name = re.sub(r"[\s\-]+", "_", db_name)
+
+        # 移除特殊字符，只保留字母、数字和下划线
+        db_name = re.sub(r"[^a-z0-9_]", "", db_name)
+
+        # 确保以字母开头
+        if db_name and not db_name[0].isalpha():
+            db_name = "app_" + db_name
+
+        # 如果为空或过短，使用默认前缀
+        if not db_name or len(db_name) < 2:
+            db_name = "app_db"
+
+        # 限制长度（数据库名称通常有长度限制）
+        if len(db_name) > 50:
+            db_name = db_name[:49].rstrip("_")
+
+        return db_name
 
     class Config:
         env_file = ".env"

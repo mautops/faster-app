@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "faster_app"
-version = "0.0.25"
+version = "0.0.26"
 description = "一个轻量级的 Python Web 框架，提供自动发现、模型基类、命令行工具等功能"
 readme = "README.md"
 license = "MIT"
@@ -12,7 +12,7 @@ authors = [{ name = "peizhenfei", email = "peizhenfei@hotmail.com" }]
 maintainers = [{ name = "peizhenfei", email = "peizhenfei@hotmail.com" }]
 keywords = ["web", "framework", "fastapi", "tortoise", "orm", "cli"]
 
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "aerich>=0.9.1",
     "fastapi>=0.116.1",
@@ -41,7 +41,7 @@ exclude = ["tests*", "docs*", "__pycache__*", "*.pyc", "*.pyo"]
 "faster_app" = ["statics/*", ".env.example"]
 
 [project.scripts]
-faster-app = "faster_app.main:main"
+faster = "faster_app.cli:main"
 
 [dependency-groups]
 dev = ["build>=1.3.0", "twine>=6.2.0"]
