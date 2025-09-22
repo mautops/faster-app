@@ -12,7 +12,7 @@ authors = [{ name = "peizhenfei", email = "peizhenfei@hotmail.com" }]
 maintainers = [{ name = "peizhenfei", email = "peizhenfei@hotmail.com" }]
 keywords = ["web", "framework", "fastapi", "tortoise", "orm", "cli"]
 
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "aerich>=0.9.1",
     "fastapi>=0.116.1",
