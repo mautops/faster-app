@@ -6,10 +6,6 @@ from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 from faster_app.routes.discover import RoutesDiscover
 from faster_app.middleware.discover import MiddlewareDiscover
-from faster_app.utils.exceptions import (
-    setup_exception_handlers,
-    setup_custom_exception_handlers,
-)
 from faster_app.settings import logger
 from faster_app.settings import configs
 from faster_app.utils import BASE_DIR
@@ -50,14 +46,6 @@ def create_app() -> FastAPI:
 
     except Exception as e:
         logger.error(f"中间件注册失败: {e}")
-
-    # 设置全局异常处理器
-    try:
-        setup_exception_handlers(app)
-        setup_custom_exception_handlers(app)
-        logger.info("全局异常处理器注册成功")
-    except Exception as e:
-        logger.error(f"异常处理器注册失败: {e}")
 
     # 添加路由
     routes = RoutesDiscover().discover()

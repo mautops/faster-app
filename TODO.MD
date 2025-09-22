@@ -4,17 +4,17 @@
 
 ### 1. 异常处理和错误响应机制
 
-- [x] **实现全局异常处理器** ✅
+- [ ] **实现全局异常处理器**
 
-  - ✅ 添加 `HTTPException` 处理器
-  - ✅ 添加 `ValidationError` 处理器
-  - ✅ 添加通用异常处理器
-  - ✅ 实现统一的错误响应格式
+  - 添加 `HTTPException` 处理器
+  - 添加 `ValidationError` 处理器
+  - 添加通用异常处理器
+  - 实现统一的错误响应格式
 
-- [x] **完善 ApiResponse 响应模型** ✅
-  - ✅ 扩展 `ApiResponse` 支持更多字段（code, success, timestamp）
-  - ✅ 添加泛型支持 `ApiResponse[T]`
-  - ✅ 创建常用响应工具函数（success, error, paginated）
+- [ ] **完善 ApiResponse 响应模型**
+  - 扩展 `ApiResponse` 支持更多字段（code, success, timestamp）
+  - 添加泛型支持 `ApiResponse[T]`
+  - 创建常用响应工具函数（success, error, paginated）
 
 ### 2. 数据验证和序列化优化
 
