@@ -1,8 +1,8 @@
-import os
 import json
 import logging
 from logging.config import dictConfig
 from datetime import datetime
+from faster_app.settings.config import configs
 
 
 class JsonFormatter(logging.Formatter):
@@ -10,7 +10,7 @@ class JsonFormatter(logging.Formatter):
 
     def format(self, record):
         log_record = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(datetime.timezone.utc).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "module": record.module,
@@ -26,11 +26,11 @@ class JsonFormatter(logging.Formatter):
 
 
 formatters = {
-    "string": {
+    "STRING": {
         "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         "datefmt": "%Y-%m-%d %H:%M:%S",
     },
-    "json": {"()": JsonFormatter},
+    "JSON": {"()": JsonFormatter},
 }
 
 # 定义日志配置
@@ -41,19 +41,19 @@ log_config = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            "level": os.getenv("LOG_LEVEL", "INFO").upper(),
-            "formatter": os.getenv("LOG_FORMAT", "string").lower(),
+            "level": configs.LOG_LEVEL.upper(),
+            "formatter": configs.LOG_FORMAT.lower(),
             "stream": "ext://sys.stdout",
         },
     },
     "loggers": {
         "app": {
             "handlers": ["console"],
-            "level": os.getenv("LOG_LEVEL", "INFO").upper(),
+            "level": configs.LOG_LEVEL.upper(),
             "propagate": False,
         },
     },
-    "root": {"handlers": ["console"], "level": os.getenv("LOG_LEVEL", "INFO").upper()},
+    "root": {"handlers": ["console"], "level": configs.LOG_LEVEL.upper()},
 }
 
 # 应用配置

@@ -9,14 +9,14 @@ import os
 import json
 from typing import List, Type, Dict, Any
 from faster_app.middleware.base import BaseMiddleware
-from faster_app.utils.discover import DiscoverBase
+from faster_app.utils.discover import BaseDiscover
 
 
-class MiddlewareDiscover(DiscoverBase):
+class MiddlewareDiscover(BaseDiscover):
     """
     中间件发现器 - 极简实现
 
-    基于 DiscoverBase，专注核心功能：
+    基于 BaseDiscover，专注核心功能：
     1. 自动发现中间件类
     2. 可选的配置文件支持
     3. 生成最终配置

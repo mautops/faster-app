@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from faster_app.utils.discover import DiscoverBase
+from faster_app.utils.discover import BaseDiscover
 from faster_app.utils import BASE_DIR
 
 
-class RoutesDiscover(DiscoverBase):
+class RoutesDiscover(BaseDiscover):
     INSTANCE_TYPE = APIRouter
     TARGETS = [
         {

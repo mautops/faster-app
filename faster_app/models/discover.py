@@ -3,10 +3,10 @@
 """
 
 from tortoise import Model
-from faster_app.utils.discover import DiscoverBase
+from faster_app.utils.discover import BaseDiscover
 
 
-class ModelDiscover(DiscoverBase):
+class ModelDiscover(BaseDiscover):
     """模型发现器"""
 
     INSTANCE_TYPE = Model

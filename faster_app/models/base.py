@@ -15,7 +15,7 @@ from tortoise.fields import (
 class UUIDModel(Model):
     """模型基类"""
 
-    id = UUIDField(pk=True, verbose_name="ID")
+    id = UUIDField(primary_key=True, verbose_name="ID")
 
     class Meta:
         abstract = True

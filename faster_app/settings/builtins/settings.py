@@ -17,6 +17,7 @@ class DefaultSettings(BaseSettings):
     # Server 配置
     HOST: str = "0.0.0.0"
     PORT: int = 8000
+    RUN_ENV: str = "development"
 
     # API 配置
     API_V1_STR: str = "/api/v1"
@@ -61,7 +62,7 @@ class DefaultSettings(BaseSettings):
             "apps": {
                 "models": {
                     # "models": ["apps.llm.models"],  # 这里不要硬编码，由自动发现填充
-                    "default_connection": "development" if self.DEBUG else "production",
+                    "default_connection": self.RUN_ENV,
                 }
             },
         }

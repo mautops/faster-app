@@ -3,12 +3,12 @@
 """
 
 from pydantic_settings import BaseSettings
-from faster_app.utils.discover import DiscoverBase
+from faster_app.utils.discover import BaseDiscover
 from faster_app.settings.builtins.settings import DefaultSettings
 from faster_app.utils import BASE_DIR
 
 
-class SettingsDiscover(DiscoverBase):
+class SettingsDiscover(BaseDiscover):
     """配置发现器"""
 
     INSTANCE_TYPE = BaseSettings
@@ -55,21 +55,21 @@ class SettingsDiscover(DiscoverBase):
         # 获取 DefaultSettings 的所有字段和默认值
         default_fields = set(default_settings.model_fields.keys())
         default_values = default_settings.model_dump()
-        
+
         # 找出用户配置中的新字段
         user_fields = set(user_overrides.keys())
         new_fields = user_fields - default_fields
-        
+
         if not new_fields:
             # 没有新字段，使用原来的方式
             # 合并默认值和用户覆盖值
             merged_values = {**default_values, **user_overrides}
             return DefaultSettings(**merged_values)
-        
+
         # 有新字段，需要动态创建类
         from typing import Any, Optional
         from pydantic import ConfigDict
-        
+
         # 为新字段创建类型注解
         new_annotations = {}
         for field in new_fields:
@@ -85,25 +85,26 @@ class SettingsDiscover(DiscoverBase):
             else:
                 # None 值使用 Optional[Any]
                 new_annotations[field] = Optional[Any]
-        
+
         # 创建新的模型配置，允许额外字段
         model_config = ConfigDict(
-            extra="allow",
-            env_file=".env",
-            env_file_encoding="utf-8"
+            extra="allow", env_file=".env", env_file_encoding="utf-8"
         )
-        
+
         # 动态创建新的配置类
         DynamicSettings = type(
-            'DynamicSettings',
+            "DynamicSettings",
             (DefaultSettings,),
             {
-                '__annotations__': {**getattr(DefaultSettings, '__annotations__', {}), **new_annotations},
-                '__module__': DefaultSettings.__module__,
-                'model_config': model_config
-            }
+                "__annotations__": {
+                    **getattr(DefaultSettings, "__annotations__", {}),
+                    **new_annotations,
+                },
+                "__module__": DefaultSettings.__module__,
+                "model_config": model_config,
+            },
         )
-        
+
         # 创建实例 - 合并默认值和用户覆盖值
         merged_values = {**default_values, **user_overrides}
         merged_settings = DynamicSettings(**merged_values)

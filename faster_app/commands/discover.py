@@ -4,11 +4,11 @@
 
 from typing import Dict
 from faster_app.commands.base import BaseCommand
-from faster_app.utils.discover import DiscoverBase
+from faster_app.utils.discover import BaseDiscover
 from faster_app.utils import BASE_DIR
 
 
-class CommandDiscover(DiscoverBase):
+class CommandDiscover(BaseDiscover):
     INSTANCE_TYPE = BaseCommand
     TARGETS = [
         {

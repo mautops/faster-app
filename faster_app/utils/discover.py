@@ -4,7 +4,7 @@ import inspect
 from typing import Dict, List
 
 
-class DiscoverBase(object):
+class BaseDiscover(object):
     INSTANCE_TYPE = None
     TARGETS: List[Dict[str, str]] = []
 
