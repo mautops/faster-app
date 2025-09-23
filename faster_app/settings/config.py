@@ -6,7 +6,6 @@
 
 from .discover import SettingsDiscover
 from faster_app.models import ModelDiscover
-from faster_app.settings import logger
 
 # 创建默认配置实例
 configs = SettingsDiscover().merge()
@@ -25,5 +24,3 @@ if hasattr(configs, "TORTOISE_ORM") and configs.TORTOISE_ORM:
         models.append("aerich.models")
 
     configs.TORTOISE_ORM["apps"]["models"]["models"] = models
-
-logger.debug(configs.TORTOISE_ORM)

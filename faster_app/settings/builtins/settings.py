@@ -35,6 +35,10 @@ class DefaultSettings(BaseSettings):
     DB_PASSWORD: str = "postgres"
     DB_DATABASE: str = "faster_app"
 
+    # 日志配置
+    LOG_LEVEL: str = "INFO"
+    LOG_FORMAT: str = "STRING"
+
     TORTOISE_ORM: Optional[dict] = None
 
     def __init__(self, **kwargs):

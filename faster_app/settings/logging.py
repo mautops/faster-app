@@ -1,7 +1,7 @@
 import json
 import logging
 from logging.config import dictConfig
-from datetime import datetime
+from datetime import datetime, timezone
 from faster_app.settings.config import configs
 
 
@@ -10,7 +10,7 @@ class JsonFormatter(logging.Formatter):
 
     def format(self, record):
         log_record = {
-            "timestamp": datetime.now(datetime.timezone.utc).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "module": record.module,
@@ -42,7 +42,7 @@ log_config = {
         "console": {
             "class": "logging.StreamHandler",
             "level": configs.LOG_LEVEL.upper(),
-            "formatter": configs.LOG_FORMAT.lower(),
+            "formatter": configs.LOG_FORMAT.upper(),
             "stream": "ext://sys.stdout",
         },
     },
