@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from faster_app.settings import configs
 from pydantic import BaseModel, Field
 from faster_app.settings import logger
 from faster_app.apps.demo.models import DemoModel
-from tortoise_pagination import Pagination, Page
+from fastapi_pagination import Page, paginate
 from tortoise.contrib.pydantic import pydantic_model_creator
 from fastapi.responses import JSONResponse
 
@@ -32,7 +32,5 @@ async def demo(request: DemoRequest):
 
 
 @router.get("/models")
-async def pagination(
-    pagination: Pagination = Depends(Pagination.from_query),
-) -> Page[DemoModelPydantic]:
-    return await pagination.paginated_response(DemoModel.all(), DemoModelPydantic)
+async def pagination() -> Page[DemoModelPydantic]:
+    return await paginate(DemoModel.all())
