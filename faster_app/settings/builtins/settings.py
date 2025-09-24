@@ -17,7 +17,6 @@ class DefaultSettings(BaseSettings):
     # Server 配置
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    RUN_ENV: str = "development"
 
     # API 配置
     API_V1_STR: str = "/api/v1"
@@ -28,6 +27,7 @@ class DefaultSettings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # 数据库配置
+    DB_TYPE: str = "sqlite"
     DB_ENGINE: str = "tortoise.backends.asyncpg"
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
@@ -46,13 +46,13 @@ class DefaultSettings(BaseSettings):
         # 动态生成 TORTOISE_ORM 配置，确保使用实际的配置值
         self.TORTOISE_ORM = {
             "connections": {
-                "development": {
+                "SQLITE": {
                     "engine": "tortoise.backends.sqlite",
                     "credentials": {
                         "file_path": f"{self._normalize_db_name(self.PROJECT_NAME)}.db"
                     },
                 },
-                "production": {
+                "POSTGRES": {
                     "engine": self.DB_ENGINE,
                     "credentials": {
                         "host": self.DB_HOST,
@@ -66,7 +66,7 @@ class DefaultSettings(BaseSettings):
             "apps": {
                 "models": {
                     # "models": ["apps.llm.models"],  # 这里不要硬编码，由自动发现填充
-                    "default_connection": self.RUN_ENV,
+                    "default_connection": self.DB_TYPE.upper()
                 }
             },
         }

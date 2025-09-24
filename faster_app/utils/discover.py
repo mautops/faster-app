@@ -109,6 +109,7 @@ class BaseDiscover(object):
 
             # 查找模块中所有的类并实例化
             for _, obj in inspect.getmembers(module):
+                # print(obj)
                 if (
                     inspect.isclass(obj)
                     and issubclass(obj, self.INSTANCE_TYPE)

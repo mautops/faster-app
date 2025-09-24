@@ -32,20 +32,10 @@ def create_app() -> FastAPI:
         logger.error(f"静态文件服务器启动失败: {e}")
 
     # 添加中间件
-    try:
-        middleware_discover = MiddlewareDiscover()
-        middleware_configs = middleware_discover.get_configs()
-
-        # 按优先级顺序添加中间件（使用 FastAPI 推荐的 add_middleware 方法）
-        for config in middleware_configs:
-            middleware_class = config["class"]
-            app.add_middleware(middleware_class, **config["kwargs"])
-            logger.info(
-                f"已注册中间件: {middleware_class.__name__} (优先级: {config['priority']})"
-            )
-
-    except Exception as e:
-        logger.error(f"中间件注册失败: {e}")
+    middlewares = MiddlewareDiscover().discover()
+    for middleware in middlewares:
+        app.add_middleware(middleware["class"], **middleware["kwargs"])
+        logger.info(f"添加中间件: {middleware['class']}")
 
     # 添加路由
     routes = RoutesDiscover().discover()
