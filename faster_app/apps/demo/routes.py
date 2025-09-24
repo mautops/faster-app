@@ -1,14 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from faster_app.settings import configs
 from pydantic import BaseModel, Field
 from faster_app.settings import logger
 from faster_app.apps.demo.models import DemoModel
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import Page, Params
+from fastapi_pagination.ext.tortoise import apaginate
 from tortoise.contrib.pydantic import pydantic_model_creator
 from fastapi.responses import JSONResponse
 
 
-router = APIRouter(prefix="/demo", tags=["demo"])
+router = APIRouter(prefix="/demo", tags=["Demo"])
 
 # 创建 Pydantic 模型用于序列化
 DemoModelPydantic = pydantic_model_creator(DemoModel, name="DemoModel")
@@ -32,5 +33,7 @@ async def demo(request: DemoRequest):
 
 
 @router.get("/models")
-async def pagination() -> Page[DemoModelPydantic]:
-    return await paginate(DemoModel.all())
+async def pagination(
+    params: Params = Depends(Params.as_query),
+) -> Page[DemoModelPydantic]:
+    return await apaginate(queryset=DemoModel.all(), params=params)
