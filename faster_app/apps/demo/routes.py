@@ -34,6 +34,6 @@ async def demo(request: DemoRequest):
 
 @router.get("/models")
 async def pagination(
-    params: Params = Depends(Params.as_query),
+    params: Params = Depends(),
 ) -> Page[DemoModelPydantic]:
-    return await apaginate(queryset=DemoModel.all(), params=params)
+    return await apaginate(query=DemoModel.all(), params=params)
