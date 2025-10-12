@@ -8,7 +8,7 @@ Faster APP - 一个轻量级的 Python Web 框架
 - 路由管理 (ApiResponse)
 """
 
-__version__ = "0.0.36"
+__version__ = "0.0.37"
 __author__ = "peizhenfei"
 __email__ = "peizhenfei@hotmail.com"
 

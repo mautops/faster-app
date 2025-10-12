@@ -7,7 +7,7 @@ import importlib.util
 from typing import List, Dict, Any
 from faster_app.utils.discover import BaseDiscover
 
-# from faster_app.utils import BASE_DIR
+from faster_app.utils import BASE_DIR
 from faster_app.settings import logger
 
 
@@ -29,13 +29,12 @@ class MiddlewareDiscover(BaseDiscover):
             "skip_dirs": ["__pycache__"],
             "skip_files": ["__init__.py"],
         },
-        # 默认不加载内置中间件样例，开发环境反注释代码进行调试
-        # {
-        #     "directory": f"{BASE_DIR}/middleware/builtins",
-        #     "filename": None,
-        #     "skip_dirs": ["__pycache__"],
-        #     "skip_files": ["__init__.py"],
-        # },
+        {
+            "directory": f"{BASE_DIR}/middleware/builtins",
+            "filename": None,
+            "skip_dirs": ["__pycache__"],
+            "skip_files": ["__init__.py"],
+        },
     ]
 
     def import_and_extract_instances(

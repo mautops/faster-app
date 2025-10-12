@@ -35,7 +35,7 @@ def create_app() -> FastAPI:
     middlewares = MiddlewareDiscover().discover()
     for middleware in middlewares:
         app.add_middleware(middleware["class"], **middleware["kwargs"])
-        logger.info(f"添加中间件: {middleware['class']}")
+        logger.info(f"Loaded middleware: {middleware['class'].__name__}")
 
     # 添加路由
     routes = RoutesDiscover().discover()
