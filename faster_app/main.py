@@ -39,3 +39,7 @@ def main():
             reload=reload,
             log_config=log_config,
         )
+
+
+if __name__ == "__main__":
+    main()
