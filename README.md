@@ -7,7 +7,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.116+-green.svg)](https://fastapi.tiangolo.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.0.37-orange.svg)](https://github.com/mautops/faster-app)
+[![Version](https://img.shields.io/badge/version-0.0.38-orange.svg)](https://github.com/mautops/faster-app)
 
 _为 FastAPI 带来 Django 风格的项目结构和开发体验_
 
@@ -88,7 +88,7 @@ your-project/
 # 四大基础模型，覆盖 90% 业务场景
 UUIDModel     # UUID 主键
 DateTimeModel # 创建/更新时间
-StatusModel   # 状态管理 (启用/禁用)
+EnumModel   # 动态枚举字段
 ScopeModel    # 多租户作用域
 ```
 

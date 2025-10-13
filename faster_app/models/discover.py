@@ -4,6 +4,7 @@
 
 from tortoise import Model
 from faster_app.utils.discover import BaseDiscover
+# from faster_app.utils import BASE_DIR
 
 
 class ModelDiscover(BaseDiscover):
@@ -18,6 +19,12 @@ class ModelDiscover(BaseDiscover):
             "skip_dirs": ["__pycache__", "utils", "tests"],
             "skip_files": [],
         },
+        # {
+        #     "directory": f"{BASE_DIR}/faster_app/apps",
+        #     "filename": "models.py",
+        #     "skip_dirs": ["__pycache__", "utils", "tests"],
+        #     "skip_files": [],
+        # },
     ]
 
     def discover(self) -> dict[str, list[str]]:

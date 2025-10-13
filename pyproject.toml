@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "faster_app"
-version = "0.0.37"
+version = "0.0.38"
 description = "一个轻量级的 Python Web 框架，提供自动发现、模型基类、命令行工具等功能"
 readme = "README.md"
 license = "MIT"
@@ -16,6 +16,7 @@ requires-python = ">=3.12"
 dependencies = [
     "aerich>=0.9.1",
     "asyncpg>=0.30.0",
+    "deprecated>=1.2.18",
     "fastapi>=0.116.1",
     "fastapi-pagination>=0.14.1",
     "fire>=0.7.1",

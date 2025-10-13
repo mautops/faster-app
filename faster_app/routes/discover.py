@@ -19,12 +19,12 @@ class RoutesDiscover(BaseDiscover):
             "skip_files": [],
         },
         # 默认不加载内置路由样例，开发环境反注释代码进行调试
-        # {
-        #     "directory": f"{BASE_DIR}/apps",
-        #     "filename": None,
-        #     "skip_dirs": ["__pycache__"],
-        #     "skip_files": [],
-        # },
+        {
+            "directory": f"{BASE_DIR}/apps",
+            "filename": None,
+            "skip_dirs": ["__pycache__"],
+            "skip_files": [],
+        },
     ]
 
     def import_and_extract_instances(

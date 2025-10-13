@@ -1,10 +1,7 @@
-# ================================
-# Faster APP 应用部署模板
-# ================================
 # 这是一个用于部署基于 faster-app 框架开发的应用的 Dockerfile 模板
 # 请将此文件复制到您的应用项目根目录并根据需要修改
 
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # 设置环境变量
 ENV PYTHONUNBUFFERED=1 \

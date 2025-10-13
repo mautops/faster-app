@@ -2,6 +2,8 @@
 模型基类, 使用 pydantic 库管理模型
 """
 
+import re
+from deprecated import deprecated
 from enum import IntEnum, StrEnum
 from tortoise import Model
 from tortoise.fields import (
@@ -31,6 +33,69 @@ class DateTimeModel(Model):
         abstract = True
 
 
+class EnumModel(Model):
+    """模型基类，支持子类自定义状态枚举
+
+    示例:
+
+    子类中定义 StrEnum 枚举
+
+    class TaskStatusEnum(StrEnum):
+        # 任务状态枚举 \n
+        PENDING = "pending" \n
+        RUNNING = "running" \n
+        COMPLETED = "completed" \n
+        FAILED = "failed"
+
+    则自动创建 task_status 字段，默认状态为 PENDING
+    """
+
+    class StatusEnum(StrEnum):
+        """默认状态枚举"""
+
+        ACTIVE = "active"
+        INACTIVE = "inactive"
+
+    @staticmethod
+    def _enum_class_to_field_name(enum_class_name: str) -> str:
+        """
+        将枚举类名转换为字段名
+        例如: StatusEnum -> status, OrderStatusEnum -> order_status
+        """
+        # 去掉 Enum 后缀
+        name = enum_class_name
+        if name.endswith("Enum"):
+            name = name[:-4]
+
+        # 将驼峰命名转换为蛇形命名
+        # 在大写字母前插入下划线，然后转换为小写
+        name = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+
+        return name
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        enum_class = getattr(cls, "StatusEnum", EnumModel.StatusEnum)
+        is_custom_enum = enum_class is not EnumModel.StatusEnum
+
+        field_name = (
+            EnumModel._enum_class_to_field_name(enum_class.__name__)
+            if is_custom_enum
+            else "status"
+        )
+        default_value = list(enum_class)[0].value
+
+        setattr(
+            cls,
+            field_name,
+            CharEnumField(enum_class, default=default_value, verbose_name="状态"),
+        )
+
+    class Meta:
+        abstract = True
+
+
 class StatusModel(Model):
     """模型基类"""
 
@@ -41,6 +106,10 @@ class StatusModel(Model):
         INACTIVE = 0
 
     status = IntEnumField(default=1, verbose_name="状态", enum_type=StatusEnum)
+
+    @deprecated(version="0.0.40", reason="StatusModel 已弃用，请使用 EnumModel 代替。")
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
 
     class Meta:
         abstract = True
@@ -79,6 +148,10 @@ class ScopeModel(Model):
         OBJECT = "object"
 
     scope = CharEnumField(ScopeEnum, default=ScopeEnum.PROJECT, verbose_name="作用域")
+
+    @deprecated(version="0.0.40", reason="ScopeModel 已弃用，请使用 EnumModel 代替。")
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
 
     class Meta:
         abstract = True
