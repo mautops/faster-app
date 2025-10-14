@@ -5,6 +5,285 @@
   --md-accent-fg-color: #7e57c2;
 }
 
+/* ========== 赞助支持和开发者模块样式 ========== */
+
+/* 开发者模块整体样式 */
+.md-typeset h2#开发者 + .grid {
+  background: linear-gradient(135deg, rgba(92, 107, 192, 0.08) 0%, rgba(126, 87, 194, 0.08) 100%);
+  border-radius: 16px;
+  padding: 1.8rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(92, 107, 192, 0.15);
+  margin-top: 1.5rem;
+}
+
+/* 开发者信息卡片 */
+.md-typeset h2#开发者 + .grid > div:first-child {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.3rem 1.5rem;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child strong {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child em {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child p {
+  line-height: 1.8;
+  margin: 0.8rem 0 0.5rem 0;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child a {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child a:hover {
+  border-bottom-color: white;
+  color: white !important;
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child code {
+  color: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* 微信二维码卡片 */
+.md-typeset h2#开发者 + .grid > div:nth-child(2) {
+  background: linear-gradient(135deg, #07c160 0%, #04aa4b 100%);
+  padding: 1.3rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.md-typeset h2#开发者 + .grid > div:nth-child(2) img {
+  background: white;
+  padding: 0.6rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1rem;
+}
+
+.md-typeset h2#开发者 + .grid > div:nth-child(2) strong {
+  color: white;
+  font-size: 1.05rem;
+  display: block;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+/* 赞助支持模块标题美化 */
+.md-typeset h2#赞助支持 {
+  text-align: center;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.md-typeset h2#赞助支持 + p {
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--md-default-fg-color--light);
+  margin-bottom: 2rem;
+}
+
+/* 赞助卡片容器 */
+.md-typeset h2#赞助支持 ~ div[align="center"] > .grid {
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.08) 0%, rgba(245, 87, 108, 0.08) 100%);
+  border-radius: 20px;
+  padding: 2rem 1.8rem;
+  box-shadow: 0 8px 32px rgba(240, 147, 251, 0.2);
+  border: 1px solid rgba(240, 147, 251, 0.2);
+}
+
+/* 微信支付卡片 */
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child {
+  background: linear-gradient(135deg, #07c160 0%, #04aa4b 100%);
+  padding: 1.2rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(7, 193, 96, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child:hover::before {
+  opacity: 1;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(7, 193, 96, 0.4);
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child strong {
+  color: white;
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 0.6rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+/* 支付宝卡片 */
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child {
+  background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+  padding: 1.2rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(22, 119, 255, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child:hover::before {
+  opacity: 1;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(22, 119, 255, 0.4);
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child strong {
+  color: white;
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 0.6rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+/* 二维码图片通用样式 */
+.md-typeset img[alt*="收款"],
+.md-typeset img[alt*="微信好友"] {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  background: white;
+  padding: 0.8rem;
+  border-radius: 12px;
+}
+
+/* 赞助模块二维码特殊样式 - 减少上下边距 */
+.md-typeset h2#赞助支持 ~ div[align="center"] img[alt*="收款"] {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* 二维码悬停效果 */
+.md-typeset img[alt*="收款"]:hover,
+.md-typeset img[alt*="微信好友"]:hover {
+  transform: scale(1.08) rotate(2deg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 感谢文字样式 */
+.md-typeset h2#赞助支持 ~ div[align="center"] > em,
+.md-typeset h2#赞助支持 ~ div[align="center"] > p em {
+  display: block;
+  margin-top: 2rem;
+  font-size: 1.05rem;
+  color: var(--md-default-fg-color--light);
+  font-style: italic;
+}
+
+/* 暗色模式适配 */
+[data-md-color-scheme="slate"] .md-typeset h2#开发者 + .grid {
+  background: linear-gradient(135deg, rgba(92, 107, 192, 0.15) 0%, rgba(126, 87, 194, 0.15) 100%);
+  border-color: rgba(92, 107, 192, 0.25);
+}
+
+[data-md-color-scheme="slate"] .md-typeset h2#赞助支持 ~ div[align="center"] > .grid {
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.15) 0%, rgba(245, 87, 108, 0.15) 100%);
+  border-color: rgba(240, 147, 251, 0.3);
+}
+
+/* 开发者模块响应式调整 */
+@media screen and (max-width: 960px) {
+  .md-typeset .grid[style*="2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
+  .md-typeset h2#开发者 + .grid {
+    padding: 1.3rem 1rem;
+  }
+  
+  .md-typeset h2#开发者 + .grid > div:nth-child(2) img {
+    max-width: 220px !important;
+  }
+}
+
+/* 赞助模块响应式调整 */
+@media screen and (max-width: 768px) {
+  .md-typeset .grid[style*="repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
+  .md-typeset h2#赞助支持 ~ div[align="center"] > .grid {
+    padding: 1.5rem 1rem;
+  }
+  
+  .md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child,
+  .md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child {
+    padding: 1rem 1.2rem;
+  }
+  
+  .md-typeset img[alt*="收款"] {
+    max-width: 240px !important;
+  }
+}
+
 /* ========== 顶部导航栏美化 ========== */
 
 /* 创建统一的渐变背景层 */
