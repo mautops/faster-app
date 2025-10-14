@@ -1,14 +1,14 @@
 """
 Faster APP - 一个轻量级的 Python Web 框架
 
-提供了以下核心功能：
+提供了以下核心功能:
 - 自动发现和加载模块 (BaseDiscover)
 - 数据库模型基类 (UUIDModel, DateTimeModel, EnumModel)
 - 命令行工具基类 (BaseCommand)
 - 路由管理 (ApiResponse)
 """
 
-__version__ = "0.0.38"
+__version__ = "0.0.39"
 __author__ = "peizhenfei"
 __email__ = "peizhenfei@hotmail.com"
 
@@ -17,7 +17,8 @@ from faster_app.utils.discover import BaseDiscover
 from faster_app.models.base import (
     UUIDModel,
     DateTimeModel,
-    EnumModel,
+    StatusModel,
+    ScopeModel,
 )
 from faster_app.commands.base import BaseCommand
 from faster_app.routes.base import ApiResponse
@@ -38,7 +39,8 @@ __all__ = [
     # 模型基类
     "UUIDModel",
     "DateTimeModel",
-    "EnumModel",
+    "StatusModel",
+    "ScopeModel",
     # 发现器
     "ModelDiscover",
     "CommandDiscover",

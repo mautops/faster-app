@@ -18,7 +18,7 @@ class RoutesDiscover(BaseDiscover):
             "skip_dirs": ["__pycache__"],
             "skip_files": [],
         },
-        # 默认不加载内置路由样例，开发环境反注释代码进行调试
+        # 默认不加载内置路由样例, 开发环境反注释代码进行调试
         {
             "directory": f"{BASE_DIR}/apps",
             "filename": None,
@@ -32,7 +32,7 @@ class RoutesDiscover(BaseDiscover):
     ) -> list[APIRouter]:
         """
         导入模块并提取路由实例
-        对于路由，我们查找已经实例化的 APIRouter 对象
+        对于路由, 我们查找已经实例化的 APIRouter 对象
         """
         instances = []
 
@@ -54,7 +54,7 @@ class RoutesDiscover(BaseDiscover):
                     instances.append(obj)
 
         except Exception as e:
-            # 静默跳过导入失败的模块，避免阻断整个发现过程
+            # 静默跳过导入失败的模块, 避免阻断整个发现过程
             print(f"Warning: Failed to import routes from {module_name}: {e}")
 
         return instances

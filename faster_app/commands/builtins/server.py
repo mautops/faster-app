@@ -72,13 +72,13 @@ class ServerOperations(BaseCommand):
         # 生产模式下的特殊处理
         if not reload:
             if factory and app_target == "faster_app.main:get_app":
-                # 默认框架应用，直接导入实例
+                # 默认框架应用, 直接导入实例
                 from faster_app.main import get_app
 
                 app_target = get_app()
                 factory = False
             elif isinstance(app_target, str) and not factory:
-                # 用户自定义应用字符串，需要导入为实例
+                # 用户自定义应用字符串, 需要导入为实例
                 try:
                     if ":" in app_target:
                         module_name, attr_name = app_target.rsplit(":", 1)

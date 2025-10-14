@@ -17,7 +17,7 @@ def main():
     # 添加分页器
     add_pagination(app)
 
-    # 生产环境中不使用 reload，只在开发环境(DEBUG=True)中启用
+    # 生产环境中不使用 reload, 只在开发环境(DEBUG=True)中启用
     reload = configs.DEBUG
 
     if reload:

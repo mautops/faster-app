@@ -15,7 +15,7 @@ class MiddlewareDiscover(BaseDiscover):
     """
     中间件发现器 - 极简实现
 
-    基于 BaseDiscover，专注核心功能：
+    基于 BaseDiscover, 专注核心功能:
     1. 自动发现中间件类
     2. 可选的配置文件支持
     3. 生成最终配置
@@ -75,12 +75,12 @@ class MiddlewareDiscover(BaseDiscover):
 
     def discover(self) -> List[Dict[str, Any]]:
         """
-        自动扫描 TARGETS 中的目录和文件，
+        自动扫描 TARGETS 中的目录和文件,
         导出所有的实例
         """
         middlewares = []
         instances = super().discover()
-        middlewares_imported = []  # 已导入的中间件，避免重复导入
+        middlewares_imported = []  # 已导入的中间件, 避免重复导入
 
         for instance in instances:
             if instance["class"] not in middlewares_imported:

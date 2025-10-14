@@ -2,11 +2,11 @@
 
 import os
 
-# 先定义 BASE_DIR，避免循环导入
+# 先定义 BASE_DIR, 避免循环导入
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
-# 延迟导入 decorators，避免循环导入
+# 延迟导入 decorators, 避免循环导入
 def _import_decorators():
     from .decorators import with_aerich_command
 

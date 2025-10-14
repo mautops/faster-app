@@ -1,18 +1,9 @@
-from enum import StrEnum
-from faster_app.models.base import UUIDModel, DateTimeModel, EnumModel
+from faster_app.models.base import UUIDModel, DateTimeModel, StatusModel
 from tortoise import fields
 
 
-class DemoModel(UUIDModel, DateTimeModel, EnumModel):
+class DemoModel(UUIDModel, DateTimeModel, StatusModel):
     """demo model"""
-
-    class TaskStatusEnum(StrEnum):
-        """任务状态枚举"""
-
-        PENDING = "pending"
-        RUNNING = "running"
-        COMPLETED = "completed"
-        FAILED = "failed"
 
     name = fields.CharField(max_length=255)
 

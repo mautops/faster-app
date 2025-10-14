@@ -6,11 +6,11 @@ from faster_app.settings.logging import logger
 async def send_notification(email: str, message: str):
     """
     模拟发送通知的后台任务
-    在实际应用中，这里可以是发送邮件、推送消息、处理数据等耗时操作
+    在实际应用中, 这里可以是发送邮件、推送消息、处理数据等耗时操作
     """
     logger.info(f"[后台任务] 开始处理通知任务 - 收件人: {email}")
 
-    # 模拟耗时操作（如调用邮件服务API）
+    # 模拟耗时操作(如调用邮件服务API)
     await asyncio.sleep(3)
 
     logger.info(f"[后台任务] 通知已发送给 {email}: {message}")

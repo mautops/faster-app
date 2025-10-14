@@ -16,7 +16,7 @@ class DBOperations(BaseCommand):
     """🗄️ 数据库操作命令 - 基于 Aerich 的数据库迁移和管理工具"""
 
     def __init__(self, fake: bool = False):
-        super().__init__()  # 调用父类初始化，自动配置 PYTHONPATH
+        super().__init__()  # 调用父类初始化, 自动配置 PYTHONPATH
         self.fake = fake
         self.command = Command(tortoise_config=configs.TORTOISE_ORM)
 
@@ -60,7 +60,7 @@ class DBOperations(BaseCommand):
         """⬇️ 回滚数据库迁移 - 降级到指定的迁移版本
 
         Args:
-            version: 目标版本号，默认 -1 表示回滚一个版本
+            version: 目标版本号, 默认 -1 表示回滚一个版本
         """
         await self.command.downgrade(version=version, delete=True, fake=self.fake)
         console.print("[bold green]✅ 数据库回滚成功[/bold green]")
@@ -85,12 +85,12 @@ class DBOperations(BaseCommand):
         """🧹 清理开发环境数据 - 删除数据库和迁移文件
 
         Args:
-            force: 是否强制清理，跳过确认提示
+            force: 是否强制清理, 跳过确认提示
 
         ⚠️ 警告:
-            此操作将删除所有数据，请谨慎使用！仅在开发环境中使用！
+            此操作将删除所有数据, 请谨慎使用！仅在开发环境中使用！
         """
-        # 安全检查：仅在调试模式下允许
+        # 安全检查:仅在调试模式下允许
         if not configs.DEBUG:
             console.print(
                 "[bold red]❌ 此操作仅允许在开发环境中执行 (DEBUG=True)![/bold red]"

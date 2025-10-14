@@ -29,7 +29,7 @@ class SettingsDiscover(BaseDiscover):
     ]
 
     def merge(self) -> BaseSettings:
-        """合并配置: 使用用户配置覆盖内置配置，同时保留DefaultSettings的方法和动态逻辑"""
+        """合并配置: 使用用户配置覆盖内置配置, 同时保留DefaultSettings的方法和动态逻辑"""
         configs = self.discover()
 
         # 分离默认配置和用户配置
@@ -42,7 +42,7 @@ class SettingsDiscover(BaseDiscover):
             else:
                 user_settings.append(config)
 
-        # 如果没有用户配置，直接返回默认配置
+        # 如果没有用户配置, 直接返回默认配置
         if not user_settings:
             return default_settings
 
@@ -61,12 +61,12 @@ class SettingsDiscover(BaseDiscover):
         new_fields = user_fields - default_fields
 
         if not new_fields:
-            # 没有新字段，使用原来的方式
+            # 没有新字段, 使用原来的方式
             # 合并默认值和用户覆盖值
             merged_values = {**default_values, **user_overrides}
             return DefaultSettings(**merged_values)
 
-        # 有新字段，需要动态创建类
+        # 有新字段, 需要动态创建类
         from typing import Any, Optional
         from pydantic import ConfigDict
 
@@ -77,7 +77,7 @@ class SettingsDiscover(BaseDiscover):
             if value is not None:
                 # 从值推断类型
                 field_type = type(value)
-                # 如果是基本类型，直接使用；否则使用 Any
+                # 如果是基本类型, 直接使用；否则使用 Any
                 if field_type in (str, int, float, bool, list, dict):
                     new_annotations[field] = field_type
                 else:
@@ -86,7 +86,7 @@ class SettingsDiscover(BaseDiscover):
                 # None 值使用 Optional[Any]
                 new_annotations[field] = Optional[Any]
 
-        # 创建新的模型配置，允许额外字段
+        # 创建新的模型配置, 允许额外字段
         model_config = ConfigDict(
             extra="allow", env_file=".env", env_file_encoding="utf-8"
         )

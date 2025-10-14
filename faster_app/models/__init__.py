@@ -7,13 +7,11 @@
 from .base import (
     UUIDModel,
     DateTimeModel,
-    EnumModel,
 )
 from .discover import ModelDiscover
 
 __all__ = [
     "UUIDModel",
     "DateTimeModel",
-    "EnumModel",
     "ModelDiscover",
 ]

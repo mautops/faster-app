@@ -10,7 +10,7 @@ class BaseDiscover(object):
 
     def discover(self) -> List[type]:
         """
-        自动扫描 TARGETS 中的目录和文件，
+        自动扫描 TARGETS 中的目录和文件,
         导出所有的实例
         """
         instances = []
@@ -42,7 +42,7 @@ class BaseDiscover(object):
             return results
 
         for root, dirs, files in os.walk(directory):
-            # 过滤掉需要跳过的目录，直接修改 dirs 列表来影响 os.walk 的遍历
+            # 过滤掉需要跳过的目录, 直接修改 dirs 列表来影响 os.walk 的遍历
             dirs[:] = [d for d in dirs if d not in skip_dirs]
 
             for file in files:
@@ -66,7 +66,7 @@ class BaseDiscover(object):
 
         Args:
             directory: 要扫描的目录路径
-            filename: 要扫描的具体文件名，如果为 None 则扫描目录下所有 .py 文件
+            filename: 要扫描的具体文件名, 如果为 None 则扫描目录下所有 .py 文件
             skip_files: 要跳过的文件列表
             skip_dirs: 要跳过的目录列表
         Returns:
@@ -124,7 +124,7 @@ class BaseDiscover(object):
                         print(f"Warning: Failed to instantiate {obj.__name__}: {e}")
 
         except Exception as e:
-            # 静默跳过导入失败的模块，避免阻断整个发现过程
+            # 静默跳过导入失败的模块, 避免阻断整个发现过程
             print(f"Warning: Failed to import instances from {module_name}: {e}")
 
         return instances

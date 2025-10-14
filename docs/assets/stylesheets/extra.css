@@ -1,0 +1,915 @@
+/* 自定义样式 */
+
+:root {
+  --md-primary-fg-color: #5c6bc0;
+  --md-accent-fg-color: #7e57c2;
+}
+
+/* ========== 赞助支持和开发者模块样式 ========== */
+
+/* 开发者模块整体样式 */
+.md-typeset h2#开发者 + .grid {
+  background: linear-gradient(135deg, rgba(92, 107, 192, 0.08) 0%, rgba(126, 87, 194, 0.08) 100%);
+  border-radius: 16px;
+  padding: 1.8rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(92, 107, 192, 0.15);
+  margin-top: 1.5rem;
+}
+
+/* 开发者信息卡片 */
+.md-typeset h2#开发者 + .grid > div:first-child {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.3rem 1.5rem;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child strong {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child em {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child p {
+  line-height: 1.8;
+  margin: 0.8rem 0 0.5rem 0;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child a {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child a:hover {
+  border-bottom-color: white;
+  color: white !important;
+}
+
+.md-typeset h2#开发者 + .grid > div:first-child code {
+  color: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* 微信二维码卡片 */
+.md-typeset h2#开发者 + .grid > div:nth-child(2) {
+  background: linear-gradient(135deg, #07c160 0%, #04aa4b 100%);
+  padding: 1.3rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.md-typeset h2#开发者 + .grid > div:nth-child(2) img {
+  background: white;
+  padding: 0.6rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1rem;
+}
+
+.md-typeset h2#开发者 + .grid > div:nth-child(2) strong {
+  color: white;
+  font-size: 1.05rem;
+  display: block;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+/* 赞助支持模块标题美化 */
+.md-typeset h2#赞助支持 {
+  text-align: center;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.md-typeset h2#赞助支持 + p {
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--md-default-fg-color--light);
+  margin-bottom: 2rem;
+}
+
+/* 赞助卡片容器 */
+.md-typeset h2#赞助支持 ~ div[align="center"] > .grid {
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.08) 0%, rgba(245, 87, 108, 0.08) 100%);
+  border-radius: 20px;
+  padding: 2rem 1.8rem;
+  box-shadow: 0 8px 32px rgba(240, 147, 251, 0.2);
+  border: 1px solid rgba(240, 147, 251, 0.2);
+}
+
+/* 微信支付卡片 */
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child {
+  background: linear-gradient(135deg, #07c160 0%, #04aa4b 100%);
+  padding: 1.2rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(7, 193, 96, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child:hover::before {
+  opacity: 1;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(7, 193, 96, 0.4);
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child strong {
+  color: white;
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 0.6rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+/* 支付宝卡片 */
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child {
+  background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+  padding: 1.2rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(22, 119, 255, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child:hover::before {
+  opacity: 1;
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(22, 119, 255, 0.4);
+}
+
+.md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child strong {
+  color: white;
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 0.6rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+/* 二维码图片通用样式 */
+.md-typeset img[alt*="收款"],
+.md-typeset img[alt*="微信好友"] {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  background: white;
+  padding: 0.8rem;
+  border-radius: 12px;
+}
+
+/* 赞助模块二维码特殊样式 - 减少上下边距 */
+.md-typeset h2#赞助支持 ~ div[align="center"] img[alt*="收款"] {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* 二维码悬停效果 */
+.md-typeset img[alt*="收款"]:hover,
+.md-typeset img[alt*="微信好友"]:hover {
+  transform: scale(1.08) rotate(2deg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 感谢文字样式 */
+.md-typeset h2#赞助支持 ~ div[align="center"] > em,
+.md-typeset h2#赞助支持 ~ div[align="center"] > p em {
+  display: block;
+  margin-top: 2rem;
+  font-size: 1.05rem;
+  color: var(--md-default-fg-color--light);
+  font-style: italic;
+}
+
+/* 暗色模式适配 */
+[data-md-color-scheme="slate"] .md-typeset h2#开发者 + .grid {
+  background: linear-gradient(135deg, rgba(92, 107, 192, 0.15) 0%, rgba(126, 87, 194, 0.15) 100%);
+  border-color: rgba(92, 107, 192, 0.25);
+}
+
+[data-md-color-scheme="slate"] .md-typeset h2#赞助支持 ~ div[align="center"] > .grid {
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.15) 0%, rgba(245, 87, 108, 0.15) 100%);
+  border-color: rgba(240, 147, 251, 0.3);
+}
+
+/* 开发者模块响应式调整 */
+@media screen and (max-width: 960px) {
+  .md-typeset .grid[style*="2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
+  .md-typeset h2#开发者 + .grid {
+    padding: 1.3rem 1rem;
+  }
+  
+  .md-typeset h2#开发者 + .grid > div:nth-child(2) img {
+    max-width: 220px !important;
+  }
+}
+
+/* 赞助模块响应式调整 */
+@media screen and (max-width: 768px) {
+  .md-typeset .grid[style*="repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
+  .md-typeset h2#赞助支持 ~ div[align="center"] > .grid {
+    padding: 1.5rem 1rem;
+  }
+  
+  .md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:first-child,
+  .md-typeset h2#赞助支持 ~ div[align="center"] .grid > div:last-child {
+    padding: 1rem 1.2rem;
+  }
+  
+  .md-typeset img[alt*="收款"] {
+    max-width: 240px !important;
+  }
+}
+
+/* ========== 顶部导航栏美化 ========== */
+
+/* 创建统一的渐变背景层 */
+.md-header,
+.md-tabs {
+  position: relative;
+}
+
+/* 使用伪元素创建统一的背景 */
+.md-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    #667eea 0%, 
+    #764ba2 15%, 
+    #f093fb 30%, 
+    #4facfe 45%,
+    #00f2fe 60%,
+    #43e97b 75%,
+    #38f9d7 90%,
+    #667eea 100%
+  );
+  background-size: 300% 100%;
+  animation: gradientShift 15s ease infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 导航栏主体 - 移除自身背景 */
+.md-header {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+  border: none !important;
+  border-bottom: none !important;
+  position: relative;
+  overflow: hidden;
+  z-index: 3;
+}
+
+/* 导航栏光效装饰 */
+.md-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.2) 25%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0.2) 75%, 
+    transparent 100%
+  );
+  animation: headerShine 8s linear infinite;
+  pointer-events: none;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+@keyframes headerShine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 导航栏标题 */
+.md-header__title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 2;
+}
+
+.md-header__title:hover {
+  color: #e8eaf6;
+}
+
+/* Logo */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  filter: brightness(1.2) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+}
+
+.md-header__button.md-logo:hover img,
+.md-header__button.md-logo:hover svg {
+  filter: brightness(1.4) drop-shadow(0 4px 8px rgba(92, 107, 192, 0.5));
+  transform: scale(1.05);
+}
+
+/* 导航栏按钮（汉堡菜单、搜索等） */
+.md-header__button {
+  color: #ffffff;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.md-header__button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #e8eaf6;
+  transform: scale(1.05);
+}
+
+/* 导航栏图标 */
+.md-header__button svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* 搜索框 */
+.md-search__form {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.md-search__form:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 2px rgba(92, 107, 192, 0.3);
+}
+
+.md-search__input {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.md-search__input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.md-search__input:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 搜索图标 */
+.md-search__icon {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 顶部导航标签（Tabs） - 移除自身背景 */
+.md-tabs {
+  background: transparent !important;
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+  margin-top: 0;
+  padding-top: 0;
+  position: relative;
+  z-index: 3;
+}
+
+/* Tabs 也需要统一的背景 */
+.md-tabs::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    #667eea 0%, 
+    #764ba2 15%, 
+    #f093fb 30%, 
+    #4facfe 45%,
+    #00f2fe 60%,
+    #43e97b 75%,
+    #38f9d7 90%,
+    #667eea 100%
+  );
+  background-size: 300% 100%;
+  animation: gradientShift 15s ease infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 导航标签项 */
+.md-tabs__item {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.md-tabs__item:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 激活的导航标签 */
+.md-tabs__link--active {
+  color: #ffffff !important;
+  font-weight: 600;
+  border-bottom: 3px solid #ffd700;
+  text-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 0.3rem 0.3rem 0 0;
+}
+
+/* 导航标签链接 */
+.md-tabs__link {
+  transition: all 0.3s ease;
+}
+
+.md-tabs__link:hover {
+  transform: translateY(-2px);
+}
+
+/* 侧边栏标题 */
+.md-sidebar__scrollwrap .md-nav__title {
+  background: linear-gradient(135deg, 
+    #667eea 0%, 
+    #764ba2 50%, 
+    #f093fb 100%
+  );
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* 侧边栏返回按钮 */
+.md-nav__button {
+  color: white;
+}
+
+.md-nav__button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 暗色模式下的顶部导航栏 */
+[data-md-color-scheme="slate"] .md-header::after,
+[data-md-color-scheme="slate"] .md-tabs::before {
+  background: linear-gradient(135deg, 
+    #4a5568 0%, 
+    #5a4a7a 20%, 
+    #7b61a8 40%,
+    #4a8fc7 60%,
+    #3aa98f 80%,
+    #4a5568 100%
+  );
+  background-size: 300% 100%;
+  animation: gradientShift 15s ease infinite;
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+[data-md-color-scheme="slate"] .md-header__title,
+[data-md-color-scheme="slate"] .md-header__button,
+[data-md-color-scheme="slate"] .md-tabs__item {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-md-color-scheme="slate"] .md-search__form {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-md-color-scheme="slate"] .md-search__form:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(121, 134, 203, 0.4);
+}
+
+/* 响应式优化 */
+@media screen and (max-width: 76.1875em) {
+  .md-header {
+    box-shadow: none !important;
+    border-bottom: none !important;
+  }
+  
+  .md-header__title {
+    font-size: 1rem;
+  }
+}
+
+/* ========== 首页样式 ========== */
+
+/* 首页顶部居中区域 */
+.md-content article > div[align="center"] {
+  padding: 2rem 0;
+}
+
+/* 首页按钮组 */
+.md-content .md-button {
+  margin: 0.5rem;
+  padding: 0.6em 2em;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.md-content .md-button--primary {
+  background: linear-gradient(135deg, var(--md-primary-fg-color) 0%, var(--md-accent-fg-color) 100%);
+  box-shadow: 0 4px 15px rgba(92, 107, 192, 0.3);
+}
+
+.md-content .md-button--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(92, 107, 192, 0.4);
+}
+
+.md-content .md-button:not(.md-button--primary) {
+  border: 2px solid var(--md-primary-fg-color);
+}
+
+.md-content .md-button:not(.md-button--primary):hover {
+  background-color: var(--md-primary-fg-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* ========== 卡片样式 ========== */
+
+/* 标准卡片 */
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.8rem;
+  transition: all 0.3s ease;
+  background: var(--md-default-bg-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.md-typeset .grid.cards > ol > li:hover,
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 8px 24px rgba(126, 87, 194, 0.15);
+  transform: translateY(-4px);
+}
+
+/* 卡片内的图标 */
+.md-typeset .grid.cards svg.lg {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 1rem;
+  color: var(--md-primary-fg-color);
+}
+
+/* 卡片内的标题 */
+.md-typeset .grid.cards > ol > li > p:first-child,
+.md-typeset .grid.cards > ul > li > p:first-child {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--md-default-fg-color);
+}
+
+/* ========== 网格布局优化 ========== */
+
+/* 响应式网格 */
+.md-typeset .grid {
+  display: grid;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+/* 自定义网格列 */
+.md-typeset .grid[style*="grid-template-columns"] > div {
+  padding: 1.5rem;
+  border-radius: 0.6rem;
+  background: var(--md-code-bg-color);
+  transition: all 0.3s ease;
+}
+
+.md-typeset .grid[style*="grid-template-columns"] > div:hover {
+  background: var(--md-default-fg-color--lightest);
+  transform: translateY(-2px);
+}
+
+/* 网格内的图标 */
+.md-typeset .grid svg.lg {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--md-accent-fg-color);
+}
+
+/* ========== 提示框样式 ========== */
+
+/* 提示框基础样式 */
+.md-typeset .admonition {
+  border-radius: 0.6rem;
+  border-left: 0.3rem solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin: 1.5rem 0;
+}
+
+/* quote 提示框 */
+.md-typeset .admonition.quote {
+  border-left-color: var(--md-accent-fg-color);
+  background: linear-gradient(135deg, rgba(126, 87, 194, 0.05) 0%, rgba(92, 107, 192, 0.05) 100%);
+}
+
+/* abstract 提示框 */
+.md-typeset .admonition.abstract {
+  border-left-color: var(--md-primary-fg-color);
+}
+
+/* tip 提示框 */
+.md-typeset .admonition.tip {
+  background: linear-gradient(135deg, rgba(0, 200, 83, 0.05) 0%, rgba(0, 150, 83, 0.05) 100%);
+}
+
+/* ========== 代码块样式 ========== */
+
+/* 代码块增强 */
+.md-typeset .highlight {
+  border-radius: 0.6rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 1.5rem 0;
+}
+
+.md-typeset code {
+  border-radius: 0.3rem;
+  padding: 0.2em 0.4em;
+  background-color: var(--md-code-bg-color);
+}
+
+/* ========== 选项卡样式 ========== */
+
+/* 选项卡容器 */
+.md-typeset .tabbed-set {
+  border-radius: 0.6rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 选项卡标签 */
+.md-typeset .tabbed-labels > label {
+  border-radius: 0.5rem 0.5rem 0 0;
+  transition: all 0.2s ease;
+}
+
+.md-typeset .tabbed-labels > label:hover {
+  background-color: var(--md-accent-fg-color--transparent);
+}
+
+/* ========== 标题样式 ========== */
+
+/* 一级标题 */
+.md-typeset h1 {
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  margin-top: 0;
+}
+
+/* 二级标题 */
+.md-typeset h2 {
+  font-weight: 600;
+  margin-top: 2.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--md-default-fg-color--lightest);
+}
+
+/* 三级标题 */
+.md-typeset h3 {
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+  margin-top: 2rem;
+}
+
+/* ========== 分割线 ========== */
+
+.md-typeset hr {
+  margin: 2.5rem 0;
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--md-default-fg-color--lightest), transparent);
+}
+
+/* ========== 徽章样式 ========== */
+
+.md-typeset img[alt*="shield"] {
+  margin: 0.2rem;
+  transition: transform 0.2s ease;
+}
+
+.md-typeset img[alt*="shield"]:hover {
+  transform: scale(1.05);
+}
+
+/* ========== 链接样式 ========== */
+
+.md-typeset a {
+  transition: all 0.2s ease;
+}
+
+.md-typeset a:hover {
+  color: var(--md-accent-fg-color);
+}
+
+/* ========== 页脚样式 ========== */
+
+.md-footer {
+  background: linear-gradient(135deg, var(--md-primary-fg-color) 0%, var(--md-accent-fg-color) 100%);
+}
+
+/* ========== 响应式设计 ========== */
+
+@media screen and (max-width: 76.1875em) {
+  .md-typeset .grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ========== 暗色模式优化 ========== */
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #7986cb;
+  --md-accent-fg-color: #9575cd;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ol > li,
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ol > li:hover,
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li:hover {
+  box-shadow: 0 8px 24px rgba(149, 117, 205, 0.3);
+}
+
+/* ========== 动画效果 ========== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.md-typeset h2,
+.md-typeset .grid.cards {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* ========== 回到顶部按钮 ========== */
+
+/* 回到顶部按钮移到右侧 */
+.md-top {
+  right: 1.5rem !important;
+  left: auto !important;
+  background: linear-gradient(135deg, var(--md-primary-fg-color) 0%, var(--md-accent-fg-color) 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  z-index: 90;
+}
+
+.md-top:hover {
+  background: linear-gradient(135deg, var(--md-accent-fg-color) 0%, var(--md-primary-fg-color) 100%);
+  box-shadow: 0 6px 20px rgba(126, 87, 194, 0.5);
+  transform: translateY(-3px) scale(1.05);
+}
+
+.md-top svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* 移动端回到顶部按钮 */
+@media screen and (max-width: 76.1875em) {
+  .md-top {
+    right: 1rem !important;
+  }
+}
+
+/* 小屏幕优化 */
+@media screen and (max-width: 44.9375em) {
+  .md-top {
+    right: 0.75rem !important;
+    bottom: 1rem !important;
+  }
+}
+
+/* ========== 滚动条样式 ========== */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--md-default-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--md-primary-fg-color);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--md-accent-fg-color);
+}

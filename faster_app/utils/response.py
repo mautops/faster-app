@@ -18,7 +18,7 @@ class ApiResponse:
         成功响应格式
 
         Args:
-            data: 返回的数据，可以是任意类型
+            data: 返回的数据, 可以是任意类型
             message: 成功消息
             code: 业务状态码
             status_code: HTTP状态码
@@ -58,7 +58,7 @@ class ApiResponse:
             "timestamp": datetime.now().isoformat(),
         }
 
-        # 如果有详细错误信息，添加到响应中
+        # 如果有详细错误信息, 添加到响应中
         if error_detail:
             response_data["error_detail"] = error_detail
 

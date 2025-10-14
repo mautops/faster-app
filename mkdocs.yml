@@ -1,0 +1,172 @@
+site_name: Faster APP
+site_description: FastAPI 最佳实践框架 - 约定优于配置
+site_author: peizhenfei
+site_url: https://mautops.github.io/faster-app/
+
+repo_name: mautops/faster-app
+repo_url: https://github.com/mautops/faster-app
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: zh
+  palette:
+    # 日间模式
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换到夜间模式
+    # 夜间模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换到日间模式
+  features:
+    - navigation.instant # 即时加载
+    - navigation.instant.progress # 显示进度
+    - navigation.tracking # 锚点跟踪
+    - navigation.tabs # 导航标签
+    - navigation.tabs.sticky # 粘性标签
+    - navigation.sections # 导航分组
+    - navigation.expand # 展开导航
+    - navigation.path # 路径显示
+    - navigation.indexes # 索引页
+    - navigation.top # 返回顶部按钮
+    - toc.follow # 目录跟随
+    - toc.integrate # 目录集成
+    - search.suggest # 搜索建议
+    - search.highlight # 搜索高亮
+    - search.share # 搜索分享
+    - header.autohide # 自动隐藏标题
+    - content.code.copy # 代码复制按钮
+    - content.code.annotate # 代码注释
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/rocket-launch
+
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 4
+
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      lang:
+        - zh
+        - en
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            docstring_section_style: table
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            group_by_category: true
+            show_if_no_docstring: false
+            inherited_members: true
+            filters:
+              - "!^_" # 排除私有成员
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mautops/faster-app
+      name: GitHub
+    - icon: fontawesome/solid/envelope
+      link: mailto:peizhenfei@cvte.com
+      name: Email
+    - icon: fontawesome/brands/weixin
+      link: "#"
+      name: 微信：hsdtsyl (黑色的碳酸饮料)
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra_javascript:
+  - assets/javascripts/extra.js
+
+nav:
+  - 首页: index.md
+  - 快速开始:
+      - 安装: getting-started/installation.md
+      - 快速入门: getting-started/quickstart.md
+      - 项目结构: getting-started/structure.md
+  - 核心功能:
+      - 自动发现机制: features/auto-discovery.md
+      - 模型基类: features/models.md
+      - 路由管理: features/routes.md
+      - 命令行工具: features/cli.md
+      - 中间件: features/middleware.md
+      - 配置管理: features/settings.md
+  - 命令行参考:
+      - App 命令: cli/app.md
+      - DB 命令: cli/db.md
+      - Server 命令: cli/server.md
+      - 自定义命令: cli/custom.md
+  - API 参考:
+      - 模块概览: api/overview.md
+      - 应用核心: api/app.md
+      - 模型基类: api/models.md
+      - 路由工具: api/routes.md
+      - 工具函数: api/utils.md
+  - 最佳实践:
+      - 项目组织: best-practices/organization.md
+      - 数据库设计: best-practices/database.md
+      - API 设计: best-practices/api-design.md
+      - 部署指南: best-practices/deployment.md
+  - 贡献指南:
+      - 如何贡献: contributing/how-to-contribute.md
+      - 开发环境: contributing/development.md
+      - 代码规范: contributing/code-style.md
+  - Changelog: about/changelog.md
+  - 许可证: about/license.md
+
+copyright: Copyright &copy; 2024 peizhenfei

@@ -29,7 +29,7 @@ class CommandDiscover(BaseDiscover):
         commands = {}
         command_instances = self.discover()
 
-        # 将命令实例转换为字典，使用类名作为键
+        # 将命令实例转换为字典, 使用类名作为键
         for instance in command_instances:
             # 使用 BaseCommand 的 _get_command_name 方法自动去除后缀
             command_name = instance._get_command_name()

@@ -46,7 +46,7 @@ def create_app() -> FastAPI:
 
 
 def get_app() -> FastAPI:
-    """获取应用实例（单例模式）"""
+    """获取应用实例(单例模式)"""
     if not hasattr(get_app, "_app"):
         get_app._app = create_app()
     return get_app._app
