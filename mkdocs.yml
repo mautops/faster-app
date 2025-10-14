@@ -143,6 +143,7 @@ nav:
       - 自动发现机制: features/auto-discovery.md
       - 模型基类: features/models.md
       - 路由管理: features/routes.md
+      - CRUD Router: features/crud-router.md
       - 命令行工具: features/cli.md
       - 中间件: features/middleware.md
       - 配置管理: features/settings.md
