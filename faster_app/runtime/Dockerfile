@@ -15,23 +15,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# 创建非 root 用户
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-
 # 设置工作目录
 WORKDIR /app
 
 # 复制项目文件
 COPY . .
 
-# 设置文件权限
-RUN chown -R appuser:appuser /app
-
 # 使用 UV 安装 Python 依赖
 RUN pip install uv && uv sync
-
-# 切换到非 root 用户
-USER appuser
 
 # 健康检查 (根据您的应用调整端口和路径)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
@@ -41,4 +32,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 EXPOSE ${PORT:-8000}
 
 # 启动命令 (根据您的应用入口调整)
-CMD ["faster", "server", "start"]
+CMD ["uv", "run", "faster", "server", "start"]

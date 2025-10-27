@@ -127,12 +127,6 @@ extra:
       link: "#"
       name: 微信：hsdtsyl (黑色的碳酸饮料)
 
-extra_css:
-  - assets/stylesheets/extra.css
-
-extra_javascript:
-  - assets/javascripts/extra.js
-
 nav:
   - 首页: index.md
   - 快速开始:

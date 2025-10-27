@@ -859,14 +859,55 @@
 
 /* ========== 回到顶部按钮 ========== */
 
-/* 回到顶部按钮移到右侧 */
+/* 回到顶部按钮移到右侧 - 所有设备隐藏文字只显示图标 */
 .md-top {
   right: 1.5rem !important;
   left: auto !important;
+  width: 2.8rem;
+  height: 2.8rem;
   background: linear-gradient(135deg, var(--md-primary-fg-color) 0%, var(--md-accent-fg-color) 100%);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   transition: all 0.3s ease;
   z-index: 90;
+  border-radius: 50%;
+}
+
+/* 全局隐藏"回到页面顶部"文字，只显示图标 */
+.md-top__label,
+.md-top span,
+.md-top .md-top__inner span {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* 确保图标正常显示 */
+.md-top svg,
+.md-top .md-icon {
+  font-size: initial !important;
+  width: 1.2rem !important;
+  height: 1.2rem !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.md-top .md-top__inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 清除可能的文本内容 */
+.md-top::before,
+.md-top::after,
+.md-top .md-top__inner::before,
+.md-top .md-top__inner::after {
+  content: none !important;
+  display: none !important;
 }
 
 .md-top:hover {
@@ -877,20 +918,60 @@
 
 .md-top svg {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
-/* 移动端回到顶部按钮 */
+/* 平板端优化 */
 @media screen and (max-width: 76.1875em) {
   .md-top {
     right: 1rem !important;
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+  
+  .md-top svg,
+  .md-top .md-icon {
+    width: 1.1rem !important;
+    height: 1.1rem !important;
   }
 }
 
-/* 小屏幕优化 */
+/* 移动端优化 */
 @media screen and (max-width: 44.9375em) {
   .md-top {
     right: 0.75rem !important;
     bottom: 1rem !important;
+    width: 2.2rem;
+    height: 2.2rem;
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+  }
+  
+  .md-top svg,
+  .md-top .md-icon {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+  
+  .md-top:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 12px rgba(126, 87, 194, 0.5);
+  }
+}
+
+/* 小屏手机优化 */
+@media screen and (max-width: 360px) {
+  .md-top {
+    right: 0.5rem !important;
+    bottom: 0.75rem !important;
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .md-top svg,
+  .md-top .md-icon {
+    width: 0.9rem !important;
+    height: 0.9rem !important;
   }
 }
 

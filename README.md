@@ -7,7 +7,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.116+-green.svg)](https://fastapi.tiangolo.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.0.39-orange.svg)](https://github.com/mautops/faster-app)
+[![Version](https://img.shields.io/badge/version-0.0.40-orange.svg)](https://github.com/mautops/faster-app)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://mautops.github.io/faster-app/)
 
 _为 FastAPI 带来 Django 风格的项目结构和开发体验_
