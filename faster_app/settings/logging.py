@@ -41,19 +41,19 @@ log_config = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            "level": configs.LOG_LEVEL.upper(),
-            "formatter": configs.LOG_FORMAT.upper(),
+            "level": configs.log.level.upper(),
+            "formatter": configs.log.format.upper(),
             "stream": "ext://sys.stdout",
         },
     },
     "loggers": {
         "app": {
             "handlers": ["console"],
-            "level": configs.LOG_LEVEL.upper(),
+            "level": configs.log.level.upper(),
             "propagate": False,
         },
     },
-    "root": {"handlers": ["console"], "level": configs.LOG_LEVEL.upper()},
+    "root": {"handlers": ["console"], "level": configs.log.level.upper()},
 }
 
 # 应用配置

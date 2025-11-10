@@ -47,14 +47,16 @@ class SettingsDiscover(BaseDiscover):
             return default_settings
 
         # 收集所有用户配置的属性
+        # 注意: 使用 mode='python' 来保留 SecretStr 等特殊类型
         user_overrides = {}
         for user_setting in user_settings:
-            user_dict = user_setting.model_dump()
+            user_dict = user_setting.model_dump(mode="python")
             user_overrides.update(user_dict)
 
         # 获取 DefaultSettings 的所有字段和默认值
+        # 使用 mode='python' 来保留 SecretStr 等特殊类型
         default_fields = set(default_settings.model_fields.keys())
-        default_values = default_settings.model_dump()
+        default_values = default_settings.model_dump(mode="python")
 
         # 找出用户配置中的新字段
         user_fields = set(user_overrides.keys())
@@ -68,7 +70,7 @@ class SettingsDiscover(BaseDiscover):
 
         # 有新字段, 需要动态创建类
         from typing import Any, Optional
-        from pydantic import ConfigDict
+        from pydantic import ConfigDict, SecretStr
 
         # 为新字段创建类型注解
         new_annotations = {}
@@ -77,8 +79,8 @@ class SettingsDiscover(BaseDiscover):
             if value is not None:
                 # 从值推断类型
                 field_type = type(value)
-                # 如果是基本类型, 直接使用；否则使用 Any
-                if field_type in (str, int, float, bool, list, dict):
+                # 如果是基本类型或特殊类型, 直接使用；否则使用 Any
+                if field_type in (str, int, float, bool, list, dict, SecretStr):
                     new_annotations[field] = field_type
                 else:
                     new_annotations[field] = Any
