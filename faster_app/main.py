@@ -18,15 +18,15 @@ def main():
     add_pagination(app)
 
     # 生产环境中不使用 reload, 只在开发环境(DEBUG=True)中启用
-    reload = configs.DEBUG
+    reload = configs.debug
 
     if reload:
         # 开发模式使用字符串导入以支持热重载
         uvicorn.run(
             "faster_app.app:get_app",
             factory=True,
-            host=configs.HOST,
-            port=configs.PORT,
+            host=configs.server.host,
+            port=configs.server.port,
             reload=reload,
             log_config=log_config,
         )
@@ -34,8 +34,8 @@ def main():
         # 生产模式直接使用应用实例
         uvicorn.run(
             app,
-            host=configs.HOST,
-            port=configs.PORT,
+            host=configs.server.host,
+            port=configs.server.port,
             reload=reload,
             log_config=log_config,
         )

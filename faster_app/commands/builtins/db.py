@@ -91,7 +91,7 @@ class DBOperations(BaseCommand):
             此操作将删除所有数据, 请谨慎使用！仅在开发环境中使用！
         """
         # 安全检查:仅在调试模式下允许
-        if not configs.DEBUG:
+        if not configs.debug:
             console.print(
                 "[bold red]❌ 此操作仅允许在开发环境中执行 (DEBUG=True)![/bold red]"
             )
@@ -99,7 +99,7 @@ class DBOperations(BaseCommand):
 
         try:
             # 删除数据库文件
-            db_file = f"{configs._normalize_db_name(configs.PROJECT_NAME)}.db"
+            db_file = f"{configs._normalize_db_name(configs.project_name)}.db"
             if os.path.exists(db_file):
                 os.remove(db_file)
                 console.print(

@@ -4,9 +4,32 @@
 
 ---
 
-## v0.0.42 (2025-11-10)
+## v0.1.0 (2025-11-10) ⚠️ Breaking Changes
 
-??? success "v0.0.42 - 配置系统全面升级 🔧"
+??? warning "v0.1.0 - 配置系统重大升级（Breaking Changes）🔧"
+
+    ### ⚠️ Breaking Changes
+
+    - **移除独立环境变量支持**：不再支持 `FASTER_DATABASE__*` 配置方式
+    - **必须使用 DATABASE_URL**：数据库配置只能通过 `DATABASE_URL` 或 `FASTER_DATABASE_URL`
+    - **简化配置结构**：`DatabaseSettings` 移除默认值，必须通过 URL 初始化
+
+    **迁移指南**：
+
+    ```bash
+    # ❌ v0.0.x 方式（不再支持）
+    export FASTER_DATABASE__TYPE=postgres
+    export FASTER_DATABASE__HOST=localhost
+    export FASTER_DATABASE__PORT=5432
+    export FASTER_DATABASE__USER=user
+    export FASTER_DATABASE__PASSWORD=pass
+    export FASTER_DATABASE__DATABASE=mydb
+
+    # ✅ v0.1.0+ 方式（必须使用）
+    export DATABASE_URL=postgresql://user:pass@localhost:5432/mydb
+    # 或
+    export FASTER_DATABASE_URL=postgresql://user:pass@localhost:5432/mydb
+    ```
 
     ### 🎉 新增功能
 
@@ -20,13 +43,14 @@
     - 🔄 **TORTOISE_ORM 配置优化**：从 `__init__` 重构为 `@property`
         - 动态生成配置，支持运行时更新
         - 遵循 Pydantic 最佳实践
-        - 避免初始化时机问题
+        - 根据实际数据库类型生成对应连接
+        - 统一使用 `default` 连接名
         - 更好的可测试性
         - 文档：[TORTOISE_ORM 配置](../features/tortoise-orm-config.md)
 
     - ✅ **生产环境配置验证**：全面的安全检查机制
         - **字段级验证器**：
-            - 端口号范围检查（1-65535）
+            - 端口号范围检查（1-65535，SQLite 除外）
             - 日志级别验证
             - JWT 算法白名单
             - Token 过期时间合理性
@@ -42,8 +66,7 @@
     - 🏷️ **环境变量前缀**：统一使用 `FASTER_` 前缀
         - 避免多应用环境变量冲突
         - 更清晰的配置管理
-        - 支持嵌套配置：`FASTER_DATABASE__HOST`
-        - 完全向后兼容
+        - 主要用于顶层配置和 DATABASE_URL
         - 文档：[环境变量前缀](../features/env-prefix.md)
 
     - 📦 **配置分组与嵌套**：模块化配置结构
@@ -58,36 +81,38 @@
     - 🗂️ **配置文件重构**：按组拆分到独立文件
         - `faster_app/settings/groups/server.py` - 服务器配置
         - `faster_app/settings/groups/jwt.py` - JWT 配置
-        - `faster_app/settings/groups/database.py` - 数据库配置
+        - `faster_app/settings/groups/database.py` - 数据库配置（基于 DATABASE_URL）
         - `faster_app/settings/groups/log.py` - 日志配置
         - `faster_app/settings/groups/__init__.py` - 统一导出
         - 更好的代码组织和模块化
         - 文档：[配置重构](../features/config-refactoring.md)
 
-    - 🔗 **DATABASE_URL 支持**：单变量配置数据库
+    - 🔗 **DATABASE_URL 支持**：唯一的数据库配置方式
         - 遵循 [12-Factor App](https://12factor.net/) 最佳实践
         - 支持 PostgreSQL、MySQL、SQLite
         - 支持 `DATABASE_URL` 和 `FASTER_DATABASE_URL`
         - 自动解析连接字符串
         - 特殊字符密码自动 URL 解码
         - 云平台友好（Heroku、Railway、Render 等）
-        - 完全向后兼容独立环境变量
+        - 未设置时自动使用 SQLite（开发环境友好）
         - 示例：
             ```bash
             # PostgreSQL
-            FASTER_DATABASE_URL=postgresql://user:pass@host:5432/database
+            export DATABASE_URL=postgresql://user:pass@host:5432/database
 
             # MySQL
-            FASTER_DATABASE_URL=mysql://user:pass@host:3306/database
+            export DATABASE_URL=mysql://user:pass@host:3306/database
 
-            # SQLite
-            FASTER_DATABASE_URL=sqlite:///path/to/database.db
+            # SQLite（开发环境）
+            export DATABASE_URL=sqlite:///dev.db
+
+            # 默认（未设置时）
+            # 自动使用: sqlite:///faster_app.db
             ```
         - 文档：[DATABASE_URL 支持](../features/database-url.md)
 
     - 🏢 **数据库 Schema 支持**：多租户数据隔离
         - 通过 URL 查询参数指定 schema：`?schema=tenant_a`
-        - 支持环境变量：`FASTER_DATABASE__DB_SCHEMA=tenant_a`
         - 自动集成到 Tortoise ORM 配置
         - PostgreSQL 完全支持，SQLite 自动忽略
         - 典型场景：
@@ -97,10 +122,10 @@
         - 示例：
             ```bash
             # 租户 A
-            FASTER_DATABASE_URL=postgresql://app:pass@db:5432/saas?schema=tenant_a
+            export DATABASE_URL=postgresql://app:pass@db:5432/saas?schema=tenant_a
 
             # 租户 B
-            FASTER_DATABASE_URL=postgresql://app:pass@db:5432/saas?schema=tenant_b
+            export DATABASE_URL=postgresql://app:pass@db:5432/saas?schema=tenant_b
             ```
         - 文档：[数据库 Schema 支持](../features/database-schema.md)
 
@@ -121,18 +146,25 @@
         - 从 `configs.LOG_FORMAT` 迁移到 `configs.log.format`
         - 完全兼容新的配置结构
 
-    - 📚 **配置优先级明确**：清晰的配置加载顺序
-        1. 构造函数参数
-        2. `FASTER_DATABASE_URL` / `DATABASE_URL`（DATABASE_URL 支持）
-        3. `FASTER_*` 环境变量
-        4. `.env` 文件
-        5. 默认值
+    - 🗄️ **TORTOISE_ORM 简化**：动态生成数据库连接
+        - 根据实际数据库类型只生成对应连接
+        - 统一使用 `default` 连接名
+        - 支持 SQLite、PostgreSQL、MySQL
+        - 自动处理 schema 配置
+
+    - 📚 **配置加载简化**：清晰的配置初始化
+        1. 构造函数参数（最高优先级）
+        2. `FASTER_DATABASE_URL` 环境变量
+        3. `DATABASE_URL` 环境变量
+        4. 默认 SQLite（开发友好）
 
     ### 🐛 Bug 修复
 
     - 修复 `SecretStr` 在配置合并时的类型丢失问题
     - 修复 Pydantic 字段名冲突（`schema` → `db_schema`）
-    - 修复 SQLite 文件路径规范化逻辑
+    - 修复 SQLite 端口验证逻辑（允许端口为 0）
+    - 修复 `TORTOISE_ORM` 连接配置错误（KeyError: 'POSTGRES'）
+    - 修复配置重构后字段访问不兼容问题
     - 修复生产环境验证的边界条件
 
     ### 📖 新增文档
@@ -145,49 +177,63 @@
     - ✨ [配置重构](../features/config-refactoring.md) - 文件结构说明
     - ✨ [DATABASE_URL 支持](../features/database-url.md) - 完整使用指南
     - ✨ [数据库 Schema 支持](../features/database-schema.md) - 多租户架构指南
+    - ✨ [迁移清单](./migration-checklist.md) - v0.0.x → v0.1.0 详细清单
 
-    ### 🔄 向后兼容性
+    ### 💡 升级指南
 
-    - ✅ **完全向后兼容**：所有旧的配置方式仍然有效
-    - ✅ **渐进式升级**：可以按需迁移到新方式
-    - ✅ **零破坏性变更**：现有项目无需修改代码
-
-    ### 💡 升级建议
-
-    推荐使用新的配置方式，但不强制：
+    **必须操作**：
 
     ```bash
-    # ✅ 推荐（新方式）
-    export FASTER_DATABASE_URL=postgresql://user:pass@host:5432/db?schema=tenant_a
+    # 1. 识别旧配置（如果使用独立环境变量）
+    # 旧方式（不再支持）
+    FASTER_DATABASE__TYPE=postgres
+    FASTER_DATABASE__HOST=prod.db.com
+    FASTER_DATABASE__PORT=5432
+    FASTER_DATABASE__USER=appuser
+    FASTER_DATABASE__PASSWORD=secret123
+    FASTER_DATABASE__DATABASE=appdb
+    FASTER_DATABASE__DB_SCHEMA=myschema  # 可选
 
-    # ✅ 仍然支持（旧方式）
-    export FASTER_DATABASE__TYPE=postgres
-    export FASTER_DATABASE__HOST=host
-    export FASTER_DATABASE__PORT=5432
-    export FASTER_DATABASE__DB_SCHEMA=tenant_a
+    # 2. 转换为 DATABASE_URL
+    # 新方式（必须使用）
+    DATABASE_URL=postgresql://appuser:secret123@prod.db.com:5432/appdb?schema=myschema
+    ```
+
+    **快速转换公式**：
+    ```
+    DATABASE_URL={type}://{user}:{password}@{host}:{port}/{database}?schema={schema}
     ```
 
     ### 🎯 设计原则
 
     本次配置系统升级遵循以下原则：
 
-    1. **安全第一**：敏感信息保护 + 生产环境验证
-    2. **简单实用**：DATABASE_URL 简化配置
-    3. **模块化**：配置分组便于维护
-    4. **云原生**：符合 12-Factor App 最佳实践
-    5. **向后兼容**：不破坏现有代码
+    1. **简单第一**：移除复杂的向后兼容，只保留一种配置方式
+    2. **安全第一**：敏感信息保护 + 生产环境验证
+    3. **标准优先**：遵循 12-Factor App 最佳实践
+    4. **模块化**：配置分组便于维护
+    5. **云原生**：DATABASE_URL 简化云平台部署
     6. **文档完善**：每个功能都有详细文档
 
     ### 📊 影响范围
 
-    - **配置系统**：全面升级，更安全、更灵活
+    - **配置系统**：全面简化，更清晰、更易用
+    - **数据库配置**：只支持 DATABASE_URL 方式
     - **多租户支持**：Schema 支持使多租户架构更简单
-    - **部署友好**：DATABASE_URL 简化云平台部署
+    - **部署友好**：符合云平台标准，一行配置搞定
     - **开发体验**：配置分组和 IDE 提示提升开发效率
+    - **维护成本**：代码更简洁，测试用例更少
+
+    ### 🔗 相关资源
+
+    - 📋 [完整迁移清单](./migration-checklist.md)
+    - 📖 [DATABASE_URL 文档](../features/database-url.md)
+    - 📖 [Schema 支持文档](../features/database-schema.md)
+    - 💬 [讨论和反馈](https://github.com/mautops/faster-app/discussions)
 
 ---
 
-## v0.0.42 (2025-10-14)
+## v0.0.41 (2025-10-14)
 
 ??? success "v0.0.42 - 文档站建设与设计哲学完善"
 

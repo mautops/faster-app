@@ -28,39 +28,55 @@ class Settings(BaseSettings):
     # 配置组
     server: ServerSettings = ServerSettings()
     jwt: JWTSettings = JWTSettings()
-    database: DatabaseSettings = DatabaseSettings()
+    database: DatabaseSettings  # 必须通过 DATABASE_URL 初始化
     log: LogSettings = LogSettings()
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_prefix="FASTER_",
-        env_nested_delimiter="__",  # 支持嵌套：FASTER_DATABASE__HOST
         extra="ignore",
     )
 
     def __init__(self, **kwargs):
         """
-        初始化配置，支持 DATABASE_URL
-
-        优先级：
-        1. 构造函数参数
-        2. DATABASE_URL / FASTER_DATABASE_URL 环境变量
-        3. 独立的 FASTER_DATABASE__* 环境变量
-        4. 默认值
+        初始化配置，要求必须提供 DATABASE_URL
+        
+        环境变量:
+            DATABASE_URL 或 FASTER_DATABASE_URL - 数据库连接字符串（必需）
+            
+        示例:
+            # PostgreSQL
+            export DATABASE_URL=postgresql://user:pass@host:5432/database
+            
+            # MySQL
+            export DATABASE_URL=mysql://user:pass@host:3306/database
+            
+            # SQLite (开发环境)
+            export DATABASE_URL=sqlite:///dev.db
         """
         # 检查 DATABASE_URL（优先使用带前缀的）
         database_url = os.getenv("FASTER_DATABASE_URL") or os.getenv("DATABASE_URL")
-
+        
+        if not database_url and "database" not in kwargs:
+            # 如果没有提供 DATABASE_URL，使用默认 SQLite
+            import warnings
+            warnings.warn(
+                "未设置 DATABASE_URL，使用默认 SQLite 数据库（sqlite:///faster_app.db）。\n"
+                "生产环境请设置 DATABASE_URL 环境变量。",
+                UserWarning
+            )
+            database_url = "sqlite:///faster_app.db"
+        
         if database_url and "database" not in kwargs:
-            # 如果设置了 DATABASE_URL 且没有手动传入 database 参数
             try:
                 kwargs["database"] = DatabaseSettings.from_database_url(database_url)
             except ValueError as e:
-                # URL 解析失败，发出警告但不中断
-                import warnings
-
-                warnings.warn(f"DATABASE_URL 解析失败: {e}，使用默认配置", UserWarning)
-
+                raise ValueError(
+                    f"DATABASE_URL 解析失败: {e}\n"
+                    f"请检查 DATABASE_URL 格式是否正确。\n"
+                    f"支持格式: postgresql://user:pass@host:port/database"
+                )
+        
         super().__init__(**kwargs)
 
     @field_validator("jwt", mode="before")
@@ -195,33 +211,55 @@ class Settings(BaseSettings):
         Returns:
             Tortoise ORM 配置字典
         """
-        # PostgreSQL 连接配置
-        postgres_credentials = {
-            "host": self.database.host,
-            "port": self.database.port,
-            "user": self.database.user,
-            "password": self.database.password.get_secret_value(),
-            "database": self.database.database,
-        }
-
-        # 如果配置了 schema，添加到连接配置
-        if self.database.db_schema:
-            postgres_credentials["schema"] = self.database.db_schema
-
+        # 根据数据库类型生成对应的连接配置
+        connections = {}
+        
+        if self.database.type == "sqlite":
+            # SQLite 连接
+            connections["default"] = {
+                "engine": "tortoise.backends.sqlite",
+                "credentials": {
+                    "file_path": self.database.database
+                },
+            }
+        elif self.database.type == "postgres":
+            # PostgreSQL 连接
+            credentials = {
+                "host": self.database.host,
+                "port": self.database.port,
+                "user": self.database.user,
+                "password": self.database.password.get_secret_value(),
+                "database": self.database.database,
+            }
+            # 如果配置了 schema，添加到连接配置
+            if self.database.db_schema:
+                credentials["schema"] = self.database.db_schema
+            
+            connections["default"] = {
+                "engine": self.database.engine,
+                "credentials": credentials,
+            }
+        elif self.database.type == "mysql":
+            # MySQL 连接
+            connections["default"] = {
+                "engine": self.database.engine,
+                "credentials": {
+                    "host": self.database.host,
+                    "port": self.database.port,
+                    "user": self.database.user,
+                    "password": self.database.password.get_secret_value(),
+                    "database": self.database.database,
+                },
+            }
+        
         return {
-            "connections": {
-                "SQLITE": {
-                    "engine": "tortoise.backends.sqlite",
-                    "credentials": {
-                        "file_path": f"{self._normalize_db_name(self.project_name)}.db"
-                    },
-                },
-                "POSTGRES": {
-                    "engine": self.database.engine,
-                    "credentials": postgres_credentials,
-                },
+            "connections": connections,
+            "apps": {
+                "models": {
+                    "models": [],  # 将在 discover 阶段填充
+                    "default_connection": "default",
+                }
             },
-            "apps": {"models": {"default_connection": self.database.type.upper()}},
         }
 
     def _normalize_db_name(self, project_name: str) -> str:

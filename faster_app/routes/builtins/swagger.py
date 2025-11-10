@@ -10,7 +10,7 @@ async def custom_swagger_ui_html():
     """自定义 Swagger UI 文档页面"""
     return get_swagger_ui_html(
         openapi_url="/openapi.json",
-        title=f"{configs.PROJECT_NAME} - API 文档",
+        title=f"{configs.project_name} - API 文档",
         swagger_js_url="/static/swagger-ui-bundle.min.js",
         swagger_css_url="/static/swagger-ui.min.css",
     )

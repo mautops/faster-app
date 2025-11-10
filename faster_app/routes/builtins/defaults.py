@@ -7,6 +7,6 @@ router = APIRouter()
 @router.get("/")
 async def default():
     return {
-        "message": f"Make {configs.PROJECT_NAME}",
-        "version": configs.VERSION,
+        "message": f"Make {configs.project_name}",
+        "version": configs.version,
     }

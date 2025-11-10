@@ -15,9 +15,9 @@ from faster_app.utils.db import lifespan
 def create_app() -> FastAPI:
     """创建 FastAPI 应用实例"""
     app = FastAPI(
-        title=configs.PROJECT_NAME,
-        version=configs.VERSION,
-        debug=configs.DEBUG,
+        title=configs.project_name,
+        version=configs.version,
+        debug=configs.debug,
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,
