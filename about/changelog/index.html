@@ -1519,14 +1519,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v0042-2025-11-10" class="md-nav__link">
+  <a href="#v010-2025-11-10-breaking-changes" class="md-nav__link">
     <span class="md-ellipsis">
-      v0.0.42 (2025-11-10)
+      v0.1.0 (2025-11-10) ⚠️ Breaking Changes
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="v0.0.42 (2025-11-10)">
+    <nav class="md-nav" aria-label="v0.1.0 (2025-11-10) ⚠️ Breaking Changes">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Breaking Changes
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
@@ -1567,7 +1576,7 @@
           <li class="md-nav__item">
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
-      🔄 向后兼容性
+      💡 升级指南
     </span>
   </a>
   
@@ -1576,7 +1585,7 @@
           <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
-      💡 升级建议
+      🎯 设计原则
     </span>
   </a>
   
@@ -1585,7 +1594,7 @@
           <li class="md-nav__item">
   <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
-      🎯 设计原则
+      📊 影响范围
     </span>
   </a>
   
@@ -1594,7 +1603,7 @@
           <li class="md-nav__item">
   <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
-      📊 影响范围
+      🔗 相关资源
     </span>
   </a>
   
@@ -1606,13 +1615,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#v0042-2025-10-14" class="md-nav__link">
+  <a href="#v0041-2025-10-14" class="md-nav__link">
     <span class="md-ellipsis">
-      v0.0.42 (2025-10-14)
+      v0.0.41 (2025-10-14)
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="v0.0.42 (2025-10-14)">
+    <nav class="md-nav" aria-label="v0.0.41 (2025-10-14)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2254,9 +2263,29 @@
 <h1 id="_1">更新日志<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>本页面记录 Faster APP 的所有版本更新历史。</p>
 <hr />
-<h2 id="v0042-2025-11-10">v0.0.42 (2025-11-10)<a class="headerlink" href="#v0042-2025-11-10" title="Permanent link">&para;</a></h2>
-<details class="success">
-<summary>v0.0.42 - 配置系统全面升级 🔧</summary>
+<h2 id="v010-2025-11-10-breaking-changes">v0.1.0 (2025-11-10) ⚠️ Breaking Changes<a class="headerlink" href="#v010-2025-11-10-breaking-changes" title="Permanent link">&para;</a></h2>
+<details class="warning">
+<summary>v0.1.0 - 配置系统重大升级（Breaking Changes）🔧</summary>
+<h3 id="breaking-changes">⚠️ Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>移除独立环境变量支持</strong>：不再支持 <code>FASTER_DATABASE__*</code> 配置方式</li>
+<li><strong>必须使用 DATABASE_URL</strong>：数据库配置只能通过 <code>DATABASE_URL</code> 或 <code>FASTER_DATABASE_URL</code></li>
+<li><strong>简化配置结构</strong>：<code>DatabaseSettings</code> 移除默认值，必须通过 URL 初始化</li>
+</ul>
+<p><strong>迁移指南</strong>：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># ❌ v0.0.x 方式（不再支持）</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__TYPE</span><span class="o">=</span>postgres
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__HOST</span><span class="o">=</span>localhost
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__PORT</span><span class="o">=</span><span class="m">5432</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__USER</span><span class="o">=</span>user
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__PASSWORD</span><span class="o">=</span>pass
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__DATABASE</span><span class="o">=</span>mydb
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># ✅ v0.1.0+ 方式（必须使用）</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://user:pass@localhost:5432/mydb
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># 或</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE_URL</span><span class="o">=</span>postgresql://user:pass@localhost:5432/mydb
+</span></code></pre></div>
 <h3 id="_2">🎉 新增功能<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -2274,7 +2303,8 @@
 <ul>
 <li>动态生成配置，支持运行时更新</li>
 <li>遵循 Pydantic 最佳实践</li>
-<li>避免初始化时机问题</li>
+<li>根据实际数据库类型生成对应连接</li>
+<li>统一使用 <code>default</code> 连接名</li>
 <li>更好的可测试性</li>
 <li>文档：<a href="../../features/tortoise-orm-config/">TORTOISE_ORM 配置</a></li>
 </ul>
@@ -2283,7 +2313,7 @@
 <p>✅ <strong>生产环境配置验证</strong>：全面的安全检查机制</p>
 <ul>
 <li><strong>字段级验证器</strong>：<ul>
-<li>端口号范围检查（1-65535）</li>
+<li>端口号范围检查（1-65535，SQLite 除外）</li>
 <li>日志级别验证</li>
 <li>JWT 算法白名单</li>
 <li>Token 过期时间合理性</li>
@@ -2306,8 +2336,7 @@
 <ul>
 <li>避免多应用环境变量冲突</li>
 <li>更清晰的配置管理</li>
-<li>支持嵌套配置：<code>FASTER_DATABASE__HOST</code></li>
-<li>完全向后兼容</li>
+<li>主要用于顶层配置和 DATABASE_URL</li>
 <li>文档：<a href="../../features/env-prefix/">环境变量前缀</a></li>
 </ul>
 </li>
@@ -2328,7 +2357,7 @@
 <ul>
 <li><code>faster_app/settings/groups/server.py</code> - 服务器配置</li>
 <li><code>faster_app/settings/groups/jwt.py</code> - JWT 配置</li>
-<li><code>faster_app/settings/groups/database.py</code> - 数据库配置</li>
+<li><code>faster_app/settings/groups/database.py</code> - 数据库配置（基于 DATABASE_URL）</li>
 <li><code>faster_app/settings/groups/log.py</code> - 日志配置</li>
 <li><code>faster_app/settings/groups/__init__.py</code> - 统一导出</li>
 <li>更好的代码组织和模块化</li>
@@ -2336,7 +2365,7 @@
 </ul>
 </li>
 <li>
-<p>🔗 <strong>DATABASE_URL 支持</strong>：单变量配置数据库</p>
+<p>🔗 <strong>DATABASE_URL 支持</strong>：唯一的数据库配置方式</p>
 <ul>
 <li>遵循 <a href="https://12factor.net/">12-Factor App</a> 最佳实践</li>
 <li>支持 PostgreSQL、MySQL、SQLite</li>
@@ -2344,16 +2373,19 @@
 <li>自动解析连接字符串</li>
 <li>特殊字符密码自动 URL 解码</li>
 <li>云平台友好（Heroku、Railway、Render 等）</li>
-<li>完全向后兼容独立环境变量</li>
+<li>未设置时自动使用 SQLite（开发环境友好）</li>
 <li>示例：
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># PostgreSQL</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">FASTER_DATABASE_URL</span><span class="o">=</span>postgresql://user:pass@host:5432/database
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># MySQL</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nv">FASTER_DATABASE_URL</span><span class="o">=</span>mysql://user:pass@host:3306/database
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># SQLite</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nv">FASTER_DATABASE_URL</span><span class="o">=</span>sqlite:///path/to/database.db
+    <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># PostgreSQL</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://user:pass@host:5432/database
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># MySQL</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>mysql://user:pass@host:3306/database
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># SQLite（开发环境）</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>sqlite:///dev.db
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># 默认（未设置时）</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1"># 自动使用: sqlite:///faster_app.db</span>
 </span></code></pre></div></li>
 <li>文档：<a href="../../features/database-url/">DATABASE_URL 支持</a></li>
 </ul>
@@ -2362,7 +2394,6 @@
 <p>🏢 <strong>数据库 Schema 支持</strong>：多租户数据隔离</p>
 <ul>
 <li>通过 URL 查询参数指定 schema：<code>?schema=tenant_a</code></li>
-<li>支持环境变量：<code>FASTER_DATABASE__DB_SCHEMA=tenant_a</code></li>
 <li>自动集成到 Tortoise ORM 配置</li>
 <li>PostgreSQL 完全支持，SQLite 自动忽略</li>
 <li>典型场景：<ul>
@@ -2372,11 +2403,11 @@
 </ul>
 </li>
 <li>示例：
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># 租户 A</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">FASTER_DATABASE_URL</span><span class="o">=</span>postgresql://app:pass@db:5432/saas?schema<span class="o">=</span>tenant_a
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># 租户 B</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nv">FASTER_DATABASE_URL</span><span class="o">=</span>postgresql://app:pass@db:5432/saas?schema<span class="o">=</span>tenant_b
+    <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># 租户 A</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://app:pass@db:5432/saas?schema<span class="o">=</span>tenant_a
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># 租户 B</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://app:pass@db:5432/saas?schema<span class="o">=</span>tenant_b
 </span></code></pre></div></li>
 <li>文档：<a href="../../features/database-schema/">数据库 Schema 支持</a></li>
 </ul>
@@ -2409,13 +2440,21 @@
 </ul>
 </li>
 <li>
-<p>📚 <strong>配置优先级明确</strong>：清晰的配置加载顺序</p>
+<p>🗄️ <strong>TORTOISE_ORM 简化</strong>：动态生成数据库连接</p>
+<ul>
+<li>根据实际数据库类型只生成对应连接</li>
+<li>统一使用 <code>default</code> 连接名</li>
+<li>支持 SQLite、PostgreSQL、MySQL</li>
+<li>自动处理 schema 配置</li>
+</ul>
+</li>
+<li>
+<p>📚 <strong>配置加载简化</strong>：清晰的配置初始化</p>
 <ol>
-<li>构造函数参数</li>
-<li><code>FASTER_DATABASE_URL</code> / <code>DATABASE_URL</code>（DATABASE_URL 支持）</li>
-<li><code>FASTER_*</code> 环境变量</li>
-<li><code>.env</code> 文件</li>
-<li>默认值</li>
+<li>构造函数参数（最高优先级）</li>
+<li><code>FASTER_DATABASE_URL</code> 环境变量</li>
+<li><code>DATABASE_URL</code> 环境变量</li>
+<li>默认 SQLite（开发友好）</li>
 </ol>
 </li>
 </ul>
@@ -2423,7 +2462,9 @@
 <ul>
 <li>修复 <code>SecretStr</code> 在配置合并时的类型丢失问题</li>
 <li>修复 Pydantic 字段名冲突（<code>schema</code> → <code>db_schema</code>）</li>
-<li>修复 SQLite 文件路径规范化逻辑</li>
+<li>修复 SQLite 端口验证逻辑（允许端口为 0）</li>
+<li>修复 <code>TORTOISE_ORM</code> 连接配置错误（KeyError: 'POSTGRES'）</li>
+<li>修复配置重构后字段访问不兼容问题</li>
 <li>修复生产环境验证的边界条件</li>
 </ul>
 <h3 id="_4">📖 新增文档<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
@@ -2436,44 +2477,56 @@
 <li>✨ <a href="../../features/config-refactoring/">配置重构</a> - 文件结构说明</li>
 <li>✨ <a href="../../features/database-url/">DATABASE_URL 支持</a> - 完整使用指南</li>
 <li>✨ <a href="../../features/database-schema/">数据库 Schema 支持</a> - 多租户架构指南</li>
+<li>✨ <a href="../migration-checklist/">迁移清单</a> - v0.0.x → v0.1.0 详细清单</li>
 </ul>
-<h3 id="_5">🔄 向后兼容性<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<ul>
-<li>✅ <strong>完全向后兼容</strong>：所有旧的配置方式仍然有效</li>
-<li>✅ <strong>渐进式升级</strong>：可以按需迁移到新方式</li>
-<li>✅ <strong>零破坏性变更</strong>：现有项目无需修改代码</li>
-</ul>
-<h3 id="_6">💡 升级建议<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
-<p>推荐使用新的配置方式，但不强制：</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># ✅ 推荐（新方式）</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE_URL</span><span class="o">=</span>postgresql://user:pass@host:5432/db?schema<span class="o">=</span>tenant_a
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># ✅ 仍然支持（旧方式）</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__TYPE</span><span class="o">=</span>postgres
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__HOST</span><span class="o">=</span>host
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__PORT</span><span class="o">=</span><span class="m">5432</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FASTER_DATABASE__DB_SCHEMA</span><span class="o">=</span>tenant_a
+<h3 id="_5">💡 升级指南<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p><strong>必须操作</strong>：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># 1. 识别旧配置（如果使用独立环境变量）</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># 旧方式（不再支持）</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nv">FASTER_DATABASE__TYPE</span><span class="o">=</span>postgres
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nv">FASTER_DATABASE__HOST</span><span class="o">=</span>prod.db.com
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nv">FASTER_DATABASE__PORT</span><span class="o">=</span><span class="m">5432</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nv">FASTER_DATABASE__USER</span><span class="o">=</span>appuser
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nv">FASTER_DATABASE__PASSWORD</span><span class="o">=</span>secret123
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="nv">FASTER_DATABASE__DATABASE</span><span class="o">=</span>appdb
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="nv">FASTER_DATABASE__DB_SCHEMA</span><span class="o">=</span>myschema<span class="w">  </span><span class="c1"># 可选</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1"># 2. 转换为 DATABASE_URL</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="c1"># 新方式（必须使用）</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://appuser:secret123@prod.db.com:5432/appdb?schema<span class="o">=</span>myschema
 </span></code></pre></div>
-<h3 id="_7">🎯 设计原则<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p><strong>快速转换公式</strong>：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>DATABASE_URL={type}://{user}:{password}@{host}:{port}/{database}?schema={schema}
+</span></code></pre></div></p>
+<h3 id="_6">🎯 设计原则<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <p>本次配置系统升级遵循以下原则：</p>
 <ol>
+<li><strong>简单第一</strong>：移除复杂的向后兼容，只保留一种配置方式</li>
 <li><strong>安全第一</strong>：敏感信息保护 + 生产环境验证</li>
-<li><strong>简单实用</strong>：DATABASE_URL 简化配置</li>
+<li><strong>标准优先</strong>：遵循 12-Factor App 最佳实践</li>
 <li><strong>模块化</strong>：配置分组便于维护</li>
-<li><strong>云原生</strong>：符合 12-Factor App 最佳实践</li>
-<li><strong>向后兼容</strong>：不破坏现有代码</li>
+<li><strong>云原生</strong>：DATABASE_URL 简化云平台部署</li>
 <li><strong>文档完善</strong>：每个功能都有详细文档</li>
 </ol>
-<h3 id="_8">📊 影响范围<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<h3 id="_7">📊 影响范围<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>配置系统</strong>：全面升级，更安全、更灵活</li>
+<li><strong>配置系统</strong>：全面简化，更清晰、更易用</li>
+<li><strong>数据库配置</strong>：只支持 DATABASE_URL 方式</li>
 <li><strong>多租户支持</strong>：Schema 支持使多租户架构更简单</li>
-<li><strong>部署友好</strong>：DATABASE_URL 简化云平台部署</li>
+<li><strong>部署友好</strong>：符合云平台标准，一行配置搞定</li>
 <li><strong>开发体验</strong>：配置分组和 IDE 提示提升开发效率</li>
+<li><strong>维护成本</strong>：代码更简洁，测试用例更少</li>
+</ul>
+<h3 id="_8">🔗 相关资源<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>📋 <a href="../migration-checklist/">完整迁移清单</a></li>
+<li>📖 <a href="../../features/database-url/">DATABASE_URL 文档</a></li>
+<li>📖 <a href="../../features/database-schema/">Schema 支持文档</a></li>
+<li>💬 <a href="https://github.com/mautops/faster-app/discussions">讨论和反馈</a></li>
 </ul>
 </details>
 <hr />
-<h2 id="v0042-2025-10-14">v0.0.42 (2025-10-14)<a class="headerlink" href="#v0042-2025-10-14" title="Permanent link">&para;</a></h2>
+<h2 id="v0041-2025-10-14">v0.0.41 (2025-10-14)<a class="headerlink" href="#v0041-2025-10-14" title="Permanent link">&para;</a></h2>
 <details class="success">
 <summary>v0.0.42 - 文档站建设与设计哲学完善</summary>
 <h3 id="_9">🎉 新增功能<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
@@ -2914,11 +2967,11 @@
 <p>如果你想参与贡献，请阅读 <a href="../../contributing/how-to-contribute/">贡献指南</a>。</p>
 <hr />
 <h2 id="_42">📦 获取最新版本<a class="headerlink" href="#_42" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># 使用 uv</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>uv<span class="w"> </span>add<span class="w"> </span>faster-app<span class="w"> </span>--upgrade
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># 使用 pip</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>faster-app
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># 使用 uv</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>uv<span class="w"> </span>add<span class="w"> </span>faster-app<span class="w"> </span>--upgrade
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># 使用 pip</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>faster-app
 </span></code></pre></div>
 <p>查看 <a href="https://github.com/mautops/faster-app/releases">GitHub Releases</a> 获取详细的发布说明。</p>
 
