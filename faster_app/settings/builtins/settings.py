@@ -34,6 +34,7 @@ class DefaultSettings(BaseSettings):
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "postgres"
     DB_DATABASE: str = "faster_app"
+    DB_SCHEMA: str = "public"  # 需要数据库支持，如 Postgresql
 
     # 日志配置
     LOG_LEVEL: str = "INFO"
@@ -60,6 +61,7 @@ class DefaultSettings(BaseSettings):
                         "user": self.DB_USER,
                         "password": self.DB_PASSWORD,
                         "database": self.DB_DATABASE,
+                        "schema": self.DB_SCHEMA,
                     },
                 },
             },
