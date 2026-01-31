@@ -226,6 +226,16 @@ class DefaultSettings(BaseSettings):
         description="是否启用数据库生命周期",
         validation_alias="ENABLE_DATABASE_LIFESPAN",
     )
+    enable_apps_lifespan: bool = Field(
+        default=False,
+        description="是否启用应用生命周期",
+        validation_alias="ENABLE_APPS_LIFESPAN",
+    )
+    enable_user_lifespans: bool = Field(
+        default=False,
+        description="是否启用用户自定义 lifespan",
+        validation_alias="ENABLE_USER_LIFESPANS",
+    )
 
     # 嵌套配置
     server: ServerConfig = Field(default_factory=ServerConfig, description="服务器配置")
@@ -242,6 +252,8 @@ class DefaultSettings(BaseSettings):
         # 从顶层字段设置嵌套配置（修复 pydantic_settings 嵌套配置无法读取环境变量的问题）
         self.database.url = self.db_url
         self.lifespan.enable_database = self.enable_database_lifespan
+        self.lifespan.enable_apps = self.enable_apps_lifespan
+        self.lifespan.enable_user = self.enable_user_lifespans
 
         if not self.debug:
             # 生产环境检查
