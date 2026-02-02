@@ -77,11 +77,15 @@ class LifespanDiscover(BaseDiscover):
         import inspect
         import os
 
-        lifespans = []
+        lifespans: list[Callable[[FastAPI], AsyncGenerator[None, None]]] = []
 
         for target in self.TARGETS:
             directory = target.get("directory")
             filename = target.get("filename")
+
+            # 类型检查：确保 directory 和 filename 不为 None
+            if directory is None or filename is None:
+                continue
 
             if not os.path.exists(directory):
                 continue

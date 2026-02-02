@@ -2,6 +2,7 @@
 
 import asyncio
 from functools import wraps
+from typing import Any
 
 from tortoise import Tortoise
 
@@ -15,15 +16,15 @@ def with_tortoise_orm():
     3. 使用 asyncio.run 执行
     """
 
-    def decorator(func):
+    def decorator(func: Any) -> Any:
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            async def execute():
+        def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+            async def execute() -> Any:
                 # 获取配置
-                from faster_app.settings import configs
+                from faster_app.settings.builtins.orm import TORTOISE_ORM
 
-                # 初始化 Tortoise ORM
-                await Tortoise.init(config=configs.TORTOISE_ORM)
+                # 初始化 Tortoise ORM - 使用 TORTOISE_ORM 而不是 configs.TORTOISE_ORM
+                await Tortoise.init(config=TORTOISE_ORM)
 
                 try:
                     return await func(self, *args, **kwargs)
@@ -47,10 +48,10 @@ def with_aerich_command():
     3. 使用 asyncio.run 执行
     """
 
-    def decorator(func):
+    def decorator(func: Any) -> Any:
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            async def execute():
+        def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+            async def execute() -> Any:
                 # 使用 aerich Command 作为异步上下文管理器
                 async with self.aerich:
                     return await func(self, *args, **kwargs)

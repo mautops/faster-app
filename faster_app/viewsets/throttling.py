@@ -4,7 +4,9 @@
 提供请求频率控制功能,防止 API 被滥用。
 """
 
+import time
 from abc import ABC, abstractmethod
+from collections import OrderedDict
 from typing import TYPE_CHECKING
 
 from fastapi import Request
@@ -13,6 +15,10 @@ from faster_app.settings import configs
 
 if TYPE_CHECKING:
     from faster_app.viewsets.base import ViewSet
+
+# 全局限流缓存（有界 LRU）
+_cache: OrderedDict[str, list[float]] = OrderedDict()
+_cache_max_size = 10000
 
 
 class BaseThrottle(ABC):
@@ -80,7 +86,6 @@ class SimpleRateThrottle(BaseThrottle):
 
     scope: str = ""
     rate: str = ""  # 格式：'100/hour', '1000/day', '10/minute'
-    _cache: dict[str, list[float]] = {}  # 简单的内存缓存
 
     def __init__(self, rate: str | None = None, scope: str | None = None):
         """
@@ -106,7 +111,7 @@ class SimpleRateThrottle(BaseThrottle):
             (允许的请求数, 时间窗口秒数) 元组
         """
         if not rate:
-            return (None, None)
+            return (0, 0)
 
         num, period = rate.split("/")
         num_requests = int(num)
@@ -138,18 +143,18 @@ class SimpleRateThrottle(BaseThrottle):
 
         # 如果有 scope,从配置中获取速率
         if self.scope:
-            throttle_rates = configs.throttle.rates
+            throttle_rates = configs.THROTTLE.RATES
             if self.scope in throttle_rates:
                 return throttle_rates[self.scope]
 
         # 如果 ViewSet 有 throttle_scope,从配置中获取
         if hasattr(view, "throttle_scope") and view.throttle_scope:
-            throttle_rates = configs.throttle.rates
+            throttle_rates = configs.THROTTLE.RATES
             if view.throttle_scope in throttle_rates:
                 return throttle_rates[view.throttle_scope]
 
         # 使用默认速率
-        throttle_rates = configs.throttle.rates
+        throttle_rates = configs.THROTTLE.RATES
         return throttle_rates.get("default", "")
 
     def get_cache_key(self, request: Request, view: "ViewSet") -> str:
@@ -178,7 +183,6 @@ class SimpleRateThrottle(BaseThrottle):
         Returns:
             True 表示允许请求,False 表示需要限流
         """
-        # 先获取实际的 rate 配置
         rate = self.get_rate(view)
         if not rate:
             return True
@@ -187,29 +191,25 @@ class SimpleRateThrottle(BaseThrottle):
         if num_requests is None:
             return True
 
-        # 获取缓存键
         key = self.get_cache_key(request, view)
-
-        # 获取当前时间戳
-        import time
-
         now = time.time()
-
-        # 从缓存中获取请求历史(Python 的 dict 操作在 GIL 下基本是原子的)
-        # 对于简单的计数器操作,不需要额外的锁
-        if key not in self._cache:
-            self._cache[key] = []
-
-        # 清理过期记录
         cutoff = now - duration
-        self._cache[key] = [timestamp for timestamp in self._cache[key] if timestamp > cutoff]
+
+        # 获取并清理过期记录
+        history = [ts for ts in _cache.get(key, []) if ts > cutoff]
 
         # 检查是否超过限制
-        if len(self._cache[key]) >= num_requests:
+        if len(history) >= num_requests:
+            _cache[key] = history
             return False
 
-        # 记录本次请求
-        self._cache[key].append(now)
+        # 记录本次请求，并限制缓存大小
+        history.append(now)
+        if key in _cache:
+            _cache.move_to_end(key)
+        elif len(_cache) >= _cache_max_size:
+            _cache.popitem(last=False)
+        _cache[key] = history
 
         return True
 
@@ -317,7 +317,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
             速率字符串
         """
         if hasattr(view, "throttle_scope") and view.throttle_scope:
-            throttle_rates = configs.throttle.rates
+            throttle_rates = configs.THROTTLE.RATES
             if view.throttle_scope in throttle_rates:
                 return throttle_rates[view.throttle_scope]
 
@@ -392,10 +392,12 @@ class MultiRateThrottle(BaseThrottle):
         Returns:
             需要等待的秒数
         """
-        wait_times = [
-            throttle.wait() for throttle in self._throttles if throttle.wait() is not None
-        ]
-        return max(wait_times) if wait_times else None
+        wait_times: list[int] = []
+        for throttle in self._throttles:
+            wait = throttle.wait()
+            if wait is not None and wait > 0:
+                wait_times.append(wait)
+        return max(wait_times) if wait_times else 0
 
 
 class NoThrottle(BaseThrottle):

@@ -54,7 +54,7 @@ class DemoViewSet(ModelViewSet):
     """
 
     model = DemoModel
-    schema = DemoResponse
+    schema = DemoResponse  # type: ignore[assignment]
     create_schema = DemoCreate
     update_schema = DemoUpdate
 
@@ -81,7 +81,7 @@ class DemoViewSet(ModelViewSet):
         return self.model.all()
 
     # 钩子函数示例
-    async def perform_create_hook(self, create_data: DemoCreate, request: Request) -> DemoCreate:
+    async def perform_create_hook(self, create_data: DemoCreate, request: Request) -> DemoCreate:  # type: ignore[override]
         """创建前钩子 - 业务逻辑检查"""
         existing = await self.model.filter(name=create_data.name).first()
         if existing:
@@ -89,29 +89,29 @@ class DemoViewSet(ModelViewSet):
         logger.info(f"[创建前] 准备创建记录: {create_data.name}")
         return create_data
 
-    async def perform_create_after_hook(self, instance: DemoModel, request: Request) -> DemoModel:
+    async def perform_create_after_hook(self, instance: DemoModel, request: Request) -> DemoModel:  # type: ignore[override]
         """创建后钩子 - 记录日志"""
         logger.info(f"[创建后] 已创建记录: {instance.id} - {instance.name}")
         return instance
 
-    async def perform_update_hook(
+    async def perform_update_hook(  # type: ignore[override]
         self, instance: DemoModel, update_data: DemoUpdate, request: Request
     ) -> DemoUpdate:
         """更新前钩子"""
         logger.info(f"[更新前] 准备更新记录: {instance.id}")
         return update_data
 
-    async def perform_update_after_hook(self, instance: DemoModel, request: Request) -> DemoModel:
+    async def perform_update_after_hook(self, instance: DemoModel, request: Request) -> DemoModel:  # type: ignore[override]
         """更新后钩子"""
         logger.info(f"[更新后] 已更新记录: {instance.id} - {instance.name}")
         return instance
 
-    async def perform_destroy_hook(self, instance: DemoModel, request: Request) -> bool:
+    async def perform_destroy_hook(self, instance: DemoModel, request: Request) -> bool:  # type: ignore[override]
         """删除前钩子"""
         logger.info(f"[删除前] 准备删除记录: {instance.id}")
         return True
 
-    async def perform_destroy_after_hook(self, instance: DemoModel, request: Request) -> None:
+    async def perform_destroy_after_hook(self, instance: DemoModel, request: Request) -> None:  # type: ignore[override]
         """删除后钩子"""
         logger.info(f"[删除后] 已删除记录: {instance.id}")
 

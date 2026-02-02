@@ -3,6 +3,7 @@ import logging
 import os
 from datetime import UTC, datetime
 from logging.config import dictConfig
+from typing import Any
 
 from faster_app.settings.config import configs
 from faster_app.utils import BASE_DIR
@@ -79,7 +80,7 @@ formatters = {
 
 def _get_log_file_path() -> str:
     """获取日志文件路径"""
-    log_path = configs.log.file_path
+    log_path = configs.LOG.FILE_PATH
     # 如果是相对路径,基于项目根目录
     if not os.path.isabs(log_path):
         log_path = os.path.join(BASE_DIR, log_path)
@@ -94,34 +95,34 @@ def _ensure_log_directory(log_file_path: str) -> None:
 
 
 # 构建 handlers 配置
-handlers_config = {
+handlers_config: dict[str, dict[str, Any]] = {
     "console": {
         "class": "logging.StreamHandler",
-        "level": configs.log.level.upper(),
-        "formatter": configs.log.format.upper(),
+        "level": configs.LOG.LEVEL.upper(),
+        "formatter": configs.LOG.FORMAT.upper(),
         "stream": "ext://sys.stdout",
     },
 }
 
 # 如果启用文件日志,添加文件处理器(按天归档)
-if configs.log.to_file:
+if configs.LOG.TO_FILE:
     log_file_path = _get_log_file_path()
     _ensure_log_directory(log_file_path)
 
     handlers_config["file"] = {
         "()": "logging.handlers.TimedRotatingFileHandler",
-        "level": configs.log.level.upper(),
-        "formatter": configs.log.format.upper(),
+        "level": configs.LOG.LEVEL.upper(),
+        "formatter": configs.LOG.FORMAT.upper(),
         "filename": log_file_path,
         "when": "midnight",  # 每天午夜滚动
         "interval": 1,  # 每 1 天
-        "backupCount": configs.log.backup_count,  # 保留的备份文件数量
+        "backupCount": configs.LOG.BACKUP_COUNT,  # 保留的备份文件数量
         "encoding": "utf-8",
         "utc": False,  # 使用本地时间
     }
 
 # 确定使用的 handlers
-handlers_list = ["console", "file"] if configs.log.to_file else ["console"]
+handlers_list = ["console", "file"] if configs.LOG.TO_FILE else ["console"]
 
 # 定义日志配置
 log_config = {
@@ -132,27 +133,27 @@ log_config = {
     "loggers": {
         "app": {
             "handlers": handlers_list,
-            "level": configs.log.level.upper(),
+            "level": configs.LOG.LEVEL.upper(),
             "propagate": False,
         },
         # 配置 uvicorn 的 logger,避免 uvicorn.error 名称引起误解
         "uvicorn": {
             "handlers": handlers_list,
-            "level": configs.log.level.upper(),
+            "level": configs.LOG.LEVEL.upper(),
             "propagate": False,
         },
         "uvicorn.error": {
             "handlers": handlers_list,
-            "level": configs.log.level.upper(),
+            "level": configs.LOG.LEVEL.upper(),
             "propagate": False,
         },
         "uvicorn.access": {
             "handlers": handlers_list,
-            "level": configs.log.level.upper(),
+            "level": configs.LOG.LEVEL.upper(),
             "propagate": False,
         },
     },
-    "root": {"handlers": handlers_list, "level": configs.log.level.upper()},
+    "root": {"handlers": handlers_list, "level": configs.LOG.LEVEL.upper()},
 }
 
 # 应用配置

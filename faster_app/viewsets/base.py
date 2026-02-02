@@ -5,7 +5,7 @@ ViewSet 基类
 """
 
 from abc import ABC
-from typing import Any, TypeVar
+from typing import Any
 
 from fastapi import Request
 from pydantic import BaseModel
@@ -18,10 +18,10 @@ from faster_app.viewsets.filters import BaseFilterBackend
 from faster_app.viewsets.permissions import AllowAny, BasePermission
 from faster_app.viewsets.throttling import BaseThrottle, NoThrottle
 
-ModelType = TypeVar("ModelType", bound=Model)
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
-ResponseSchemaType = TypeVar("ResponseSchemaType", bound=PydanticModel)
+# 全局组件缓存
+_permission_cache: dict[type, Any] = {}
+_authenticator_cache: dict[type, Any] = {}
+_filter_backend_cache: dict[type, Any] = {}
 
 
 class ViewSet(ABC):  # noqa: B024
@@ -84,9 +84,10 @@ class ViewSet(ABC):  # noqa: B024
         Returns:
             查询集对象(Tortoise QuerySet)
         """
+        assert self.model is not None  # Validated in __init__
         return self.model.all()
 
-    def get_schema(self, action: str) -> type[PydanticModel]:
+    def get_schema(self, action: str) -> type[PydanticModel] | type[BaseModel] | None:
         """
         根据操作获取 Schema 类(可被子类重写)
 
@@ -123,6 +124,7 @@ class ViewSet(ABC):  # noqa: B024
                 # 尝试将字符串转换为 UUID
                 pk = UUID(pk)
 
+        assert self.model is not None  # Validated in __init__
         if prefetch:
             # 如果需要预加载关联,使用查询集方式
             instance = await self.model.filter(id=pk).prefetch_related(*prefetch).first()
@@ -142,45 +144,13 @@ class ViewSet(ABC):  # noqa: B024
             return self.model.__name__
         return "对象"
 
-    # 权限实例缓存(类级别,无状态组件可以复用)
-    _permission_cache: dict[type[BasePermission], BasePermission] = {}
-
     def get_permissions(self) -> list[BasePermission]:
-        """
-        获取权限实例列表(可被子类重写)
-
-        Returns:
-            权限实例列表
-
-        Note:
-            使用缓存避免重复创建无状态的权限实例
-        """
-        result = []
-        for permission_class in self.permission_classes:
-            if permission_class not in self._permission_cache:
-                self._permission_cache[permission_class] = permission_class()
-            result.append(self._permission_cache[permission_class])
-        return result
-
-    # 认证实例缓存(类级别,无状态组件可以复用)
-    _authenticator_cache: dict[type[BaseAuthentication], BaseAuthentication] = {}
+        """获取权限实例列表(可被子类重写)"""
+        return [_permission_cache.setdefault(cls, cls()) for cls in self.permission_classes]
 
     def get_authenticators(self) -> list[BaseAuthentication]:
-        """
-        获取认证实例列表(可被子类重写)
-
-        Returns:
-            认证实例列表
-
-        Note:
-            使用缓存避免重复创建无状态的认证实例
-        """
-        result = []
-        for auth_class in self.authentication_classes:
-            if auth_class not in self._authenticator_cache:
-                self._authenticator_cache[auth_class] = auth_class()
-            result.append(self._authenticator_cache[auth_class])
-        return result
+        """获取认证实例列表(可被子类重写)"""
+        return [_authenticator_cache.setdefault(cls, cls()) for cls in self.authentication_classes]
 
     async def perform_authentication(self, request: Request) -> None:
         """
@@ -252,25 +222,9 @@ class ViewSet(ABC):  # noqa: B024
                     data={"action": action, "object_id": object_id},
                 )
 
-    # 过滤后端实例缓存(类级别,无状态组件可以复用)
-    _filter_backend_cache: dict[type[BaseFilterBackend], BaseFilterBackend] = {}
-
     def get_filter_backends(self) -> list[BaseFilterBackend]:
-        """
-        获取过滤后端实例列表(可被子类重写)
-
-        Returns:
-            过滤后端实例列表
-
-        Note:
-            使用缓存避免重复创建无状态的过滤后端实例
-        """
-        result = []
-        for backend_class in self.filter_backends:
-            if backend_class not in self._filter_backend_cache:
-                self._filter_backend_cache[backend_class] = backend_class()
-            result.append(self._filter_backend_cache[backend_class])
-        return result
+        """获取过滤后端实例列表(可被子类重写)"""
+        return [_filter_backend_cache.setdefault(cls, cls()) for cls in self.filter_backends]
 
     async def filter_queryset(self, queryset: Any, request: Request) -> Any:
         """

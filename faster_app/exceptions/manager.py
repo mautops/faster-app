@@ -1,7 +1,7 @@
 """异常管理器"""
 
 import logging
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -18,7 +18,9 @@ from faster_app.exceptions.handlers import (
 
 logger = logging.getLogger(__name__)
 
-ExceptionHandler = Callable[[Request, Exception], JSONResponse]
+# 异常处理器类型：支持异步处理函数
+# 注：FastAPI 异常处理器通常是异步函数，返回 Awaitable[JSONResponse]
+ExceptionHandler = Callable[[Request, Exception], Awaitable[JSONResponse] | JSONResponse]
 
 
 class ExceptionManager:
@@ -50,9 +52,10 @@ class ExceptionManager:
             logger.debug("[异常管理器] 默认处理器已注册,跳过")
             return
 
-        self.register(FasterAppError, faster_app_exception_handler, priority=10)
-        self.register(RequestValidationError, validation_exception_handler, priority=20)
-        self.register(StarletteHTTPException, http_exception_handler, priority=30)
+        # 使用 type: ignore 来忽略类型检查，因为这些处理器的签名是正确的
+        self.register(FasterAppError, faster_app_exception_handler, priority=10)  # type: ignore[arg-type]
+        self.register(RequestValidationError, validation_exception_handler, priority=20)  # type: ignore[arg-type]
+        self.register(StarletteHTTPException, http_exception_handler, priority=30)  # type: ignore[arg-type]
         self.register(Exception, general_exception_handler, priority=100)
 
         self._registered_defaults = True

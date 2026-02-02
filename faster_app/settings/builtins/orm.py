@@ -1,3 +1,5 @@
+from urllib.parse import parse_qs, urlparse, urlunparse
+
 from tortoise.backends.base.config_generator import expand_db_url
 
 from faster_app.models.discover import ModelDiscover
@@ -22,22 +24,101 @@ apps_config = {
 }
 
 # 完全使用 credentials 配置方式
-# 始终使用 expand_db_url() 解析 URL，确保所有官方支持的参数都被正确处理
-# 这样可以确保 schema、minsize、maxsize、ssl 等参数都能正确传递
-db_url = configs.database.url
+# 处理 schema、连接池等配置
+
+db_url = configs.DATABASE.URL
 
 try:
-    # 使用 expand_db_url 解析 URL
-    # 它会自动：
-    # 1. 从 URL scheme 推断引擎类型
-    # 2. 解析所有查询参数
-    # 3. 根据 DB_LOOKUP["cast"] 进行类型转换
-    # 4. 返回包含 engine 和 credentials 的配置
+    # 处理 DB scheme: 将 'postgresql' 转换为 Tortoise ORM 支持的 'postgres'
+    # Tortoise ORM 中 'postgres' 等价于 'asyncpg'（通过 DB_LOOKUP 映射）
+    url_parts = urlparse(db_url)
+    original_scheme = url_parts.scheme
+    if url_parts.scheme == "postgresql":
+        # 统一转换为 'postgres'（Tortoise ORM 标准方案）
+        new_scheme = "postgres"
+
+        # 重新构建 URL
+        new_url_parts = url_parts._replace(scheme=new_scheme)
+        db_url = urlunparse(new_url_parts)
+        logger.info(f"将 DB scheme 从 '{original_scheme}' 转换为 '{new_scheme}'")
+
+    # 1. 首先使用 expand_db_url 解析基本 URL
     connection_config = expand_db_url(db_url)
 
-    # 获取 schema 参数用于日志记录
-    schema = connection_config.get("credentials", {}).get("schema")
+    # 2. 手动解析 URL 查询参数，处理 schema 和连接池配置
+    url = urlparse(db_url)
+    query_params = parse_qs(url.query)
+
+    credentials = connection_config.get("credentials", {})
     engine = connection_config.get("engine")
+
+    # 3. 处理 schema 配置
+    if "schema" in query_params:
+        credentials["schema"] = query_params["schema"][-1]
+
+    # 4. 处理连接池配置，同时支持 minsize/maxsize 和 min_size/max_size 两种格式
+    if "minsize" in query_params:
+        credentials["minsize"] = int(query_params["minsize"][-1])
+    elif "min_size" in query_params:
+        credentials["minsize"] = int(query_params["min_size"][-1])
+
+    if "maxsize" in query_params:
+        credentials["maxsize"] = int(query_params["maxsize"][-1])
+    elif "max_size" in query_params:
+        credentials["maxsize"] = int(query_params["max_size"][-1])
+
+    # 5. 处理 application_name 配置
+    if "application_name" in query_params:
+        credentials["application_name"] = query_params["application_name"][-1]
+
+    # 6. 处理 SSL 配置并移除 asyncpg 不支持的参数
+    # asyncpg 不接受某些 PostgreSQL URL 参数，需要移除或转换
+    # 不支持的参数列表（会导致 TypeError: connect() got an unexpected keyword argument）
+    unsupported_params = [
+        "sslmode",
+        "channel_binding",
+        "sslcert",
+        "sslkey",
+        "sslrootcert",
+        "sslcrl",
+        "target_session_attrs",
+        "options",
+        "keepalives",
+        "keepalives_idle",
+        "keepalives_interval",
+        "keepalives_count",
+        "tcp_user_timeout",
+        "replication",
+        "gssencmode",
+        "krbsrvname",
+        "gsslib",
+        "service",
+        "passfile",
+    ]
+
+    # 提取 sslmode 用于转换
+    sslmode = credentials.pop("sslmode", None)
+    if sslmode is None and "sslmode" in query_params:
+        sslmode = query_params["sslmode"][-1]
+
+    # 移除所有不支持的参数
+    for param in unsupported_params:
+        credentials.pop(param, None)
+
+    # 将 sslmode 转换为 asyncpg 支持的 ssl 参数
+    if sslmode:
+        if sslmode == "disable":
+            credentials["ssl"] = False
+        elif sslmode in ("require", "prefer", "allow"):
+            credentials["ssl"] = True
+        elif sslmode in ("verify-ca", "verify-full"):
+            # 对于严格的 SSL 验证，使用默认 SSL 上下文
+            import ssl
+
+            credentials["ssl"] = ssl.create_default_context()
+
+    # 获取 schema 参数用于日志记录
+    schema = credentials.get("schema")
 
     logger.info(
         f"使用 credentials 配置方式初始化数据库连接，"
@@ -56,7 +137,7 @@ except Exception as e:
         f"如果使用了 schema 等特殊参数，可能无法正常工作。"
     )
     TORTOISE_ORM = {
-        "connections": {"default": db_url},
+        "connections": {"default": {"db_url": db_url}},
         "apps": apps_config,
     }
 

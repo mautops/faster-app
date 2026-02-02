@@ -90,11 +90,11 @@ class IsAdminUser(BasePermission):
         # 检查用户是否有 is_admin 属性或 role 属性
         user = request.state.user
         if hasattr(user, "is_admin"):
-            return user.is_admin
+            return bool(user.is_admin)
         if hasattr(user, "role"):
-            return user.role == "admin"
+            return bool(user.role == "admin")
         if hasattr(user, "is_superuser"):
-            return user.is_superuser
+            return bool(user.is_superuser)
 
         return False
 
@@ -148,9 +148,9 @@ class IsOwner(BasePermission):
 
         # 检查对象的 owner_id 或 user_id 字段
         if hasattr(obj, "owner_id"):
-            return obj.owner_id == user_id
+            return bool(obj.owner_id == user_id)
         if hasattr(obj, "user_id"):
-            return obj.user_id == user_id
+            return bool(obj.user_id == user_id)
 
         # 检查对象的 owner 或 user 关联
         if hasattr(obj, "owner"):
@@ -207,8 +207,8 @@ class IsOwnerOrReadOnly(BasePermission):
 
         # 检查是否是所有者
         if hasattr(obj, "owner_id"):
-            return obj.owner_id == user_id
+            return bool(obj.owner_id == user_id)
         if hasattr(obj, "user_id"):
-            return obj.user_id == user_id
+            return bool(obj.user_id == user_id)
 
         return False

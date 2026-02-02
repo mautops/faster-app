@@ -250,10 +250,11 @@ class FieldFilter(BaseFilterBackend):
                 filter_kwargs[f"{field_name}__lte"] = param_value
             elif filter_type == "in":
                 # 支持逗号分隔的多个值
-                values = [v.strip() for v in param_value.split(",")]
-                filter_kwargs[f"{field_name}__in"] = values
+                values: list[str] = [v.strip() for v in param_value.split(",")]
+                filter_kwargs[f"{field_name}__in"] = values  # type: ignore[assignment]
             elif filter_type == "isnull":
-                filter_kwargs[f"{field_name}__isnull"] = param_value.lower() == "true"
+                is_null: bool = param_value.lower() == "true"
+                filter_kwargs[f"{field_name}__isnull"] = is_null  # type: ignore[assignment]
             else:
                 # 默认使用精确匹配
                 filter_kwargs[field_name] = param_value
@@ -264,46 +265,7 @@ class FieldFilter(BaseFilterBackend):
         return queryset
 
 
-class DjangoFilterBackend(BaseFilterBackend):
-    """
-    Django Filter 风格的过滤后端
+class DjangoFilterBackend(FieldFilter):
+    """Django Filter 风格的过滤后端（FieldFilter 的别名）"""
 
-    支持类似 Django Filter 的复杂过滤条件。
-    这是一个简化版本,实际使用时可以集成 django-filter 库。
-    """
-
-    def __init__(self, filterset_class: Any = None):
-        """
-        初始化 Django Filter 后端
-
-        Args:
-            filterset_class: FilterSet 类(可选,如果使用 django-filter)
-        """
-        self.filterset_class = filterset_class
-
-    async def filter_queryset(self, request: Request, queryset: Any, view: "ViewSet") -> Any:
-        """
-        执行 Django Filter 过滤
-
-        Args:
-            request: FastAPI 请求对象
-            queryset: 查询集对象
-            view: ViewSet 实例
-
-        Returns:
-            过滤后的查询集
-
-        Note:
-            这是一个简化实现,实际使用时可以集成 django-filter 库
-        """
-        # 如果提供了 filterset_class,使用它
-        if self.filterset_class:
-            # TODO: 集成 django-filter
-            # from django_filters import rest_framework as filters
-            # filterset = self.filterset_class(request.query_params, queryset=queryset)
-            # return filterset.qs
-            pass
-
-        # 否则使用简单的字段过滤
-        filter_backend = FieldFilter()
-        return await filter_backend.filter_queryset(request, queryset, view)
+    pass

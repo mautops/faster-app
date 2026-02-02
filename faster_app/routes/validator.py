@@ -62,12 +62,13 @@ class RouteValidator:
             if isinstance(route, (Route, APIRoute)):
                 path = prefix + route.path
                 # 获取 HTTP 方法
+                methods: set[str]
                 if isinstance(route, APIRoute):
                     # FastAPI 的 APIRoute 有 methods 属性
                     methods = route.methods if hasattr(route, "methods") else set()
                 else:
                     # Starlette 的 Route
-                    methods = route.methods if hasattr(route, "methods") else {"GET"}
+                    methods = route.methods if hasattr(route, "methods") and route.methods else {"GET"}
 
                 # 如果没有方法, 跳过 (可能是 WebSocket 或其他类型)
                 if not methods:

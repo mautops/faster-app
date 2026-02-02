@@ -30,17 +30,18 @@ class ModelDiscover(BaseDiscover):
         },
     ]
 
-    def discover(self) -> dict[str, list[str]]:
+    def discover(self) -> dict[str, list[str]]:  # type: ignore[override]
         """
         发现模型模块路径
         返回按app分组的模块路径字典, 用于Tortoise ORM的apps配置
         """
-        apps_models = {}
+        apps_models: dict[str, list[str]] = {}
 
         # 扫描 TARGETS 中的目录和文件
         for target in self.TARGETS:
+            directory = target.get("directory", "")
             files = self.walk(
-                directory=target.get("directory"),
+                directory=directory,
                 filename=target.get("filename"),
                 skip_files=target.get("skip_files"),
                 skip_dirs=target.get("skip_dirs"),

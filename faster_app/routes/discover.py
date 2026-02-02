@@ -13,24 +13,8 @@ logger = logging.getLogger(__name__)
 class RoutesDiscover(BaseDiscover):
     INSTANCE_TYPE = APIRouter
     TARGETS = [
-        {
-            "directory": "apps",
-            "filename": None,
-            "skip_dirs": ["__pycache__"],
-            "skip_files": [],
-        },
-        {
-            "directory": f"{BASE_DIR}/routes/builtins",
-            "filename": None,
-            "skip_dirs": ["__pycache__"],
-            "skip_files": [],
-        },
-        # {
-        #     "directory": f"{BASE_DIR}/apps",
-        #     "filename": None,
-        #     "skip_dirs": ["__pycache__"],
-        #     "skip_files": [],
-        # },
+        {"directory": "apps", "skip_dirs": ["__pycache__"]},
+        {"directory": f"{BASE_DIR}/routes/builtins", "skip_dirs": ["__pycache__"]},
     ]
 
     def import_and_extract_instances(self, file_path: str, module_name: str) -> list[APIRouter]:
@@ -38,7 +22,7 @@ class RoutesDiscover(BaseDiscover):
         导入模块并提取路由实例
         对于路由, 我们查找已经实例化的 APIRouter 对象
         """
-        instances = []
+        instances: list[APIRouter] = []
 
         try:
             # 动态导入模块
@@ -109,7 +93,7 @@ class RoutesDiscover(BaseDiscover):
             except RouteConflictError as e:
                 logger.error(str(e))
                 # 在开发模式下允许继续运行, 但记录错误
-                if configs.debug:
+                if configs.DEBUG:
                     logger.warning("开发模式下允许路由冲突, 应用将继续启动")
                 else:
                     # 生产模式下抛出异常

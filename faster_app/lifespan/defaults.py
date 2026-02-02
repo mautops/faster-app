@@ -67,11 +67,11 @@ def get_lifespan(
     # 注册内置 lifespan (优先级: 数据库 < 应用 < 用户自定义)
     # 参数优先级高于配置
     if enable_database is None:
-        enable_database = configs.lifespan.enable_database
+        enable_database = configs.LIFESPAN.ENABLE_DATABASE
     if enable_apps is None:
-        enable_apps = configs.lifespan.enable_apps
+        enable_apps = configs.LIFESPAN.ENABLE_APPS
     if enable_user is None:
-        enable_user = configs.lifespan.enable_user
+        enable_user = configs.LIFESPAN.ENABLE_USER
 
     manager.register(
         "database",
@@ -99,7 +99,7 @@ def get_lifespan(
                 priority=100 + idx,  # 用户 lifespan 优先级最低
             )
 
-    return manager.build()
+    return manager.build()  # type: ignore[return-value]
 
 
 @asynccontextmanager
@@ -123,5 +123,5 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         Application registry is stored in app.state.app_registry
     """
     combined = get_lifespan()
-    async with combined(app):
+    async with combined(app):  # type: ignore[attr-defined]
         yield

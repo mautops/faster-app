@@ -29,6 +29,8 @@ def custom_openapi(app: FastAPI):
     )
 
     # 添加安全方案
+    if "components" not in openapi_schema:
+        openapi_schema["components"] = {}
     openapi_schema["components"]["securitySchemes"] = {
         "Bearer": {
             "type": "http",
@@ -58,9 +60,9 @@ def create_app() -> FastAPI:
         Uses singleton pattern via get_app() to ensure single instance
     """
     app = FastAPI(
-        title=configs.project_name,
-        version=configs.version,
-        debug=configs.debug,
+        title=configs.PROJECT_NAME,
+        version=configs.VERSION,
+        debug=configs.DEBUG,
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,
@@ -85,7 +87,7 @@ def create_app() -> FastAPI:
         )
 
     # 添加路由 (启用路由冲突检测)
-    routes = RoutesDiscover().discover(validate=configs.validate_routes)
+    routes = RoutesDiscover().discover(validate=configs.VALIDATE_ROUTES)
     route_count = len(routes)
     for route in routes:
         app.include_router(route)
@@ -98,10 +100,10 @@ def create_app() -> FastAPI:
     get_manager().apply(app)
 
     # 设置自定义 OpenAPI schema(添加 JWT Bearer 安全方案)
-    app.openapi = lambda: custom_openapi(app)
+    app.openapi = lambda: custom_openapi(app)  # type: ignore[method-assign]
 
     logger.info(
-        f"[应用初始化] 操作: 应用创建 应用名: {configs.project_name} 版本: {configs.version} 状态: 完成"
+        f"[应用初始化] 操作: 应用创建 应用名: {configs.PROJECT_NAME} 版本: {configs.VERSION} 状态: 完成"
     )
 
     return app
@@ -118,5 +120,5 @@ def get_app() -> FastAPI:
         FastAPI application instance
     """
     if not hasattr(get_app, "_app"):
-        get_app._app = create_app()
-    return get_app._app
+        get_app._app = create_app()  # type: ignore[attr-defined]
+    return get_app._app  # type: ignore[attr-defined,no-any-return]

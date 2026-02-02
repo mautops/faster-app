@@ -5,16 +5,17 @@ Lifespan 组合器
 """
 
 from collections.abc import AsyncGenerator, Callable
-from contextlib import AsyncExitStack, asynccontextmanager
+from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 
 from fastapi import FastAPI
 
 __all__ = ["combine_lifespans"]
 
+# Lifespan 函数类型
+LifespanFunc = Callable[[FastAPI], AbstractAsyncContextManager[None]]
 
-def combine_lifespans(
-    *lifespans: Callable[[FastAPI], AsyncGenerator[None, None]],
-) -> Callable[[FastAPI], AsyncGenerator[None, None]]:
+
+def combine_lifespans(*lifespans: LifespanFunc) -> LifespanFunc:
     """组合多个 lifespan 上下文管理器
 
     将多个独立的 lifespan 函数组合成一个, 按顺序执行启动和关闭逻辑。

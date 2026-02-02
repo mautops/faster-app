@@ -1,4 +1,4 @@
-.PHONY: clean build upload image docs-serve docs-build docs-deploy docs-clean
+.PHONY: clean build upload image docs-serve docs-build docs-deploy docs-clean test test-cov test-verbose lint lint-fix format typecheck
 
 clean:
 	@echo "🧹 清理构建产物和临时文件..."
@@ -37,3 +37,26 @@ docs-deploy:
 
 docs-clean:
 	rm -rf site
+
+# 测试相关命令
+test:
+	uv run pytest tests/
+
+test-cov:
+	uv run pytest tests/ --cov=faster_app --cov-report=html --cov-report=term
+
+test-verbose:
+	uv run pytest tests/ -v
+
+# 代码质量相关命令
+lint:
+	uv run ruff check faster_app/
+
+lint-fix:
+	uv run ruff check --fix faster_app/
+
+format:
+	uv run ruff format faster_app/
+
+typecheck:
+	uv run mypy faster_app/

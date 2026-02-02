@@ -10,7 +10,7 @@
 3. 动态启用/禁用：通过 enabled 字段控制中间件是否加载
 4. 配置来自 Settings：所有敏感配置从配置文件读取
 
-优先级说明：
+优先级说明（参见 MiddlewarePriority 枚举）：
 - 1-10: 日志和监控（最外层，捕获一切）
 - 11-20: 安全相关（CORS, TrustedHost, SecurityHeaders）
 - 21-30: 压缩和优化
@@ -21,41 +21,35 @@
 响应流：路由处理器 -> ... -> 3 -> 2 -> 1
 """
 
+from faster_app.middleware.discover import PRIORITY_CORS, PRIORITY_GZIP, PRIORITY_TRUSTED_HOST
 from faster_app.settings import configs
 
 # 中间件配置列表
-
 MIDDLEWARES = [
-    # 安全相关
     {
         "class": "fastapi.middleware.cors.CORSMiddleware",
-        "priority": 12,  # CORS 处理
+        "priority": PRIORITY_CORS,
         "enabled": True,
         "kwargs": {
-            "allow_origins": configs.middleware.cors.allow_origins,
-            "allow_credentials": configs.middleware.cors.allow_credentials,
-            "allow_methods": configs.middleware.cors.allow_methods,
-            "allow_headers": configs.middleware.cors.allow_headers,
-            "expose_headers": configs.middleware.cors.expose_headers,
-            "max_age": configs.middleware.cors.max_age,
+            "allow_origins": configs.MIDDLEWARE.CORS.ALLOW_ORIGINS,
+            "allow_credentials": configs.MIDDLEWARE.CORS.ALLOW_CREDENTIALS,
+            "allow_methods": configs.MIDDLEWARE.CORS.ALLOW_METHODS,
+            "allow_headers": configs.MIDDLEWARE.CORS.ALLOW_HEADERS,
+            "expose_headers": configs.MIDDLEWARE.CORS.EXPOSE_HEADERS,
+            "max_age": configs.MIDDLEWARE.CORS.MAX_AGE,
         },
     },
     {
         "class": "fastapi.middleware.trustedhost.TrustedHostMiddleware",
-        "priority": 13,  # 主机名验证
-        "enabled": configs.middleware.trusted_host.enabled,
-        "kwargs": {
-            "allowed_hosts": configs.middleware.trusted_host.hosts,
-        },
+        "priority": PRIORITY_TRUSTED_HOST,
+        "enabled": configs.MIDDLEWARE.TRUSTED_HOST.ENABLED,
+        "kwargs": {"allowed_hosts": configs.MIDDLEWARE.TRUSTED_HOST.HOSTS},
     },
-    # 压缩和优化
     {
         "class": "fastapi.middleware.gzip.GZipMiddleware",
-        "priority": 21,  # GZip 压缩
-        "enabled": configs.middleware.gzip.enabled,
-        "kwargs": {
-            "minimum_size": configs.middleware.gzip.minimum_size,
-        },
+        "priority": PRIORITY_GZIP,
+        "enabled": configs.MIDDLEWARE.GZIP.ENABLED,
+        "kwargs": {"minimum_size": configs.MIDDLEWARE.GZIP.MINIMUM_SIZE},
     },
 ]
 
@@ -67,21 +61,21 @@ def _log_middleware_info():
     """记录中间件配置信息"""
     from faster_app.settings import logger
 
-    if configs.debug:
+    if configs.DEBUG:
         logger.info("🔧 [开发模式] 中间件使用宽松的安全配置")
     else:
         # 生产环境提示
-        cors_cfg = configs.middleware.cors
-        if "*" in cors_cfg.allow_origins:
+        cors_cfg = configs.MIDDLEWARE.CORS
+        if "*" in cors_cfg.ALLOW_ORIGINS:
             logger.warning("⚠️  [安全提示] 生产环境 CORS 允许所有域名访问，建议指定明确的域名列表")
 
-        trusted_cfg = configs.middleware.trusted_host
-        if not trusted_cfg.enabled:
+        trusted_cfg = configs.MIDDLEWARE.TRUSTED_HOST
+        if not trusted_cfg.ENABLED:
             logger.warning(
                 "⚠️  [安全提示] 生产环境建议启用 TrustedHostMiddleware "
                 "（设置 TRUSTED_HOST_ENABLED=true）"
             )
-        elif "*" in trusted_cfg.hosts:
+        elif "*" in trusted_cfg.HOSTS:
             logger.warning("⚠️  [安全提示] TrustedHost 允许所有主机名，建议指定明确的主机名列表")
 
 

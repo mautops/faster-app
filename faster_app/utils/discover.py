@@ -8,34 +8,22 @@ logger = logging.getLogger(__name__)
 
 
 class BaseDiscover:
-    """Base class for auto-discovery of instances in the application.
+    """
+    自动发现基类
 
-    This class provides the core functionality for scanning directories and files,
-    importing modules, and extracting instances of a specific type.
-
-    Attributes:
-        INSTANCE_TYPE: The type of instances to discover and extract
-        TARGETS: List of directory/file configurations to scan
+    扫描目录和文件，导入模块，提取指定类型的实例。
     """
 
     INSTANCE_TYPE: type | None = None
     TARGETS: list[dict[str, Any]] = []
 
     def discover(self) -> list[Any]:
-        """
-        Automatically scan directories and files defined in TARGETS,
-        and extract all instances of INSTANCE_TYPE.
-
-        Returns:
-            List of discovered instances
-        """
-        instances = []
-
-        # 扫描 TARGETS 中的目录和文件
+        """扫描 TARGETS 中的目录和文件，提取所有 INSTANCE_TYPE 实例"""
+        instances: list[Any] = []
         for target in self.TARGETS:
             instances.extend(
                 self.scan(
-                    directory=target.get("directory"),
+                    directory=target.get("directory", ""),
                     filename=target.get("filename"),
                     skip_files=target.get("skip_files"),
                     skip_dirs=target.get("skip_dirs"),
@@ -64,7 +52,7 @@ class BaseDiscover:
         """
         skip_files = skip_files or []
         skip_dirs = skip_dirs or []
-        results = []
+        results: list[str] = []
 
         if not os.path.exists(directory) or not os.path.isdir(directory):
             return results
@@ -89,41 +77,18 @@ class BaseDiscover:
         skip_files: list[str] | None = None,
         skip_dirs: list[str] | None = None,
     ) -> list[Any]:
-        """
-        Generic scanning method to discover instances in Python files.
-
-        Args:
-            directory: The directory path to scan
-            filename: Optional specific filename to scan (None scans all .py files)
-            skip_files: List of filenames to skip
-            skip_dirs: List of directory names to skip
-
-        Returns:
-            List of discovered instances
-        """
-        skip_files = skip_files or []
-        skip_dirs = skip_dirs or []
-        instances = []
-
-        files = self.walk(directory, filename, skip_files, skip_dirs)
-
+        """扫描目录中的 Python 文件，提取实例"""
+        instances: list[Any] = []
+        files = self.walk(directory, filename, skip_files or [], skip_dirs or [])
         for file in files:
             instances.extend(self.import_and_extract_instances(file, file.split("/")[-1][:-3]))
-
         return instances
 
     def import_and_extract_instances(self, file_path: str, module_name: str) -> list[Any]:
-        """
-        Import a module and extract instances of INSTANCE_TYPE.
-
-        Args:
-            file_path: Absolute path to the Python file
-            module_name: Name to use for the module
-
-        Returns:
-            List of extracted instances
-        """
-        instances = []
+        """导入模块并提取 INSTANCE_TYPE 实例"""
+        instances: list[Any] = []
+        if self.INSTANCE_TYPE is None:
+            return instances
 
         try:
             # 动态导入模块
@@ -139,7 +104,7 @@ class BaseDiscover:
                 if (
                     inspect.isclass(obj)
                     and issubclass(obj, self.INSTANCE_TYPE)
-                    and obj != self.INSTANCE_TYPE
+                    and obj is not self.INSTANCE_TYPE
                     and not inspect.isabstract(obj)  # 跳过抽象类
                 ):
                     try:

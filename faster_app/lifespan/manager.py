@@ -1,15 +1,13 @@
 """Lifespan 管理器"""
 
-from collections.abc import AsyncGenerator, Callable
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI
 
-from faster_app.lifespan.combine import combine_lifespans
+from faster_app.lifespan.combine import LifespanFunc, combine_lifespans
 from faster_app.settings import logger
-
-LifespanFunc = Callable[[FastAPI], AsyncGenerator[None, None]]
 
 
 class LifespanManager:
@@ -17,7 +15,6 @@ class LifespanManager:
 
     def __init__(self) -> None:
         self._lifespans: dict[str, dict[str, Any]] = {}
-        self._order: list[str] = []
 
     def register(
         self,
@@ -30,13 +27,7 @@ class LifespanManager:
         """注册 lifespan 函数"""
         if name in self._lifespans:
             raise ValueError(f"Lifespan '{name}' 已注册")
-
-        self._lifespans[name] = {
-            "func": lifespan,
-            "enabled": enabled,
-            "priority": priority,
-        }
-        self._order.append(name)
+        self._lifespans[name] = {"func": lifespan, "enabled": enabled, "priority": priority}
         logger.debug(f"[Lifespan] 注册: {name} 启用: {enabled} 优先级: {priority}")
 
     def enable(self, name: str) -> None:
@@ -57,7 +48,7 @@ class LifespanManager:
 
     def is_enabled(self, name: str) -> bool:
         """检查 lifespan 是否启用"""
-        return self._lifespans.get(name, {}).get("enabled", False)
+        return bool(self._lifespans.get(name, {}).get("enabled", False))
 
     def list_enabled(self) -> list[str]:
         """列出所有启用的 lifespan(按优先级排序)"""
@@ -89,7 +80,6 @@ class LifespanManager:
     def clear(self) -> None:
         """清空所有注册的 lifespan"""
         self._lifespans.clear()
-        self._order.clear()
         logger.debug("[Lifespan] 清空所有注册")
 
 

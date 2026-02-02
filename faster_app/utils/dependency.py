@@ -146,7 +146,7 @@ class DependencyAnalyzer:
         Returns:
             循环依赖列表, 每个循环是一个应用名称列表
         """
-        cycles = []
+        cycles: list[list[str]] = []
         visited = set()
         rec_stack = set()
 

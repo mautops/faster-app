@@ -68,7 +68,7 @@ async def faster_app_exception_handler(request: Request, exc: FasterAppError) ->
         标准化的错误响应
     """
     # 在生产环境中隐藏详细错误信息
-    include_detail = configs.debug
+    include_detail = configs.DEBUG
 
     logger.warning(
         f"[异常处理] {exc.__class__.__name__} 消息: {exc.message} "
@@ -109,7 +109,7 @@ async def validation_exception_handler(
     logger.warning(f"[请求验证] 验证失败 详情: {error_detail}")
 
     # 在开发环境中显示详细错误信息
-    extra = {"errors": errors} if configs.debug else None
+    extra = {"errors": errors} if configs.DEBUG else None
 
     return _create_error_response(
         code=422,
@@ -117,7 +117,7 @@ async def validation_exception_handler(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         error_detail=error_detail,
         extra=extra,
-        include_detail=configs.debug,
+        include_detail=configs.DEBUG,
     )
 
 
@@ -163,7 +163,7 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
     # 在开发环境中显示详细错误信息
     extra = None
     error_detail = None
-    if configs.debug:
+    if configs.DEBUG:
         error_detail = str(exc)
         extra = {"traceback": traceback.format_exc()}
 
@@ -173,5 +173,5 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         error_detail=error_detail,
         extra=extra,
-        include_detail=configs.debug,
+        include_detail=configs.DEBUG,
     )

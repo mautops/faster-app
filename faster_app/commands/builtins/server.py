@@ -39,12 +39,16 @@ class ServerOperations(BaseCommand):
         """
         try:
             spec = importlib.util.spec_from_file_location("user_main", user_main_path)
+            if spec is None or spec.loader is None:
+                console.print("[bold yellow]⚠️  无法加载用户的 main.py[/bold yellow]")
+                return False
+
             user_main = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(user_main)
 
             if hasattr(user_main, "app"):
                 console.print("[bold green]⚙️  使用用户自定义的 FastAPI 应用实例[/bold green]")
-                app_target = "main:app" if configs.debug else user_main.app
+                app_target = "main:app" if configs.DEBUG else user_main.app
                 self._run_server(app_target)
                 return True
             elif hasattr(user_main, "main") and callable(user_main.main):
@@ -67,7 +71,7 @@ class ServerOperations(BaseCommand):
             app_target: 应用实例或工厂函数路径
             factory: 是否使用工厂模式
         """
-        reload = configs.debug
+        reload = configs.DEBUG
 
         # 生产模式下的特殊处理
         if not reload:
@@ -87,6 +91,10 @@ class ServerOperations(BaseCommand):
                             spec = importlib.util.spec_from_file_location(
                                 "user_main", os.path.join(os.getcwd(), "main.py")
                             )
+                            if spec is None or spec.loader is None:
+                                console.print("[bold red]❌ 无法加载 main.py[/bold red]")
+                                return
+
                             module = importlib.util.module_from_spec(spec)
                             spec.loader.exec_module(module)
                             app_target = getattr(module, attr_name)
@@ -96,8 +104,8 @@ class ServerOperations(BaseCommand):
         uvicorn.run(
             app_target,
             factory=factory,
-            host=configs.server.host,
-            port=configs.server.port,
+            host=configs.SERVER.HOST,
+            port=configs.SERVER.PORT,
             reload=reload,
             log_config=log_config,
         )

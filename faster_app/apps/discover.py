@@ -35,7 +35,7 @@ class AppLifecycleDiscover(BaseDiscover):
         # },
     ]
 
-    def discover(self) -> AppRegistry:
+    def discover(self) -> AppRegistry:  # type: ignore[override]
         """发现并注册所有应用生命周期
 
         Returns:

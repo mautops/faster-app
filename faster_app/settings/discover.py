@@ -29,9 +29,9 @@ class SettingsDiscover(BaseDiscover):
         },
     ]
 
-    def merge(self) -> BaseSettings:
+    def merge(self) -> DefaultSettings:
         """合并配置: 使用用户配置覆盖内置配置, 同时保留DefaultSettings的方法和动态逻辑"""
-        configs = self.discover()
+        configs: list[BaseSettings] = self.discover()
 
         # 分离默认配置和用户配置
         default_settings = DefaultSettings()
@@ -39,7 +39,7 @@ class SettingsDiscover(BaseDiscover):
 
         for config in configs:
             if type(config).__name__ == "DefaultSettings":
-                default_settings = config
+                default_settings = config  # type: ignore[assignment]
             else:
                 user_settings.append(config)
 
@@ -70,10 +70,8 @@ class SettingsDiscover(BaseDiscover):
         # 有新字段, 需要动态创建类
         from typing import Any
 
-        from pydantic import ConfigDict
-
         # 为新字段创建类型注解
-        new_annotations = {}
+        new_annotations: dict[str, object] = {}
         for field in new_fields:
             value = user_overrides[field]
             if value is not None:
@@ -89,7 +87,7 @@ class SettingsDiscover(BaseDiscover):
                 new_annotations[field] = Any | None
 
         # 创建新的模型配置, 允许额外字段
-        model_config = ConfigDict(extra="allow", env_file=".env", env_file_encoding="utf-8")
+        model_config: dict[str, object] = {"extra": "allow", "env_file": ".env", "env_file_encoding": "utf-8"}
 
         # 动态创建新的配置类
         dynamic_settings_class = type(
@@ -108,4 +106,4 @@ class SettingsDiscover(BaseDiscover):
         # 创建实例 - 合并默认值和用户覆盖值
         merged_values = {**default_values, **user_overrides}
         merged_settings = dynamic_settings_class(**merged_values)
-        return merged_settings
+        return merged_settings  # type: ignore[no-any-return]

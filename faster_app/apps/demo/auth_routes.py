@@ -24,7 +24,7 @@ class AdminDemoViewSet(ModelViewSet):
     """
 
     model = DemoModel
-    schema = DemoResponse
+    schema = DemoResponse  # type: ignore[assignment]
     create_schema = DemoCreate
     update_schema = DemoUpdate
 

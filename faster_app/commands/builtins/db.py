@@ -102,7 +102,7 @@ class DBOperations(BaseCommand):
             此操作将删除所有数据, 请谨慎使用！仅在开发环境中使用！
         """
         # 安全检查:仅在调试模式下允许
-        if not configs.debug:
+        if not configs.DEBUG:
             console.print("[bold red]❌ 此操作仅允许在开发环境中执行 (DEBUG=True)![/bold red]")
             return
 

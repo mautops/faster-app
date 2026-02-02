@@ -5,10 +5,21 @@
 """
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any
 
 from fastapi import Request
-from fastapi.security import HTTPBearer
+
+
+@dataclass
+class JWTUser:
+    """JWT 认证用户"""
+
+    id: Any
+    username: str | None = None
+    is_admin: bool = False
+    is_superuser: bool = False
+    role: str | None = None
 
 
 class BaseAuthentication(ABC):
@@ -48,82 +59,45 @@ class NoAuthentication(BaseAuthentication):
 
 
 class JWTAuthentication(BaseAuthentication):
-    """
-    JWT 认证
-
-    从 Authorization header 中提取 JWT token 并验证。
-    """
+    """JWT 认证 - 从 Authorization header 中提取 JWT token 并验证"""
 
     def __init__(self, secret_key: str | None = None, algorithm: str = "HS256"):
-        """
-        初始化 JWT 认证
-
-        Args:
-            secret_key: JWT 密钥,如果为 None 则从配置中读取
-            algorithm: JWT 算法,默认 HS256
-        """
         self.secret_key = secret_key
         self.algorithm = algorithm
-        self.security = HTTPBearer()
 
     async def authenticate(self, request: Request) -> tuple[Any, str] | None:
-        """
-        从 JWT token 中认证用户
-
-        Args:
-            request: FastAPI 请求对象
-
-        Returns:
-            (user, token) 元组,如果认证失败返回 None
-        """
+        """从 JWT token 中认证用户"""
         try:
             import jwt
 
             from faster_app.settings import configs
 
-            # 从 Authorization header 获取 token
             authorization = request.headers.get("Authorization")
-            if not authorization:
+            if not authorization or not authorization.startswith("Bearer "):
                 return None
 
-            # 提取 Bearer token
-            if authorization.startswith("Bearer "):
-                token = authorization[7:]
-            else:
-                return None
-
-            # 验证 token
-            secret_key = self.secret_key or configs.jwt.secret_key
+            token = authorization[7:]
+            secret_key = self.secret_key or configs.JWT.SECRET_KEY
 
             try:
                 payload = jwt.decode(token, secret_key, algorithms=[self.algorithm])
-            except jwt.ExpiredSignatureError:
-                return None
-            except jwt.InvalidTokenError:
+            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
                 return None
 
-            # 从 payload 中获取用户信息
-            # 这里假设 payload 中包含 user_id 或 user 信息
-            # 实际使用时需要根据 JWT payload 结构调整
             user_id = payload.get("user_id") or payload.get("sub")
             if not user_id:
                 return None
 
-            # 创建用户对象(简化版,实际应该从数据库查询)
-            # 这里返回一个简单的用户对象,实际使用时需要根据需求调整
-            user_data = {
-                "id": user_id,
-                "username": payload.get("username"),
-                "is_admin": payload.get("is_admin", False),
-                "is_superuser": payload.get("is_superuser", False),
-                "role": payload.get("role"),
-            }
-            user = type("User", (), user_data)()
-
+            user = JWTUser(
+                id=user_id,
+                username=payload.get("username"),
+                is_admin=payload.get("is_admin", False),
+                is_superuser=payload.get("is_superuser", False),
+                role=payload.get("role"),
+            )
             return (user, token)
 
         except ImportError:
-            # 如果没有安装 PyJWT,返回 None
             return None
         except Exception:
             return None

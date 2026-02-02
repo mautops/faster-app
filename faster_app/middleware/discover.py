@@ -10,7 +10,14 @@ from faster_app.settings import logger
 from faster_app.utils import BASE_DIR
 from faster_app.utils.discover import BaseDiscover
 
-# 模块导入缓存(避免重复导入)
+# 中间件优先级常量
+# 1-10: 日志和监控, 11-20: 安全, 21-30: 优化, 31+: 业务
+PRIORITY_CORS = 12
+PRIORITY_TRUSTED_HOST = 13
+PRIORITY_GZIP = 21
+PRIORITY_DEFAULT = 999
+
+# 模块导入缓存
 _module_cache: dict[str, Any] = {}
 
 
@@ -53,7 +60,7 @@ class MiddlewareDiscover(BaseDiscover):
         Returns:
             提取到的中间件配置列表
         """
-        instances = []
+        instances: list[dict[str, Any]] = []
 
         try:
             # 动态导入模块
@@ -114,14 +121,14 @@ class MiddlewareDiscover(BaseDiscover):
 
                     # 保留优先级信息（如果有）
                     if "priority" not in instance:
-                        instance["priority"] = 999  # 默认优先级（最后执行）
+                        instance["priority"] = PRIORITY_DEFAULT
 
                     middlewares.append(instance)
                 except (ValueError, ImportError, AttributeError) as e:
                     logger.warning(f"Failed to import class {instance['class']}: {e}")
 
         # 按优先级排序（数字越小越先执行）
-        middlewares.sort(key=lambda x: x.get("priority", 999))
+        middlewares.sort(key=lambda x: x.get("priority", PRIORITY_DEFAULT))
 
         # 记录中间件加载顺序
         if middlewares:
