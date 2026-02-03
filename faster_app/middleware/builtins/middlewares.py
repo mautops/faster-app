@@ -31,25 +31,25 @@ MIDDLEWARES = [
         "priority": PRIORITY_CORS,
         "enabled": True,
         "kwargs": {
-            "allow_origins": configs.MIDDLEWARE.CORS.ALLOW_ORIGINS,
-            "allow_credentials": configs.MIDDLEWARE.CORS.ALLOW_CREDENTIALS,
-            "allow_methods": configs.MIDDLEWARE.CORS.ALLOW_METHODS,
-            "allow_headers": configs.MIDDLEWARE.CORS.ALLOW_HEADERS,
-            "expose_headers": configs.MIDDLEWARE.CORS.EXPOSE_HEADERS,
-            "max_age": configs.MIDDLEWARE.CORS.MAX_AGE,
+            "allow_origins": configs.CORS_ORIGINS,
+            "allow_credentials": configs.CORS_CREDENTIALS,
+            "allow_methods": configs.CORS_METHODS,
+            "allow_headers": configs.CORS_HEADERS,
+            "expose_headers": configs.CORS_EXPOSE_HEADERS,
+            "max_age": configs.CORS_MAX_AGE,
         },
     },
     {
         "class": "fastapi.middleware.trustedhost.TrustedHostMiddleware",
         "priority": PRIORITY_TRUSTED_HOST,
-        "enabled": configs.MIDDLEWARE.TRUSTED_HOST.ENABLED,
-        "kwargs": {"allowed_hosts": configs.MIDDLEWARE.TRUSTED_HOST.HOSTS},
+        "enabled": configs.TRUSTED_HOST_ENABLED,
+        "kwargs": {"allowed_hosts": configs.TRUSTED_HOSTS},
     },
     {
         "class": "fastapi.middleware.gzip.GZipMiddleware",
         "priority": PRIORITY_GZIP,
-        "enabled": configs.MIDDLEWARE.GZIP.ENABLED,
-        "kwargs": {"minimum_size": configs.MIDDLEWARE.GZIP.MINIMUM_SIZE},
+        "enabled": configs.GZIP_ENABLED,
+        "kwargs": {"minimum_size": configs.GZIP_MINIMUM_SIZE},
     },
 ]
 
@@ -65,17 +65,15 @@ def _log_middleware_info():
         logger.info("🔧 [开发模式] 中间件使用宽松的安全配置")
     else:
         # 生产环境提示
-        cors_cfg = configs.MIDDLEWARE.CORS
-        if "*" in cors_cfg.ALLOW_ORIGINS:
+        if "*" in configs.CORS_ORIGINS:
             logger.warning("⚠️  [安全提示] 生产环境 CORS 允许所有域名访问，建议指定明确的域名列表")
 
-        trusted_cfg = configs.MIDDLEWARE.TRUSTED_HOST
-        if not trusted_cfg.ENABLED:
+        if not configs.TRUSTED_HOST_ENABLED:
             logger.warning(
                 "⚠️  [安全提示] 生产环境建议启用 TrustedHostMiddleware "
                 "（设置 TRUSTED_HOST_ENABLED=true）"
             )
-        elif "*" in trusted_cfg.HOSTS:
+        elif "*" in configs.TRUSTED_HOSTS:
             logger.warning("⚠️  [安全提示] TrustedHost 允许所有主机名，建议指定明确的主机名列表")
 
 

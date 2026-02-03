@@ -40,17 +40,19 @@ def main() -> None:
     reload = configs.DEBUG
 
     logger.info(
-        f"[服务器启动] 操作: 启动服务器 主机: {configs.SERVER.HOST} 端口: {configs.SERVER.PORT} "
+        f"[服务器启动] 操作: 启动服务器 主机: {configs.SERVER_HOST} 端口: {configs.SERVER_PORT} "
         f"模式: {'开发' if reload else '生产'} 状态: 开始"
     )
 
     if reload:
         # 开发模式使用字符串导入以支持热重载
+        # factory=True 表示 get_app 是工厂函数，uvicorn 在启动时调用一次创建应用实例
+        # get_app() 内部使用单例模式，确保只创建一个应用实例
         uvicorn.run(
             "faster_app.app:get_app",
             factory=True,
-            host=configs.SERVER.HOST,
-            port=configs.SERVER.PORT,
+            host=configs.SERVER_HOST,
+            port=configs.SERVER_PORT,
             reload=reload,
             log_config=log_config,
         )
@@ -58,8 +60,8 @@ def main() -> None:
         # 生产模式直接使用应用实例
         uvicorn.run(
             app,
-            host=configs.SERVER.HOST,
-            port=configs.SERVER.PORT,
+            host=configs.SERVER_HOST,
+            port=configs.SERVER_PORT,
             reload=reload,
             log_config=log_config,
         )

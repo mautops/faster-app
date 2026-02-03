@@ -92,8 +92,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 # 检查配置
 from faster_app.settings import configs
-print(configs.debug)
-print(configs.database.url)
+print(configs.DEBUG)
+print(configs.DB_URL)
 
 # 测试路由
 faster_app.routes.discover.RoutesDiscover().discover()

@@ -555,8 +555,8 @@ class TestServerOperations:
         """测试在调试模式下运行服务器"""
         with patch("faster_app.commands.builtins.server.configs") as mock_configs:
             mock_configs.DEBUG = True
-            mock_configs.SERVER.HOST = "127.0.0.1"
-            mock_configs.SERVER.PORT = 8000
+            mock_configs.SERVER_HOST = "127.0.0.1"
+            mock_configs.SERVER_PORT = 8000
 
             with patch("faster_app.commands.builtins.server.uvicorn.run") as mock_run:
                 server_command = ServerOperations()
@@ -572,8 +572,8 @@ class TestServerOperations:
         """测试在生产模式下运行服务器"""
         with patch("faster_app.commands.builtins.server.configs") as mock_configs:
             mock_configs.DEBUG = False
-            mock_configs.SERVER.HOST = "0.0.0.0"
-            mock_configs.SERVER.PORT = 80
+            mock_configs.SERVER_HOST = "0.0.0.0"
+            mock_configs.SERVER_PORT = 80
 
             with patch("faster_app.commands.builtins.server.uvicorn.run") as mock_run:
                 server_command = ServerOperations()
@@ -587,8 +587,8 @@ class TestServerOperations:
         """测试使用工厂模式运行服务器"""
         with patch("faster_app.commands.builtins.server.configs") as mock_configs:
             mock_configs.DEBUG = True
-            mock_configs.SERVER.HOST = "127.0.0.1"
-            mock_configs.SERVER.PORT = 8000
+            mock_configs.SERVER_HOST = "127.0.0.1"
+            mock_configs.SERVER_PORT = 8000
 
             with patch("faster_app.commands.builtins.server.uvicorn.run") as mock_run:
                 server_command = ServerOperations()

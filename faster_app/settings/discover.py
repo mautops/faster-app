@@ -1,5 +1,5 @@
 """
-自动发现 apps 目录下的 models 模块
+自动发现 config 目录下的配置模块
 """
 
 from pydantic_settings import BaseSettings
@@ -30,22 +30,33 @@ class SettingsDiscover(BaseDiscover):
     ]
 
     def merge(self) -> DefaultSettings:
-        """合并配置: 使用用户配置覆盖内置配置, 同时保留DefaultSettings的方法和动态逻辑"""
+        """
+        合并配置: 使用用户配置覆盖内置配置
+
+        简化逻辑：
+        1. 发现所有配置实例
+        2. 分离默认配置和用户配置
+        3. 简单合并（用户配置覆盖默认配置）
+        """
         configs: list[BaseSettings] = self.discover()
 
         # 分离默认配置和用户配置
-        default_settings = DefaultSettings()
+        default_settings = None
         user_settings = []
 
         for config in configs:
             if type(config).__name__ == "DefaultSettings":
-                default_settings = config  # type: ignore[assignment]
+                default_settings = config
             else:
                 user_settings.append(config)
 
-        # 如果没有用户配置, 直接返回默认配置
+        # 如果没有找到默认配置，创建一个
+        if default_settings is None:
+            default_settings = DefaultSettings()
+
+        # 如果没有用户配置，直接返回默认配置
         if not user_settings:
-            return default_settings
+            return default_settings  # type: ignore[return-value]
 
         # 收集所有用户配置的属性
         user_overrides = {}
@@ -53,57 +64,11 @@ class SettingsDiscover(BaseDiscover):
             user_dict = user_setting.model_dump()
             user_overrides.update(user_dict)
 
-        # 获取 DefaultSettings 的所有字段和默认值
-        default_fields = set(DefaultSettings.model_fields.keys())
+        # 获取默认配置的所有值
         default_values = default_settings.model_dump()
 
-        # 找出用户配置中的新字段
-        user_fields = set(user_overrides.keys())
-        new_fields = user_fields - default_fields
-
-        if not new_fields:
-            # 没有新字段, 使用原来的方式
-            # 合并默认值和用户覆盖值
-            merged_values = {**default_values, **user_overrides}
-            return DefaultSettings(**merged_values)
-
-        # 有新字段, 需要动态创建类
-        from typing import Any
-
-        # 为新字段创建类型注解
-        new_annotations: dict[str, object] = {}
-        for field in new_fields:
-            value = user_overrides[field]
-            if value is not None:
-                # 从值推断类型
-                field_type = type(value)
-                # 如果是基本类型, 直接使用；否则使用 Any
-                if field_type in (str, int, float, bool, list, dict):
-                    new_annotations[field] = field_type
-                else:
-                    new_annotations[field] = Any
-            else:
-                # None 值使用 Any | None
-                new_annotations[field] = Any | None
-
-        # 创建新的模型配置, 允许额外字段
-        model_config: dict[str, object] = {"extra": "allow", "env_file": ".env", "env_file_encoding": "utf-8"}
-
-        # 动态创建新的配置类
-        dynamic_settings_class = type(
-            "DynamicSettings",
-            (DefaultSettings,),
-            {
-                "__annotations__": {
-                    **getattr(DefaultSettings, "__annotations__", {}),
-                    **new_annotations,
-                },
-                "__module__": DefaultSettings.__module__,
-                "model_config": model_config,
-            },
-        )
-
-        # 创建实例 - 合并默认值和用户覆盖值
+        # 合并：用户配置覆盖默认配置
         merged_values = {**default_values, **user_overrides}
-        merged_settings = dynamic_settings_class(**merged_values)
-        return merged_settings  # type: ignore[no-any-return]
+
+        # 返回合并后的配置实例
+        return DefaultSettings(**merged_values)

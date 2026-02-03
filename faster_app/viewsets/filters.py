@@ -7,7 +7,7 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from fastapi import Request
+from fastapi import Query, Request
 
 if TYPE_CHECKING:
     from faster_app.viewsets.base import ViewSet
@@ -34,6 +34,18 @@ class BaseFilterBackend(ABC):
             过滤后的查询集
         """
         pass
+
+    def get_query_params(self, view: "ViewSet") -> dict[str, Any]:
+        """
+        获取此过滤后端需要的查询参数配置
+
+        Args:
+            view: ViewSet 实例
+
+        Returns:
+            查询参数字典,键为参数名,值为 FastAPI Query 对象
+        """
+        return {}
 
 
 class SearchFilter(BaseFilterBackend):
@@ -107,6 +119,21 @@ class SearchFilter(BaseFilterBackend):
                 search_conditions |= Q(**{f"{field}__icontains": search_term})
 
         return queryset.filter(search_conditions)
+
+    def get_query_params(self, view: "ViewSet") -> dict[str, Any]:
+        """获取搜索查询参数配置"""
+        search_fields = self.search_fields
+        if not search_fields and hasattr(view, "search_fields"):
+            search_fields = view.search_fields
+
+        if search_fields:
+            return {
+                self.search_param: Query(
+                    None,
+                    description=f"搜索关键词,将在以下字段中搜索: {', '.join(search_fields)}",
+                )
+            }
+        return {}
 
 
 class OrderingFilter(BaseFilterBackend):
@@ -190,6 +217,21 @@ class OrderingFilter(BaseFilterBackend):
 
         return queryset
 
+    def get_query_params(self, view: "ViewSet") -> dict[str, Any]:
+        """获取排序查询参数配置"""
+        ordering_fields = self.ordering_fields
+        if not ordering_fields and hasattr(view, "ordering_fields"):
+            ordering_fields = view.ordering_fields
+
+        if ordering_fields:
+            return {
+                self.ordering_param: Query(
+                    None,
+                    description=f"排序字段,支持: {', '.join(ordering_fields)}。使用 - 前缀表示降序,例如: -created_at",
+                )
+            }
+        return {}
+
 
 class FieldFilter(BaseFilterBackend):
     """
@@ -263,6 +305,33 @@ class FieldFilter(BaseFilterBackend):
             return queryset.filter(**filter_kwargs)
 
         return queryset
+
+    def get_query_params(self, view: "ViewSet") -> dict[str, Any]:
+        """获取字段过滤查询参数配置"""
+        filter_fields = self.filter_fields
+        if not filter_fields and hasattr(view, "filter_fields"):
+            filter_fields = view.filter_fields
+
+        if not filter_fields:
+            return {}
+
+        query_params = {}
+        type_descriptions = {
+            "exact": "精确匹配",
+            "icontains": "包含匹配(不区分大小写)",
+            "gt": "大于",
+            "gte": "大于等于",
+            "lt": "小于",
+            "lte": "小于等于",
+            "in": "在列表中(逗号分隔)",
+            "isnull": "是否为空(true/false)",
+        }
+
+        for field_name, filter_type in filter_fields.items():
+            description = type_descriptions.get(filter_type, f"过滤类型: {filter_type}")
+            query_params[field_name] = Query(None, description=f"{field_name}: {description}")
+
+        return query_params
 
 
 class DjangoFilterBackend(FieldFilter):

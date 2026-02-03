@@ -49,42 +49,28 @@ faster server start
 
 **何时使用**：用户需要创建 REST API、实现 CRUD 操作
 
-- **[01-basics.md](references/viewset/01-basics.md)** - 首次使用 ViewSet，了解基础概念
-- **[02-mixins.md](references/viewset/02-mixins.md)** - 需要自定义 ViewSet 行为
-- **[03-actions.md](references/viewset/03-actions.md)** - 添加自定义操作（如 publish、archive）
-- **[04-authentication.md](references/viewset/04-authentication.md)** - 实现 JWT、API Key 等认证
-- **[05-permissions.md](references/viewset/05-permissions.md)** - 添加权限控制
-- **[06-filtering.md](references/viewset/06-filtering.md)** - 实现数据过滤
-- **[07-search-sorting.md](references/viewset/07-search-sorting.md)** - 添加搜索和排序
-- **[08-pagination.md](references/viewset/08-pagination.md)** - 配置分页
-- **[09-throttling.md](references/viewset/09-throttling.md)** - 设置速率限制
-- **[10-caching.md](references/viewset/10-caching.md)** - 添加缓存
-- **[11-advanced-patterns.md](references/viewset/11-advanced-patterns.md)** - 嵌套资源、批量操作、文件上传
+- **[basics.md](references/viewset/basics.md)** - ViewSet 基础概念、Mixins 和自定义操作
+- **[security.md](references/viewset/security.md)** - 认证、权限和速率限制
+- **[data.md](references/viewset/data.md)** - 数据过滤、搜索、排序、分页和缓存
 
 ### Model 开发（数据建模）
 
 **何时使用**：用户需要定义数据模型、设置数据库关系、编写查询
 
-- **[01-base-models.md](references/model/01-base-models.md)** - 了解基础模型类（UUID、DateTime、Enum、Scope）
-- **[02-fields.md](references/model/02-fields.md)** - 字段类型详解（字符串、数字、日期、JSON、枚举）
-- **[03-relationships.md](references/model/03-relationships.md)** - 数据库关系（ForeignKey、ManyToMany、OneToOne）
-- **[04-queries.md](references/model/04-queries.md)** - 查询操作（基础、高级、Q 对象、聚合）
-- **[05-patterns.md](references/model/05-patterns.md)** - 自定义方法和常见模式（软删除、版本控制、状态机）
+- **[basics.md](references/model/basics.md)** - 基础模型、字段类型和数据库关系
+- **[queries.md](references/model/queries.md)** - 查询操作和常见模式
 
 ### Config 配置（环境和部署）
 
 **何时使用**：用户需要配置应用、设置中间件、准备生产部署
 
-- **[01-basics-and-middleware.md](references/config/01-basics-and-middleware.md)** - 配置基础、环境变量、CORS、TrustedHost、GZip、数据库连接
-- **[02-logging-and-production.md](references/config/02-logging-and-production.md)** - 日志配置、生产环境检查清单、部署方式、监控
-- **[03-advanced.md](references/config/03-advanced.md)** - 多环境配置、自定义扩展、密钥管理、动态配置
+- **[guide.md](references/config/guide.md)** - 完整配置指南，包含基础配置、中间件、日志、生产环境和高级配置
 
 ### 辅助资源（快速参考和问题解决）
 
 **何时使用**：根据用户的具体情况选择
 
-- **[FAQ.md](references/FAQ.md)** - 遇到常见问题时首先查看
-- **[CHEATSHEET.md](references/CHEATSHEET.md)** - 需要快速查找代码片段
+- **[QUICKREF.md](references/QUICKREF.md)** - 快速参考和常见问题
 - **[EXAMPLES.md](references/EXAMPLES.md)** - 需要完整项目示例
 - **[TROUBLESHOOTING.md](references/TROUBLESHOOTING.md)** - 诊断错误和性能问题
 - **[MIGRATION.md](references/MIGRATION.md)** - 从其他框架迁移
@@ -102,29 +88,29 @@ faster server start
 - **ViewSet**：类似 DRF 的 CRUD API 构建方式
 - **自动发现**：约定目录结构，自动注册路由/模型/命令
 - **模型基类**：UUIDModel、DateTimeModel、EnumModel、ScopeModel
-- **配置管理**：基于 Pydantic 的嵌套配置，支持环境变量
+- **配置管理**：基于 Pydantic 的扁平化配置，支持环境变量
 
 ### 常见任务快速指引
 
-| 任务          | 加载文档                            |
-| ------------- | ----------------------------------- |
-| 创建 CRUD API | viewset/01-basics.md                |
-| 添加认证      | viewset/04-authentication.md        |
-| 定义模型关系  | model/03-relationships.md           |
-| 数据查询      | model/04-queries.md                 |
-| 配置中间件    | config/01-basics-and-middleware.md  |
-| 配置生产环境  | config/02-logging-and-production.md |
-| 多环境部署    | config/03-advanced.md               |
-| 解决错误      | FAQ.md → TROUBLESHOOTING.md         |
-| 快速查代码    | CHEATSHEET.md                       |
-| 迁移项目      | MIGRATION.md                        |
+| 任务          | 加载文档                         |
+| ------------- | -------------------------------- |
+| 创建 CRUD API | viewset/basics.md                |
+| 添加认证      | viewset/security.md              |
+| 定义模型关系  | model/basics.md                  |
+| 数据查询      | model/queries.md                 |
+| 配置中间件    | config/guide.md                  |
+| 配置生产环境  | config/guide.md                  |
+| 多环境部署    | config/guide.md                  |
+| 解决错误      | QUICKREF.md → TROUBLESHOOTING.md |
+| 快速查代码    | QUICKREF.md                      |
+| 迁移项目      | MIGRATION.md                     |
 
 ## 最佳实践
 
 1. **项目结构**：按功能组织应用，每个应用专注单一职责
 2. **模型设计**：使用 UUIDModel + DateTimeModel 作为基类
 3. **API 开发**：优先使用 ViewSet 而非手写路由
-4. **配置管理**：使用嵌套配置，不硬编码
+4. **配置管理**：使用扁平化配置，不硬编码
 5. **安全性**：生产环境必须修改 SECRET_KEY，设置 DEBUG=false
 6. **数据库**：每次模型变更后创建迁移
 7. **测试**：开发时 DEBUG=true，生产环境 DEBUG=false

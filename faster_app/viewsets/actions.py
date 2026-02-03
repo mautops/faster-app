@@ -74,12 +74,12 @@ def action(
             return await func(self, request, *args, **kwargs_inner)
 
         # 复制元数据到 wrapper
-        wrapper.action = True  # type: ignore[attr-defined]
-        wrapper.action_methods = methods  # type: ignore[attr-defined]
-        wrapper.action_detail = detail  # type: ignore[attr-defined]
-        wrapper.action_url_path = url_path or func.__name__.replace("_", "-")  # type: ignore[attr-defined]
-        wrapper.action_url_name = url_name or func.__name__  # type: ignore[attr-defined]
-        wrapper.action_kwargs = kwargs  # type: ignore[attr-defined]
+        wrapper.action = True
+        wrapper.action_methods = methods
+        wrapper.action_detail = detail
+        wrapper.action_url_path = url_path or func.__name__.replace("_", "-")
+        wrapper.action_url_name = url_name or func.__name__
+        wrapper.action_kwargs = kwargs
 
         return wrapper  # type: ignore[return-value]
 

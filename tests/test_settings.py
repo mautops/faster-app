@@ -22,23 +22,23 @@ class TestDefaultSettings:
         assert settings.DEBUG is True
         assert settings.VERSION == "0.0.1"
 
-    def test_nested_config(self):
-        """测试嵌套配置"""
+    def test_flattened_config(self):
+        """测试扁平化配置"""
         from faster_app.settings.builtins.settings import DefaultSettings
 
         os.environ["DEBUG"] = "true"
         settings = DefaultSettings()
 
         # 服务器配置
-        assert settings.SERVER.HOST == "0.0.0.0"
-        assert settings.SERVER.PORT == 8000
+        assert settings.SERVER_HOST == "0.0.0.0"
+        assert settings.SERVER_PORT == 8000
 
         # JWT 配置
-        assert settings.JWT.ALGORITHM == "HS256"
-        assert settings.JWT.ACCESS_TOKEN_EXPIRE_MINUTES == 30
+        assert settings.JWT_ALGORITHM == "HS256"
+        assert settings.JWT_EXPIRE_MINUTES == 30
 
         # 日志配置
-        assert settings.LOG.LEVEL == "INFO"
+        assert settings.LOG_LEVEL == "INFO"
 
     def test_middleware_config(self):
         """测试中间件配置"""
@@ -48,12 +48,12 @@ class TestDefaultSettings:
         settings = DefaultSettings()
 
         # CORS 配置
-        assert "*" in settings.MIDDLEWARE.CORS.ALLOW_ORIGINS
-        assert settings.MIDDLEWARE.CORS.ALLOW_CREDENTIALS is False
+        assert "*" in settings.CORS_ORIGINS
+        assert settings.CORS_CREDENTIALS is False
 
         # GZip 配置
-        assert settings.MIDDLEWARE.GZIP.ENABLED is True
-        assert settings.MIDDLEWARE.GZIP.MINIMUM_SIZE == 1000
+        assert settings.GZIP_ENABLED is True
+        assert settings.GZIP_MINIMUM_SIZE == 1000
 
     def test_lifespan_config(self):
         """测试生命周期配置"""
@@ -62,9 +62,9 @@ class TestDefaultSettings:
         os.environ["DEBUG"] = "true"
         settings = DefaultSettings()
 
-        assert settings.LIFESPAN.ENABLE_DATABASE is False
-        assert settings.LIFESPAN.ENABLE_APPS is False
-        assert settings.LIFESPAN.ENABLE_USER is False
+        assert settings.LIFESPAN_DATABASE is False
+        assert settings.LIFESPAN_APPS is False
+        assert settings.LIFESPAN_USER is False
 
     def test_throttle_config(self):
         """测试限流配置"""
@@ -73,58 +73,50 @@ class TestDefaultSettings:
         os.environ["DEBUG"] = "true"
         settings = DefaultSettings()
 
-        assert "user" in settings.THROTTLE.RATES
-        assert "anon" in settings.THROTTLE.RATES
-        assert "default" in settings.THROTTLE.RATES
+        assert settings.THROTTLE_USER_RATE == "100/hour"
+        assert settings.THROTTLE_ANON_RATE == "20/hour"
+        assert settings.THROTTLE_DEFAULT_RATE == "100/hour"
 
 
-class TestConfigModels:
-    """测试配置模型"""
-
-    def test_server_config(self):
-        """测试服务器配置模型"""
-        from faster_app.settings.builtins.settings import ServerConfig
-
-        config = ServerConfig()
-        assert config.HOST == "0.0.0.0"
-        assert config.PORT == 8000
-
-    def test_jwt_config(self):
-        """测试 JWT 配置模型"""
-        from faster_app.settings.builtins.settings import JWTConfig
-
-        config = JWTConfig()
-        assert config.ALGORITHM == "HS256"
-        assert config.ACCESS_TOKEN_EXPIRE_MINUTES == 30
+class TestProductionValidation:
+    """测试生产环境配置验证"""
 
     def test_cors_config_validation(self):
         """测试 CORS 配置验证"""
         from pydantic import ValidationError
 
-        from faster_app.settings.builtins.settings import CORSConfig
+        from faster_app.settings.builtins.settings import DefaultSettings
 
-        # 正常配置 (使用 validation_alias 名称进行初始化)
-        config = CORSConfig.model_validate({
-            "CORS_ALLOW_CREDENTIALS": False,
-            "CORS_ALLOW_ORIGINS": ["*"]
-        })
-        assert config.ALLOW_ORIGINS == ["*"]
+        # 正常配置
+        settings = DefaultSettings(
+            DEBUG=False,
+            JWT_SECRET_KEY="production-secret-key",
+            CORS_CREDENTIALS=False,
+            CORS_ORIGINS=["*"]
+        )
+        assert settings.CORS_ORIGINS == ["*"]
 
-        # 不安全配置应该抛出错误 (Pydantic v2 将 ValueError 包装为 ValidationError)
-        with pytest.raises(ValidationError):
-            CORSConfig.model_validate({
-                "CORS_ALLOW_CREDENTIALS": True,
-                "CORS_ALLOW_ORIGINS": ["*"]
-            })
+        # 不安全配置应该抛出错误
+        with pytest.raises(ValidationError, match="CORS 配置不安全"):
+            DefaultSettings(
+                DEBUG=False,
+                JWT_SECRET_KEY="production-secret-key",
+                CORS_CREDENTIALS=True,
+                CORS_ORIGINS=["*"]
+            )
 
-    def test_log_config(self):
-        """测试日志配置模型"""
-        from faster_app.settings.builtins.settings import LogConfig
+    def test_jwt_secret_validation(self):
+        """测试 JWT 密钥验证"""
+        from pydantic import ValidationError
 
-        config = LogConfig()
-        assert config.LEVEL == "INFO"
-        assert config.FORMAT == "STRING"
-        assert config.TO_FILE is False
+        from faster_app.settings.builtins.settings import DefaultSettings
+
+        # 生产环境必须修改默认密钥
+        with pytest.raises(ValidationError, match="生产环境必须修改 JWT_SECRET_KEY"):
+            DefaultSettings(
+                DEBUG=False,
+                JWT_SECRET_KEY="your-secret-key-here-change-in-production"
+            )
 
 
 class TestConfigsInstance:
@@ -141,10 +133,40 @@ class TestConfigsInstance:
         """测试配置属性可访问"""
         from faster_app.settings import configs
 
+        # 基础配置
         assert hasattr(configs, "PROJECT_NAME")
         assert hasattr(configs, "DEBUG")
-        assert hasattr(configs, "SERVER")
-        assert hasattr(configs, "JWT")
-        assert hasattr(configs, "DATABASE")
-        assert hasattr(configs, "LOG")
-        assert hasattr(configs, "MIDDLEWARE")
+        assert hasattr(configs, "VERSION")
+
+        # 服务器配置
+        assert hasattr(configs, "SERVER_HOST")
+        assert hasattr(configs, "SERVER_PORT")
+
+        # JWT 配置
+        assert hasattr(configs, "JWT_SECRET_KEY")
+        assert hasattr(configs, "JWT_ALGORITHM")
+        assert hasattr(configs, "JWT_EXPIRE_MINUTES")
+
+        # 数据库配置
+        assert hasattr(configs, "DB_URL")
+
+        # 日志配置
+        assert hasattr(configs, "LOG_LEVEL")
+        assert hasattr(configs, "LOG_FORMAT")
+
+        # 生命周期配置
+        assert hasattr(configs, "LIFESPAN_DATABASE")
+        assert hasattr(configs, "LIFESPAN_APPS")
+        assert hasattr(configs, "LIFESPAN_USER")
+
+        # 限流配置
+        assert hasattr(configs, "THROTTLE_USER_RATE")
+        assert hasattr(configs, "THROTTLE_ANON_RATE")
+
+        # CORS 配置
+        assert hasattr(configs, "CORS_ORIGINS")
+        assert hasattr(configs, "CORS_CREDENTIALS")
+
+        # GZip 配置
+        assert hasattr(configs, "GZIP_ENABLED")
+        assert hasattr(configs, "GZIP_MINIMUM_SIZE")

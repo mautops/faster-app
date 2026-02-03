@@ -120,5 +120,5 @@ def get_app() -> FastAPI:
         FastAPI application instance
     """
     if not hasattr(get_app, "_app"):
-        get_app._app = create_app()  # type: ignore[attr-defined]
+        get_app._app = create_app()
     return get_app._app  # type: ignore[attr-defined,no-any-return]

@@ -46,22 +46,22 @@ class ListModelMixin:
             ApiResponse 格式的分页结果
         """
         # 检查限流
-        await self.check_throttles(request)  # type: ignore[attr-defined]
+        await self.check_throttles(request)
         # 执行认证
-        await self.perform_authentication(request)  # type: ignore[attr-defined]
+        await self.perform_authentication(request)
         # 检查权限
-        await self.check_permissions(request, "list")  # type: ignore[attr-defined]
+        await self.check_permissions(request, "list")
 
         # 获取查询集
-        queryset = self.get_queryset()  # type: ignore[attr-defined]
+        queryset = self.get_queryset()
         # 应用过滤
-        queryset = await self.filter_queryset(queryset, request)  # type: ignore[attr-defined]
+        queryset = await self.filter_queryset(queryset, request)
 
         # 获取分页结果
         page = await apaginate(query=queryset, params=pagination)
 
         # 获取 Schema 类
-        schema = self.get_schema("list")  # type: ignore[attr-defined]
+        schema = self.get_schema("list")
 
         # 序列化每个对象并转换为字典(使用 mode='json' 以正确处理 UUID 等类型)
         serialized_items = [
@@ -110,11 +110,11 @@ class CreateModelMixin:
             ApiResponse 格式的创建结果
         """
         # 检查限流
-        await self.check_throttles(request)  # type: ignore[attr-defined]
+        await self.check_throttles(request)
         # 执行认证
-        await self.perform_authentication(request)  # type: ignore[attr-defined]
+        await self.perform_authentication(request)
         # 检查权限
-        await self.check_permissions(request, "create")  # type: ignore[attr-defined]
+        await self.check_permissions(request, "create")
 
         # 执行创建前钩子
         create_data = await self.perform_create_hook(create_data, request)
@@ -126,7 +126,7 @@ class CreateModelMixin:
         instance = await self.perform_create_after_hook(instance, request)
 
         # 序列化数据
-        schema = self.get_schema("retrieve")  # type: ignore[attr-defined]
+        schema = self.get_schema("retrieve")
         serialized_data = await schema.from_orm_model(instance)
 
         return ApiResponse.success(  # type: ignore[return-value]
@@ -145,7 +145,7 @@ class CreateModelMixin:
             创建的模型实例
         """
         data_dict = create_data.model_dump(exclude_unset=True)
-        return await self.model.create(**data_dict)  # type: ignore[attr-defined,no-any-return]
+        return await self.model.create(**data_dict)
 
     async def perform_create_hook(self, create_data: BaseModel, request: Request) -> BaseModel:
         """
@@ -204,21 +204,21 @@ class RetrieveModelMixin:
             NotFoundError: 记录不存在
         """
         # 检查限流
-        await self.check_throttles(request)  # type: ignore[attr-defined]
+        await self.check_throttles(request)
         # 执行认证
-        await self.perform_authentication(request)  # type: ignore[attr-defined]
+        await self.perform_authentication(request)
 
-        instance = await self.get_object(pk)  # type: ignore[attr-defined]
+        instance = await self.get_object(pk)
         if not instance:
             raise NotFoundError(message="记录不存在", data={"pk": pk})
 
         # 检查对象级权限
-        await self.check_object_permissions(request, instance, "retrieve")  # type: ignore[attr-defined]
+        await self.check_object_permissions(request, instance, "retrieve")
 
-        schema = self.get_schema("retrieve")  # type: ignore[attr-defined]
+        schema = self.get_schema("retrieve")
         serialized_data = await schema.from_orm_model(instance)
 
-        return ApiResponse.success(  # type: ignore[return-value]
+        return ApiResponse.success(
             data=serialized_data.model_dump(mode="json"),
             message="查询成功",
         )
@@ -256,16 +256,16 @@ class UpdateModelMixin:
             NotFoundError: 记录不存在
         """
         # 检查限流
-        await self.check_throttles(request)  # type: ignore[attr-defined]
+        await self.check_throttles(request)
         # 执行认证
-        await self.perform_authentication(request)  # type: ignore[attr-defined]
+        await self.perform_authentication(request)
 
-        instance = await self.get_object(pk)  # type: ignore[attr-defined]
+        instance = await self.get_object(pk)
         if not instance:
             raise NotFoundError(message="记录不存在", data={"pk": pk})
 
         # 检查对象级权限
-        await self.check_object_permissions(request, instance, "update")  # type: ignore[attr-defined]
+        await self.check_object_permissions(request, instance, "update")
 
         # 执行更新前钩子
         update_data = await self.perform_update_hook(instance, update_data, request)
@@ -277,7 +277,7 @@ class UpdateModelMixin:
         instance = await self.perform_update_after_hook(instance, request)
 
         # 序列化数据
-        schema = self.get_schema("retrieve")  # type: ignore[attr-defined]
+        schema = self.get_schema("retrieve")
         serialized_data = await schema.from_orm_model(instance)
 
         return ApiResponse.success(  # type: ignore[return-value]
@@ -389,16 +389,16 @@ class DestroyModelMixin:
             NotFoundError: 记录不存在
         """
         # 检查限流
-        await self.check_throttles(request)  # type: ignore[attr-defined]
+        await self.check_throttles(request)
         # 执行认证
-        await self.perform_authentication(request)  # type: ignore[attr-defined]
+        await self.perform_authentication(request)
 
-        instance = await self.get_object(pk)  # type: ignore[attr-defined]
+        instance = await self.get_object(pk)
         if not instance:
             raise NotFoundError(message="记录不存在", data={"pk": pk})
 
         # 检查对象级权限
-        await self.check_object_permissions(request, instance, "destroy")  # type: ignore[attr-defined]
+        await self.check_object_permissions(request, instance, "destroy")
 
         # 执行删除前钩子
         can_delete = await self.perform_destroy_hook(instance, request)

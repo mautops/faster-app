@@ -77,7 +77,7 @@ class JWTAuthentication(BaseAuthentication):
                 return None
 
             token = authorization[7:]
-            secret_key = self.secret_key or configs.JWT.SECRET_KEY
+            secret_key = self.secret_key or configs.JWT_SECRET_KEY
 
             try:
                 payload = jwt.decode(token, secret_key, algorithms=[self.algorithm])

@@ -377,7 +377,7 @@ wheels = [
 
 [[package]]
 name = "faster-app"
-version = "0.1.7"
+version = "0.1.9"
 source = { editable = "." }
 dependencies = [
     { name = "aerich" },

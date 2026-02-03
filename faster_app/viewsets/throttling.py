@@ -143,19 +143,26 @@ class SimpleRateThrottle(BaseThrottle):
 
         # 如果有 scope,从配置中获取速率
         if self.scope:
-            throttle_rates = configs.THROTTLE.RATES
+            throttle_rates = {
+                "user": configs.THROTTLE_USER_RATE,
+                "anon": configs.THROTTLE_ANON_RATE,
+                "default": configs.THROTTLE_DEFAULT_RATE,
+            }
             if self.scope in throttle_rates:
                 return throttle_rates[self.scope]
 
         # 如果 ViewSet 有 throttle_scope,从配置中获取
         if hasattr(view, "throttle_scope") and view.throttle_scope:
-            throttle_rates = configs.THROTTLE.RATES
+            throttle_rates = {
+                "user": configs.THROTTLE_USER_RATE,
+                "anon": configs.THROTTLE_ANON_RATE,
+                "default": configs.THROTTLE_DEFAULT_RATE,
+            }
             if view.throttle_scope in throttle_rates:
                 return throttle_rates[view.throttle_scope]
 
         # 使用默认速率
-        throttle_rates = configs.THROTTLE.RATES
-        return throttle_rates.get("default", "")
+        return configs.THROTTLE_DEFAULT_RATE
 
     def get_cache_key(self, request: Request, view: "ViewSet") -> str:
         """
@@ -317,7 +324,11 @@ class ScopedRateThrottle(SimpleRateThrottle):
             速率字符串
         """
         if hasattr(view, "throttle_scope") and view.throttle_scope:
-            throttle_rates = configs.THROTTLE.RATES
+            throttle_rates = {
+                "user": configs.THROTTLE_USER_RATE,
+                "anon": configs.THROTTLE_ANON_RATE,
+                "default": configs.THROTTLE_DEFAULT_RATE,
+            }
             if view.throttle_scope in throttle_rates:
                 return throttle_rates[view.throttle_scope]
 

@@ -70,7 +70,7 @@ MIDDLEWARES = [
     {
         "class": "faster_app.middleware.builtins.custom.RequestLoggingMiddleware",
         "priority": 2,
-        "enabled": configs.debug,  # 仅在调试模式启用
+        "enabled": configs.DEBUG,  # 仅在调试模式启用
         "kwargs": {
             "log_request_body": False,  # 不记录请求体
             "log_response_body": False,  # 不记录响应体
@@ -81,7 +81,7 @@ MIDDLEWARES = [
     {
         "class": "faster_app.middleware.builtins.custom.SecurityHeadersMiddleware",
         "priority": 11,
-        "enabled": not configs.debug,  # 仅在生产环境启用
+        "enabled": not configs.DEBUG,  # 仅在生产环境启用
         "kwargs": {},
     },
     
@@ -116,9 +116,9 @@ REQUEST_LOGGING_LOG_RESPONSE=false
 {
     "class": "faster_app.middleware.builtins.custom.RequestTimingMiddleware",
     "priority": 1,
-    "enabled": configs.middleware.timing.enabled,  # 从配置读取
+    "enabled": configs.TIMING_ENABLED,  # 从配置读取
     "kwargs": {
-        "slow_threshold": configs.middleware.timing.slow_threshold,
+        "slow_threshold": configs.TIMING_SLOW_THRESHOLD,
     },
 },
 ```
@@ -157,7 +157,7 @@ MIDDLEWARES = [
     {
         "class": "faster_app.middleware.builtins.custom.SecurityHeadersMiddleware",
         "priority": 11,
-        "enabled": not configs.debug,
+        "enabled": not configs.DEBUG,
         "kwargs": {},
     },
     
@@ -201,7 +201,7 @@ MIDDLEWARES = [
     {
         "class": "faster_app.middleware.builtins.custom.RequestLoggingMiddleware",
         "priority": 1,
-        "enabled": configs.debug,
+        "enabled": configs.DEBUG,
         "kwargs": {
             "log_request_body": True,   # 开发环境可以记录请求体
             "log_response_body": False,
@@ -255,7 +255,7 @@ MIDDLEWARES = [
 
 1. **请求日志中间件**：仅在开发环境或调试时启用
 2. **避免记录请求体**：会显著增加内存和 I/O 开销
-3. **使用条件启用**：根据 `configs.debug` 自动切换配置
+3. **使用条件启用**：根据 `configs.DEBUG` 自动切换配置
 4. **控制日志级别**：生产环境使用 `INFO` 或更高级别
 
 ## 创建自定义中间件

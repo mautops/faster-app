@@ -104,8 +104,8 @@ class ServerOperations(BaseCommand):
         uvicorn.run(
             app_target,
             factory=factory,
-            host=configs.SERVER.HOST,
-            port=configs.SERVER.PORT,
+            host=configs.SERVER_HOST,
+            port=configs.SERVER_PORT,
             reload=reload,
             log_config=log_config,
         )

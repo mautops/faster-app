@@ -40,7 +40,7 @@ def _check_needs_jwt_auth(viewset_class: type[ViewSet]) -> bool:
     同一个 ViewSet 类的认证需求不会改变。
 
     Args:
-        viewset_class: ViewSet 类
+            viewset: ViewSet 实例（单例）
 
     Returns:
         是否需要 JWT 认证（用于 Swagger UI 的 Authorize 按钮）
@@ -58,7 +58,7 @@ def _get_security_dependencies(viewset_class: type[ViewSet]) -> list[Callable[..
     获取安全依赖项
 
     Args:
-        viewset_class: ViewSet 类
+            viewset: ViewSet 实例（单例）
 
     Returns:
         安全依赖项列表，如果不需要认证则返回 None
@@ -86,7 +86,7 @@ class ViewSetRouter:
         初始化路由注册器
 
         Args:
-            viewset_class: ViewSet 类
+            viewset: ViewSet 实例（单例）
             prefix: 路由前缀
             tags: OpenAPI 标签
             operations: 支持的操作 (C=Create, R=Retrieve, U=Update, D=Destroy, L=List)
@@ -104,40 +104,33 @@ class ViewSetRouter:
             APIRouter 实例
 
         Note:
-            ViewSet 实例在每次请求时创建,确保无状态性和线程安全。
-
-            性能优化说明：
-            - ViewSet 类已经在类级别缓存了无状态组件(权限、认证、过滤后端等),
-              所以实例创建的开销主要是对象初始化,性能影响较小
-            - 如果性能成为瓶颈,可以考虑：
-              1. 使用 FastAPI 的依赖注入系统管理 ViewSet 生命周期
-              2. 使用单例模式(仅当 ViewSet 完全无状态时,需谨慎)
-              3. 添加性能测试验证当前实现是否满足需求
+            ViewSet 使用单例模式，避免重复实例化开销。
+            ViewSet 设计为无状态，所有请求共享同一实例是安全的。
         """
         router = APIRouter(prefix=self.prefix, tags=list(self.tags))
 
-        # 创建一个临时实例用于检查类型和获取序列化器类
-        temp_instance = self.viewset_class()
+        # 创建单例实例（所有请求共享）
+        viewset_instance = self.viewset_class()
 
         # 先注册自定义 action 路由(更具体的路由先注册,避免被通配路由捕获)
         self._register_custom_actions(router, self.viewset_class)
 
         # 注册标准 CRUD 路由(每次请求创建新实例)
-        if "L" in self.operations and isinstance(temp_instance, ListModelMixin):
-            self._register_list_route(router, self.viewset_class)
+        if "L" in self.operations and isinstance(viewset_instance, ListModelMixin):
+            self._register_list_route(router, viewset_instance)
 
-        if "C" in self.operations and isinstance(temp_instance, CreateModelMixin):
-            self._register_create_route(router, self.viewset_class)
+        if "C" in self.operations and isinstance(viewset_instance, CreateModelMixin):
+            self._register_create_route(router, viewset_instance)
 
-        if "R" in self.operations and isinstance(temp_instance, RetrieveModelMixin):
-            self._register_retrieve_route(router, self.viewset_class)
+        if "R" in self.operations and isinstance(viewset_instance, RetrieveModelMixin):
+            self._register_retrieve_route(router, viewset_instance)
 
-        if "U" in self.operations and isinstance(temp_instance, UpdateModelMixin):
-            self._register_update_route(router, self.viewset_class)
-            self._register_partial_update_route(router, self.viewset_class)
+        if "U" in self.operations and isinstance(viewset_instance, UpdateModelMixin):
+            self._register_update_route(router, viewset_instance)
+            self._register_partial_update_route(router, viewset_instance)
 
-        if "D" in self.operations and isinstance(temp_instance, DestroyModelMixin):
-            self._register_destroy_route(router, self.viewset_class)
+        if "D" in self.operations and isinstance(viewset_instance, DestroyModelMixin):
+            self._register_destroy_route(router, viewset_instance)
 
         return router
 
@@ -207,13 +200,13 @@ class ViewSetRouter:
 
         return query_params
 
-    def _register_list_route(self, router: APIRouter, viewset_class: type[ViewSet]) -> None:
+    def _register_list_route(self, router: APIRouter, viewset: ViewSet) -> None:
         """注册列表路由"""
-        temp_instance = viewset_class()
-        security = _get_security_dependencies(viewset_class)
+        viewset_instance = viewset
+        security = _get_security_dependencies(viewset.__class__)
 
         # 获取过滤查询参数配置
-        filter_params = self._get_filter_query_params(temp_instance)
+        filter_params = self._get_filter_query_params(viewset_instance)
 
         # 构建函数参数：request, pagination, 以及所有过滤参数
         # 使用 functools.partial 或者直接构建函数签名
@@ -223,7 +216,7 @@ class ViewSetRouter:
         # 创建基础函数
         # 使用 Depends() 让 FastAPI 自动注入 Params 实例
         async def base_list_view(request: Request, pagination: Params = Depends()):  # noqa: B008
-            viewset = viewset_class()
+            viewset = self.viewset_class()
             return await viewset.list(request, pagination)  # type: ignore[attr-defined]
 
         # 如果有过滤参数,需要动态添加
@@ -264,7 +257,7 @@ class ViewSetRouter:
                     pagination_arg = kwargs["pagination"]
 
                 if request_arg:
-                    viewset = viewset_class()
+                    viewset = self.viewset_class()
                     return await viewset.list(request_arg, pagination_arg)  # type: ignore[attr-defined]
 
                 # 回退到原始调用
@@ -278,81 +271,77 @@ class ViewSetRouter:
         router.get("/", dependencies=security)(list_view)  # type: ignore[arg-type]
 
     def _get_schema(
-        self, viewset_class: type[ViewSet], schema_type: str = "create"
+        self, viewset: ViewSet, schema_type: str = "create"
     ) -> type[BaseModel] | None:
         """
         获取 Schema 类
 
         Args:
-            viewset_class: ViewSet 类
+            viewset: ViewSet 实例（单例）
             schema_type: Schema 类型 ('create' 或 'update')
 
         Returns:
             Schema 类
         """
-        temp_instance = viewset_class()
+        viewset_instance = viewset
         if schema_type == "create":
-            return temp_instance.create_schema or temp_instance.schema
+            return viewset_instance.create_schema or viewset_instance.schema
         else:  # update
-            return temp_instance.update_schema or temp_instance.schema
+            return viewset_instance.update_schema or viewset_instance.schema
 
-    def _register_create_route(self, router: APIRouter, viewset_class: type[ViewSet]) -> None:
+    def _register_create_route(self, router: APIRouter, viewset: ViewSet) -> None:
         """注册创建路由"""
-        schema = self._get_schema(viewset_class, "create")
-        security = _get_security_dependencies(viewset_class)
+        schema = self._get_schema(viewset, "create")
+        security = _get_security_dependencies(viewset.__class__)
 
         @router.post("/", dependencies=security)  # type: ignore[arg-type]
         async def create_view(request: Request, create_data: schema):  # type: ignore[valid-type]
-            # 每次请求创建新的 ViewSet 实例,确保无状态
-            viewset = viewset_class()
-            return await viewset.create(request, create_data)  # type: ignore[attr-defined]
+            viewset_instance = self.viewset_class()
+            return await viewset_instance.create(request, create_data)  # type: ignore[attr-defined]
 
-    def _register_retrieve_route(self, router: APIRouter, viewset_class: type[ViewSet]) -> None:
+    def _register_retrieve_route(self, router: APIRouter, viewset: ViewSet) -> None:
         """注册单个查询路由"""
-        security = _get_security_dependencies(viewset_class)
+        security = _get_security_dependencies(viewset.__class__)
 
         @router.get("/{pk}", dependencies=security)  # type: ignore[arg-type]
         async def retrieve_view(request: Request, pk: str):
-            # 每次请求创建新的 ViewSet 实例,确保无状态
-            viewset = viewset_class()
-            return await viewset.retrieve(request, pk)  # type: ignore[attr-defined]
+            viewset_instance = self.viewset_class()
+            return await viewset_instance.retrieve(request, pk)  # type: ignore[attr-defined]
 
-    def _register_update_route(self, router: APIRouter, viewset_class: type[ViewSet]) -> None:
+    def _register_update_route(self, router: APIRouter, viewset: ViewSet) -> None:
         """注册完整更新路由"""
-        schema = self._get_schema(viewset_class, "update")
-        security = _get_security_dependencies(viewset_class)
+        schema = self._get_schema(viewset, "update")
+        security = _get_security_dependencies(viewset.__class__)
 
         @router.put("/{pk}", dependencies=security)  # type: ignore[arg-type]
         async def update_view(request: Request, pk: str, update_data: schema):  # type: ignore[valid-type]
-            # 每次请求创建新的 ViewSet 实例,确保无状态
-            viewset = viewset_class()
-            return await viewset.update(request, pk, update_data)  # type: ignore[attr-defined]
+            viewset_instance = self.viewset_class()
+            return await viewset_instance.update(request, pk, update_data)  # type: ignore[attr-defined]
 
     def _register_partial_update_route(
-        self, router: APIRouter, viewset_class: type[ViewSet]
+        self, router: APIRouter, viewset: ViewSet
     ) -> None:
         """注册部分更新路由"""
-        schema = self._get_schema(viewset_class, "update")
-        security = _get_security_dependencies(viewset_class)
+        schema = self._get_schema(viewset, "update")
+        security = _get_security_dependencies(viewset.__class__)
 
         @router.patch("/{pk}", dependencies=security)  # type: ignore[arg-type]
         async def partial_update_view(request: Request, pk: str, update_data: schema):  # type: ignore[valid-type]
-            # 每次请求创建新的 ViewSet 实例,确保无状态
-            viewset = viewset_class()
-            return await viewset.partial_update(request, pk, update_data)  # type: ignore[attr-defined]
+            viewset_instance = self.viewset_class()
+            return await viewset_instance.partial_update(request, pk, update_data)  # type: ignore[attr-defined]
 
-    def _register_destroy_route(self, router: APIRouter, viewset_class: type[ViewSet]) -> None:
+    def _register_destroy_route(self, router: APIRouter, viewset: ViewSet) -> None:
         """注册删除路由"""
-        security = _get_security_dependencies(viewset_class)
+        security = _get_security_dependencies(viewset.__class__)
 
         @router.delete("/{pk}", dependencies=security)  # type: ignore[arg-type]
         async def destroy_view(request: Request, pk: str):
-            # 每次请求创建新的 ViewSet 实例,确保无状态
-            viewset = viewset_class()
-            return await viewset.destroy(request, pk)  # type: ignore[attr-defined]
+            viewset_instance = self.viewset_class()
+            return await viewset_instance.destroy(request, pk)  # type: ignore[attr-defined]
 
-    def _register_custom_actions(self, router: APIRouter, viewset_class: type[ViewSet]) -> None:
+    def _register_custom_actions(self, router: APIRouter, viewset: ViewSet) -> None:
         """注册自定义 action 路由"""
+        viewset_class = viewset.__class__
         # 获取 ViewSet 类的方法(不是实例方法)
         for attr_name in dir(viewset_class):
             # 跳过私有方法和特殊方法
@@ -453,7 +442,7 @@ class ViewSetRouter:
                 handler = make_handler()
 
                 # 获取安全依赖
-                security = _get_security_dependencies(viewset_class)
+                security = _get_security_dependencies(viewset.__class__)
 
                 # 合并安全依赖到 action_kwargs
                 route_kwargs = action_kwargs.copy()
@@ -482,7 +471,7 @@ def as_router(
     将 ViewSet 转换为 FastAPI Router
 
     Args:
-        viewset_class: ViewSet 类
+            viewset: ViewSet 实例（单例）
         prefix: 路由前缀
         tags: OpenAPI 标签
         operations: 支持的操作 (C=Create, R=Retrieve, U=Update, D=Destroy, L=List)
