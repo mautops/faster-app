@@ -64,11 +64,51 @@ class SettingsDiscover(BaseDiscover):
             user_dict = user_setting.model_dump()
             user_overrides.update(user_dict)
 
-        # 获取默认配置的所有值
+        # 获取 DefaultSettings 的所有字段和默认值
+        default_fields = set(DefaultSettings.model_fields.keys())
         default_values = default_settings.model_dump()
+
+        # 找出用户配置中的新字段（自定义环境变量）
+        user_fields = set(user_overrides.keys())
+        new_fields = user_fields - default_fields
 
         # 合并：用户配置覆盖默认配置
         merged_values = {**default_values, **user_overrides}
 
-        # 返回合并后的配置实例
-        return DefaultSettings(**merged_values)
+        if not new_fields:
+            # 没有新字段，直接返回 DefaultSettings 实例
+            return DefaultSettings(**merged_values)
+
+        # 有用户自定义字段，动态创建子类以保留这些字段（与 0.1.7 行为一致）
+        from typing import Any
+
+        from pydantic import ConfigDict
+
+        # 为新字段创建类型注解
+        new_annotations = {}
+        for field in new_fields:
+            value = user_overrides[field]
+            if value is not None:
+                field_type = type(value)
+                if field_type in (str, int, float, bool, list, dict):
+                    new_annotations[field] = field_type
+                else:
+                    new_annotations[field] = Any
+            else:
+                new_annotations[field] = Any | None
+
+        # 动态子类允许额外字段，避免 extra="ignore" 丢弃自定义配置
+        model_config = ConfigDict(extra="allow", env_file=".env", env_file_encoding="utf-8")
+        dynamic_settings_class = type(
+            "DynamicSettings",
+            (DefaultSettings,),
+            {
+                "__annotations__": {
+                    **getattr(DefaultSettings, "__annotations__", {}),
+                    **new_annotations,
+                },
+                "__module__": DefaultSettings.__module__,
+                "model_config": model_config,
+            },
+        )
+        return dynamic_settings_class(**merged_values)
